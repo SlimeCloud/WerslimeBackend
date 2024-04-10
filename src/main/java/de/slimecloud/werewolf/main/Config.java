@@ -9,8 +9,8 @@ public class Config {
 	public int port;
 
 	@NotNull
-	public static Config readFromFile(@NotNull String file) throws IOException {
-		try(FileReader reader = new FileReader(file)) {
+	public static Config readFromFile(@NotNull String path) throws IOException {
+		try (FileReader reader = new FileReader(path)) {
 			return Main.json.fromJson(reader, Config.class);
 		}
 	}
