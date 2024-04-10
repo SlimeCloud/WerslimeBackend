@@ -27,7 +27,8 @@ public class JoinEndpoint implements Handler {
 
 		String id = ctx.pathParam("id");
 		Player player = new Player(request.getName(), false);
-		//TODO add player to game
+
+		ctx.appData(Server.MAIN_KEY).getGames().get(id).getPlayers().put(player.getId(), player);
 
 		ctx.json(new Response(ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(player.getId().toString())));
 	}

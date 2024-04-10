@@ -3,7 +3,7 @@ package de.slimecloud.werewolf.api;
 import com.google.gson.JsonSyntaxException;
 import de.slimecloud.werewolf.api.endpoints.CreateEndpoint;
 import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
-import de.slimecloud.werewolf.api.endpoints.game.InfoEndpoint;
+import de.slimecloud.werewolf.api.endpoints.game.GameInfoEndpoint;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;
 import io.javalin.config.Key;
@@ -57,14 +57,14 @@ public class Server {
 			config.router.apiBuilder(() -> {
 				post("/games", new CreateEndpoint());
 
-				get("/games/{id}", new InfoEndpoint());
+				get("/games/{id}", new GameInfoEndpoint());
 				post("/games/{id}/join", new JoinEndpoint());
 			});
 
 			config.appData(MAIN_KEY, main);
 		});
 
-		server.exception(JsonSyntaxException.class, (e, ctx) -> { throw new ErrorResponse(ErrorResponseType.INVALID_SYNTAX, Map.of("message", e.getMessage())); });
+		server.exception(JsonSyntaxException.class, (e, ctx) -> {throw new ErrorResponse(ErrorResponseType.INVALID_SYNTAX, Map.of("message", e.getMessage()));});
 		server.exception(ValidationException.class, (e, ctx) -> {
 			throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST, Map.of(
 					"fields",
