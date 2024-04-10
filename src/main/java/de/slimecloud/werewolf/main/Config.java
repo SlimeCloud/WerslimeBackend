@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf;
+package de.slimecloud.werewolf.main;
 
 import org.jetbrains.annotations.NotNull;
 

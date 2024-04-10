@@ -3,7 +3,7 @@ package de.slimecloud.werewolf.api;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import de.slimecloud.werewolf.WerewolfServer;
+import de.slimecloud.werewolf.main.WerewolfServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;

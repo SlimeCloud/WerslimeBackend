@@ -1,7 +1,7 @@
 package de.slimecloud.werewolf.api;
 
-import de.slimecloud.werewolf.Main;
-import de.slimecloud.werewolf.WerewolfServer;
+import de.slimecloud.werewolf.main.Main;
+import de.slimecloud.werewolf.main.WerewolfServer;
 import de.slimecloud.werewolf.api.endpoints.AuthenticationEndpoint;
 import io.javalin.Javalin;
 import io.javalin.config.Key;

@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf;
+package de.slimecloud.werewolf.main;
 
 import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;

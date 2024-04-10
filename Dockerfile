@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-COPY build/libs/Server-*-all.jar ./Server.jar
+COPY build/libs/*-all.jar ./Server.jar
 COPY run/* ./
 
 EXPOSE 4321
