@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class AuthenticationEndpoint implements Handler {
 	@Getter
-	public class Request {
+	public static class Request {
 		public String code;
 	}
 
 	@AllArgsConstructor
-	public class Response {
+	public static class Response {
 		public String discord_token;
 		public String api_token;
 	}
