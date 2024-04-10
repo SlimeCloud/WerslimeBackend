@@ -1,7 +1,15 @@
 package de.slimecloud.werewolf;
 
+import com.google.gson.Gson;
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class Main {
-	public static void main(String[] args) {
-		new WerewolfServer();
+	public final static Gson json = new Gson();
+
+	public static void main(String[] args) throws Exception {
+		new WerewolfServer(
+				Config.readFromFile("config.json"),
+				Dotenv.configure().filename("credentials").load()
+		);
 	}
 }
