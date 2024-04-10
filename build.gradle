@@ -1,9 +1,15 @@
 plugins {
     id 'java'
+    id 'idea'
+
+    id('io.freefair.lombok') version '8.4'
+
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 group = 'de.slimecloud'
-version = '1.0-.0'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
