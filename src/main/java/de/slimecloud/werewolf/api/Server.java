@@ -3,6 +3,7 @@ package de.slimecloud.werewolf.api;
 import com.google.gson.JsonSyntaxException;
 import de.slimecloud.werewolf.api.endpoints.CreateEndpoint;
 import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
+import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.GameInfoEndpoint;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;
@@ -55,6 +56,8 @@ public class Server {
 			});
 
 			config.router.apiBuilder(() -> {
+				get("/@me", new MeEndpoint());
+
 				post("/games", new CreateEndpoint());
 
 				get("/games/{id}", new GameInfoEndpoint());

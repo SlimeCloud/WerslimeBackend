@@ -35,19 +35,20 @@ public class Authenticator {
 	}
 
 	@NotNull
-	public String generateToken(@NotNull String id) {
+	public String generateToken(@NotNull String user, @NotNull String game) {
 		return JWT.create()
-				.withSubject(id)
+				.withClaim("user", user)
+				.withClaim("game", game)
 				.sign(algorithm);
 	}
 
 	@Contract("_, true -> !null; _, false -> _")
-	public String checkAuthorization(@NotNull Context context, boolean required) {
+	public AuthorizationInfo checkAuthorization(@NotNull Context context, boolean required) {
 		return checkAuthorization(context.header("Authorization") != null ? context.header("Authorization") : context.formParam("Authorization"), required);
 	}
 
 	@Contract("_, true -> !null; _, false -> _")
-	public String checkAuthorization(@Nullable String authorization, boolean required) {
+	public AuthorizationInfo checkAuthorization(@Nullable String authorization, boolean required) {
 		if (authorization == null) {
 			if (required) throw new ErrorResponse(ErrorResponseType.MISSING_TOKEN);
 			else return null;
@@ -55,7 +56,10 @@ public class Authenticator {
 
 		DecodedJWT decoded = parse(authorization);
 
-		return decoded.getSubject();
+		return new AuthorizationInfo(
+				decoded.getClaim("user").asString(),
+				decoded.getClaim("game").asString()
+		);
 	}
 
 	@NotNull

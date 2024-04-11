@@ -32,6 +32,6 @@ public class CreateEndpoint implements Handler {
 
 		ctx.appData(Server.MAIN_KEY).getGames().put(game.getId().toString(), game);
 
-		ctx.json(new Response(game.getId().toString(), ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(master.getId().toString())));
+		ctx.json(new Response(game.getId().toString(), ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(master.getId().toString(), game.getId().toString())));
 	}
 }
