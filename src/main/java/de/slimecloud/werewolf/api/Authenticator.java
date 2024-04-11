@@ -18,19 +18,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Base64;
 
 public class Authenticator {
-	private final Main main;
-
 	private final Algorithm algorithm;
 
 	private final JWTVerifier verifier;
 
 	public Authenticator(@NotNull Main main) {
-		this.main = main;
-
 		algorithm = Algorithm.HMAC512(Base64.getDecoder().decode(main.getCredentials().get("AUTH_SECRET")));
 
 		verifier = JWT.require(algorithm)
-				.withClaimPresence("sub")
+				.withClaimPresence("user")
+				.withClaimPresence("game")
 				.build();
 	}
 

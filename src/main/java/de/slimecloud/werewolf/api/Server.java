@@ -6,6 +6,7 @@ import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
 import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.GameInfoEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.SettingsEndpoint;
+import de.slimecloud.werewolf.api.endpoints.game.Gateway;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;
 import io.javalin.config.Key;
@@ -16,6 +17,7 @@ import io.javalin.json.JsonMapper;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 import io.javalin.validation.ValidationError;
 import io.javalin.validation.ValidationException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,17 +25,21 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-import static io.javalin.apibuilder.ApiBuilder.get;
-import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 @Slf4j
+@Getter
 public class Server {
 	public final static Key<Main> MAIN_KEY = new Key<>("main");
 
 	private final Main main;
 	private final Javalin server;
 
+	private final Gateway gateway;
+
 	public Server(Main main) {
+		this.gateway = new Gateway(main);
+
 		this.main = main;
 		this.server = Javalin.create(config -> {
 			config.showJavalinBanner = false;
@@ -64,6 +70,8 @@ public class Server {
 				get("/games/{id}", new GameInfoEndpoint());
 				post("/games/{id}/join", new JoinEndpoint());
 				post("/games/{id}/settings", new SettingsEndpoint());
+
+				ws("/gateway", gateway);
 			});
 
 			config.appData(MAIN_KEY, main);

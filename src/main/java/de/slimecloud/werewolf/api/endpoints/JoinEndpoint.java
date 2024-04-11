@@ -34,7 +34,7 @@ public class JoinEndpoint implements Handler {
 		if (game.isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
 
 		Player player = new Player(request.getName(), false);
-		game.getPlayers().put(player.getId(), player);
+		game.getPlayers().put(player.getId().toString(), player);
 
 		ctx.json(new Response(ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(player.getId().toString(), game.getId().toString())));
 	}

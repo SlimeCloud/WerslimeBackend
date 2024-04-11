@@ -28,7 +28,8 @@ public class CreateEndpoint implements Handler {
 				.get();
 
 		Player master = new Player(request.getMasterName(), true);
-		Game game = new Game(master.getId());
+		Game game = new Game(ctx.appData(Server.MAIN_KEY), master.getId());
+		game.getPlayers().put(master.getId().toString(), master);
 
 		ctx.appData(Server.MAIN_KEY).getGames().put(game.getId().toString(), game);
 
