@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,4 +15,6 @@ public class Game {
 	private final Map<UUID, Player> players = new HashMap<>();
 	private final UUID master;
 	private final boolean started = false;
+	@Setter
+	private GameSettings settings = new GameSettings();
 }

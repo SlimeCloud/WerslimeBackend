@@ -13,6 +13,8 @@ public class GameInfo {
 	private final List<PlayerInfo> players;
 	private final String master;
 	private final boolean started;
+	private final GameSettings settings;
+
 
 	@NotNull
 	public static GameInfo create(@NotNull Game game) {
@@ -20,7 +22,8 @@ public class GameInfo {
 				game.getId().toString(),
 				game.getPlayers().values().stream().map(PlayerInfo::create).toList(),
 				game.getMaster().toString(),
-				game.isStarted()
+				game.isStarted(),
+				game.getSettings()
 		);
 	}
 }

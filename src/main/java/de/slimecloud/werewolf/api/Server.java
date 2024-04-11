@@ -5,6 +5,7 @@ import de.slimecloud.werewolf.api.endpoints.CreateEndpoint;
 import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
 import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.GameInfoEndpoint;
+import de.slimecloud.werewolf.api.endpoints.game.SettingsEndpoint;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;
 import io.javalin.config.Key;
@@ -62,6 +63,7 @@ public class Server {
 
 				get("/games/{id}", new GameInfoEndpoint());
 				post("/games/{id}/join", new JoinEndpoint());
+				post("/games/{id}/settings", new SettingsEndpoint());
 			});
 
 			config.appData(MAIN_KEY, main);
