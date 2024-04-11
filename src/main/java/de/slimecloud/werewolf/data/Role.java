@@ -1,6 +1,5 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.main.Main;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +17,6 @@ public enum Role {
 	final String name;
 
 	public static Role getRandom() {
-		return values()[Main.random.nextInt(values().length-1)];
+		return values()[Main.random.nextInt(values().length - 1)];
 	}
 }
