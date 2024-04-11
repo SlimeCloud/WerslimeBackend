@@ -30,6 +30,6 @@ public class MeEndpoint implements Handler {
 		Player player = game.getPlayers().get(info.getUser());
 		if (player == null) throw new ErrorResponse(ErrorResponseType.UNKNOWN); //This shouldn't happen because we never remove a player from the list and only sign tokens with a valid player
 
-		ctx.json(new Response(PlayerInfo.create(player), GameInfo.crete(game)));
+		ctx.json(new Response(PlayerInfo.create(player), GameInfo.create(game)));
 	}
 }

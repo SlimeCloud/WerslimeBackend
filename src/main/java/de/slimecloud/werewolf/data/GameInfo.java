@@ -15,7 +15,7 @@ public class GameInfo {
 	private final boolean started;
 
 	@NotNull
-	public static GameInfo crete(@NotNull Game game) {
+	public static GameInfo create(@NotNull Game game) {
 		return new GameInfo(
 				game.getId().toString(),
 				game.getPlayers().values().stream().map(PlayerInfo::create).toList(),

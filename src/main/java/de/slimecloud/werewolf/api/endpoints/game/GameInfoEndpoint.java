@@ -15,6 +15,6 @@ public class GameInfoEndpoint implements Handler {
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.pathParam("id"));
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
-		ctx.json(GameInfo.crete(game));
+		ctx.json(GameInfo.create(game));
 	}
 }
