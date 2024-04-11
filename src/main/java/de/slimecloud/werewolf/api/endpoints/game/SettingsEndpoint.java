@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class SettingsEndpoint implements Handler {
 
 	@Getter
-	public class Request {
+	public static class Request {
 		GameSettings settings;
 	}
 
