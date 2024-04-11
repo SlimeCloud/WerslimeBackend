@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class JoinEndpoint implements Handler {
 	@Getter
-	public class Request {
+	public static class Request {
 		private String name;
 	}
 
 	@AllArgsConstructor
-	public class Response {
+	public static class Response {
 		public final String token;
 	}
 

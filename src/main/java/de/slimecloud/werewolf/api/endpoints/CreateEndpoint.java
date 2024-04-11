@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class CreateEndpoint implements Handler {
 	@Getter
-	public class Request {
+	public static class Request {
 		public String masterName;
 	}
 
 	@AllArgsConstructor
-	public class Response {
+	public static class Response {
 		public String game;
 		public final String token;
 	}
