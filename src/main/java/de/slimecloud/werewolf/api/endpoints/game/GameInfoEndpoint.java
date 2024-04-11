@@ -13,7 +13,7 @@ public class GameInfoEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.pathParam("id"));
-		if(game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
+		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
 		ctx.json(GameInfo.crete(game));
 	}

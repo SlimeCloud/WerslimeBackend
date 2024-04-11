@@ -67,7 +67,7 @@ public class Server {
 			config.appData(MAIN_KEY, main);
 		});
 
-		server.exception(JsonSyntaxException.class, (e, ctx) -> {throw new ErrorResponse(ErrorResponseType.INVALID_SYNTAX, Map.of("message", e.getMessage()));});
+		server.exception(JsonSyntaxException.class, (e, ctx) -> { throw new ErrorResponse(ErrorResponseType.INVALID_SYNTAX, Map.of("message", e.getMessage())); });
 		server.exception(ValidationException.class, (e, ctx) -> {
 			throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST, Map.of(
 					"fields",

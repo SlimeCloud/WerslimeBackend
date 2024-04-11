@@ -30,8 +30,8 @@ public class JoinEndpoint implements Handler {
 
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.pathParam("id"));
 
-		if(game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
-		if(game.isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
+		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
+		if (game.isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
 
 		Player player = new Player(request.getName(), false);
 		game.getPlayers().put(player.getId(), player);

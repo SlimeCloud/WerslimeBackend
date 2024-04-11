@@ -2,7 +2,6 @@ package de.slimecloud.werewolf.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 @Getter

@@ -25,10 +25,10 @@ public class MeEndpoint implements Handler {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(info.getGame());
-		if(game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
+		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
 		Player player = game.getPlayers().get(info.getUser());
-		if(player == null) throw new ErrorResponse(ErrorResponseType.UNKNOWN); //This shouldn't happen because we never remove a player from the list and only sign tokens with a valid player
+		if (player == null) throw new ErrorResponse(ErrorResponseType.UNKNOWN); //This shouldn't happen because we never remove a player from the list and only sign tokens with a valid player
 
 		ctx.json(new Response(PlayerInfo.create(player), GameInfo.crete(game)));
 	}
