@@ -24,7 +24,7 @@ public class CreateEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		Request request = ctx.bodyValidator(CreateEndpoint.Request.class)
-				.check(r -> !r.getMasterName().isBlank() && r.getMasterName().length() > 4, "Invalid 'name'")
+				.check(r -> !r.getMasterName().isBlank() && r.getMasterName().length() >= 4, "Invalid 'masterName'")
 				.get();
 
 		Player master = new Player(request.getMasterName(), true);

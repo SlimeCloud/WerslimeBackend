@@ -25,7 +25,7 @@ public class JoinEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) {
 		Request request = ctx.bodyValidator(Request.class)
-				.check(r -> !r.getName().isBlank() && r.getName().length() > 4, "Invalid 'name'")
+				.check(r -> !r.getName().isBlank() && r.getName().length() >= 4, "Invalid 'name'")
 				.get();
 
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.pathParam("id"));
