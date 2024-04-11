@@ -12,4 +12,6 @@ public class Player {
 	private final UUID id = UUID.randomUUID();
 
 	private final boolean master;
+
+	private final Role role = Role.getRandom();
 }

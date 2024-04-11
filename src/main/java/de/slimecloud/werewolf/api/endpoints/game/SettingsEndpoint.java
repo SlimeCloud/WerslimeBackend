@@ -14,7 +14,7 @@ public class SettingsEndpoint implements Handler {
 
 	@Getter
 	public static class Request {
-		GameSettings settings;
+		public GameSettings settings;
 	}
 
 	@Override

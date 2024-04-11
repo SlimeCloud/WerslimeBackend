@@ -10,11 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Slf4j
 @Getter
 public class Main {
 	public final static Gson json = new Gson();
+	public final static Random random = new Random();
 
 	public static void main(String[] args) throws Exception {
 		new Main(Config.readFromFile("config"), Dotenv.configure().filename("credentials").load());
