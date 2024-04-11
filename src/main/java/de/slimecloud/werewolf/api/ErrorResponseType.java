@@ -18,8 +18,8 @@ public enum ErrorResponseType {
 	TOKEN_INVALID_HASH(HttpStatus.FORBIDDEN),
 	MISSING_ACCESS(HttpStatus.FORBIDDEN),
 
-	ROUND_STARTED(HttpStatus.CONFLICT),
-	ROUND_NOT_FOUND(HttpStatus.NOT_FOUND);
+	GAME_STARTED(HttpStatus.CONFLICT),
+	GAME_NOT_FOUND(HttpStatus.NOT_FOUND);
 
 	private final HttpStatus status;
 }

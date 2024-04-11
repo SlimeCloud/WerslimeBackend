@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -12,4 +13,14 @@ public class GameInfo {
 	private final List<PlayerInfo> players;
 	private final String master;
 	private final boolean started;
+
+	@NotNull
+	public static GameInfo crete(@NotNull Game game) {
+		return new GameInfo(
+				game.getId().toString(),
+				game.getPlayers().values().stream().map(PlayerInfo::create).toList(),
+				game.getMaster().toString(),
+				game.isStarted()
+		);
+	}
 }
