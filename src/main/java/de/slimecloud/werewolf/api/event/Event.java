@@ -1,14 +1,13 @@
 package de.slimecloud.werewolf.api.event;
 
 import de.slimecloud.werewolf.data.Game;
+import de.slimecloud.werewolf.data.GameInfo;
 import org.jetbrains.annotations.NotNull;
 
 public class Event {
-	public final String type;
-	public final Game game;
+	public final GameInfo game;
 
-	public Event(@NotNull Game game, @NotNull String type) {
-		this.game = game;
-		this.type = type;
+	public Event(@NotNull Game game) {
+		this.game = GameInfo.create(game);
 	}
 }

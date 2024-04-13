@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.data;
 
 import de.slimecloud.werewolf.api.event.Event;
+import de.slimecloud.werewolf.api.event.EventType;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,16 @@ public class Game {
 	public void start() {
 		//TODO set roles
 
-		pushEvent(new Event(this, "START"));
 	}
 
-	public void pushEvent(@NotNull Event event, @NotNull Predicate<Player> filter) {
+	public void pushEvent(@NotNull EventType type,  @NotNull Event event, @NotNull Predicate<Player> filter) {
 		players.values().forEach(player -> {
 			if(!filter.test(player)) return;
-			player.pushEvent(event);
+			player.pushEvent(type, event);
 		});
 	}
 
-	public void pushEvent(@NotNull Event event) {
-		pushEvent(event, p -> true);
+	public void pushEvent(@NotNull EventType type, @NotNull Event event) {
+		pushEvent(type, event, p -> true);
 	}
 }
