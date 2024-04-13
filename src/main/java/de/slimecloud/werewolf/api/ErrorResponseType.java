@@ -19,6 +19,8 @@ public enum ErrorResponseType {
 	MISSING_ACCESS(HttpStatus.FORBIDDEN),
 
 	PLAYER_LEFT(HttpStatus.FORBIDDEN),
+	INVALID_TURN(HttpStatus.CONFLICT),
+
 	GAME_STARTED(HttpStatus.CONFLICT),
 	GAME_NOT_FOUND(HttpStatus.NOT_FOUND);
 

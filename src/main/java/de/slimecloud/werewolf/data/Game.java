@@ -23,6 +23,7 @@ public class Game {
 	private final UUID master;
 
 	private boolean started = false;
+	private Role current = null;
 
 	@Setter
 	private GameSettings settings = new GameSettings();

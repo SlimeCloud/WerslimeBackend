@@ -10,5 +10,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameSettings {
 	private final int werewolfAmount = 2;
-	private final List<Role> roles = Arrays.stream(Role.values()).filter(Role::isGenerate).toList();
+	private final List<Role> roles = Arrays.stream(Role.values()).filter(Role::isSpecial).toList();
 }

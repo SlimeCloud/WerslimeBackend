@@ -28,7 +28,7 @@ public class JoinEndpoint implements Handler {
 				.check(r -> !r.getName().isBlank() && r.getName().length() >= 4, "Invalid 'name'")
 				.get();
 
-		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.pathParam("id"));
+		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.queryParam("id"));
 
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 		if (game.isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
