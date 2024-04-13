@@ -35,7 +35,7 @@ public class Game {
 		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(removeRandom(playerPool));
 
 		Map<Integer, Role> roleMap = new HashMap<>();
-		List<Role> roles = settings.getRoles().stream().sorted(Comparator.comparingInt(Role::getPriority)).toList();
+		List<Role> roles = settings.getRoles().stream().sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder())).toList();
 
 		for (Role role : roles) roleMap.put(removeRandom(playerPool), role);
 
