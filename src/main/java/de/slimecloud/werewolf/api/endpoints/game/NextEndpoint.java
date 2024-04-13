@@ -12,8 +12,8 @@ public class NextEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
-		if(!info.getGame().getMaster().equals(info.getPlayer().getId())) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
-		if(!info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_NOT_STARTED);
+		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
+		if (!info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_NOT_STARTED);
 
 		info.getGame().next();
 	}

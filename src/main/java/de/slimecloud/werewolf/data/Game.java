@@ -18,7 +18,7 @@ public class Game {
 	private final UUID master;
 
 	private boolean started = false;
-	private Role current = null;
+	private final Role current = null;
 
 	@Setter
 	private GameSettings settings = new GameSettings();
@@ -31,6 +31,8 @@ public class Game {
 	}
 
 	public void start() {
+		if (started) return;
+
 		List<Role> roles = new ArrayList<>(players.size());
 		for (int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
@@ -49,7 +51,8 @@ public class Game {
 	}
 
 	public void next() {
-		if(!started) return;
+		if (!started) {
+		}
 
 		//TODO lifecycle
 	}
