@@ -29,7 +29,7 @@ public class Game {
 
 	public void start() {
 		//TODO set roles
-
+		//player.pushEvent(EventType.START, new StartEvent(role));
 	}
 
 	public void pushEvent(@NotNull EventType type,  @NotNull Event event, @NotNull Predicate<Player> filter) {
