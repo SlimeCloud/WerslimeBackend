@@ -27,7 +27,7 @@ public class CreateEndpoint implements Handler {
 				.check(r -> !r.getMasterName().isBlank() && r.getMasterName().length() >= 4, "Invalid 'masterName'")
 				.get();
 
-		Player master = new Player(request.getMasterName(), true);
+		Player master = new Player(true, request.getMasterName());
 		Game game = new Game(ctx.appData(Server.MAIN_KEY), master.getId());
 		game.getPlayers().put(master.getId().toString(), master);
 
