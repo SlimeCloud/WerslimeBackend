@@ -17,9 +17,11 @@ public class EventSource implements Consumer<SseClient> {
 	@Override
 	public void accept(@NotNull SseClient client) {
 		AuthorizationInfo info = client.ctx().appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(client.ctx().queryParam("token"), true);
+
 		client.keepAlive();
+		client.onClose(() -> info.getPlayer().setClient(null));
 
 		info.getPlayer().setClient(client);
-		client.onClose(() -> info.getPlayer().setClient(null));
+		info.getPlayer().sendUpdate(info.getGame());
 	}
 }
