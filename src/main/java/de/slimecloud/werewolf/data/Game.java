@@ -29,13 +29,13 @@ public class Game {
 
 	public void start() {
 		Set<Integer> werewolfIndexes = new HashSet<>();
-		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(Main.random.nextInt(players.size()-1));
+		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(Main.random.nextInt(players.size() - 1));
 
 		AtomicInteger i = new AtomicInteger();
 		players.values().forEach(player -> {
 			Role role;
 			if (werewolfIndexes.contains(i.getAndIncrement())) role = Role.WEREWOLF;
-			else role = settings.getRoles()[Main.random.nextInt(settings.getRoles().length-1)];
+			else role = settings.getRoles()[Main.random.nextInt(settings.getRoles().length - 1)];
 
 			player.pushEvent(EventType.START, new StartEvent(this, role));
 		});
@@ -43,9 +43,9 @@ public class Game {
 		started = true;
 	}
 
-	public void pushEvent(@NotNull EventType type,  @NotNull Event event, @NotNull Predicate<Player> filter) {
+	public void pushEvent(@NotNull EventType type, @NotNull Event event, @NotNull Predicate<Player> filter) {
 		players.values().forEach(player -> {
-			if(!filter.test(player)) return;
+			if (!filter.test(player)) return;
 			player.pushEvent(type, event);
 		});
 	}
