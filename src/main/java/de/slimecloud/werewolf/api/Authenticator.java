@@ -58,10 +58,10 @@ public class Authenticator {
 		DecodedJWT decoded = parse(authorization);
 
 		Game game = main.getGames().get(decoded.getClaim("game").asString());
-		if(game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
+		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
 		Player player = game.getPlayers().get(decoded.getClaim("user").asString());
-		if(player == null) throw new ErrorResponse(ErrorResponseType.PLAYER_LEFT);
+		if (player == null) throw new ErrorResponse(ErrorResponseType.PLAYER_LEFT);
 
 		return new AuthorizationInfo(player, game);
 	}

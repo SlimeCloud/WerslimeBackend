@@ -25,6 +25,6 @@ public class Player {
 	private Boolean alive = null;
 
 	public void pushEvent(@NotNull EventType type, @NotNull Event event) {
-		if(client != null) client.sendEvent(type.name(), event, UUID.randomUUID().toString());
+		if (client != null) client.sendEvent(type.name(), event, UUID.randomUUID().toString());
 	}
 }

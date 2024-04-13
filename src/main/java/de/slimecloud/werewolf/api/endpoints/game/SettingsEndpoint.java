@@ -21,7 +21,7 @@ public class SettingsEndpoint implements Handler {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
-		if(!info.getGame().getId().toString().equals(ctx.pathParam("id"))) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
+		if (!info.getGame().getId().toString().equals(ctx.pathParam("id"))) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
 		info.getGame().setSettings(ctx.bodyAsClass(Request.class).getSettings());
 	}

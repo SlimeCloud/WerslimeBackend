@@ -54,9 +54,9 @@ public class Game {
 		return list.remove(Main.random.nextInt(list.size()-1));
 	}
 
-	public void pushEvent(@NotNull EventType type,  @NotNull Event event, @NotNull Predicate<Player> filter) {
+	public void pushEvent(@NotNull EventType type, @NotNull Event event, @NotNull Predicate<Player> filter) {
 		players.values().forEach(player -> {
-			if(!filter.test(player)) return;
+			if (!filter.test(player)) return;
 			player.pushEvent(type, event);
 		});
 	}
