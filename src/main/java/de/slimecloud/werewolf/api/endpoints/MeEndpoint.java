@@ -19,6 +19,6 @@ public class MeEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
-		ctx.json(new Response(PlayerInfo.create(info.getPlayer()), GameInfo.create(info.getGame())));
+		ctx.json(new Response(PlayerInfo.create(info.getPlayer(), true), GameInfo.create(info.getGame(), info.getPlayer().getId())));
 	}
 }

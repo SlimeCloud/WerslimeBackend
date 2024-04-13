@@ -8,6 +8,6 @@ public class Event {
 	public final GameInfo game;
 
 	public Event(@NotNull Game game) {
-		this.game = GameInfo.create(game);
+		this.game = GameInfo.create(game, null);
 	}
 }

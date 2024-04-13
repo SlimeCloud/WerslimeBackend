@@ -11,15 +11,15 @@ public class PlayerInfo {
 	private final String name;
 
 	private final boolean master;
-	private final String role;
+	private final Role role;
 
 	@NotNull
-	public static PlayerInfo create(@NotNull Player player) {
+	public static PlayerInfo create(@NotNull Player player, boolean role) {
 		return new PlayerInfo(
 				player.getId().toString(),
 				player.getName(),
 				player.isMaster(),
-				player.getRole().name()
+				role ? player.getRole() : null
 		);
 	}
 }

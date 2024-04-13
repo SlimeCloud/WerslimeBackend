@@ -21,8 +21,8 @@ public class Player {
 	private SseClient client = null;
 
 	private Role role = null;
-	private Boolean mayor = null;
-	private Boolean alive = null;
+	private boolean mayor = false;
+	private boolean alive = false;
 
 	public void pushEvent(@NotNull EventType type, @NotNull Event event) {
 		if (client != null) client.sendEvent(type.name(), event, UUID.randomUUID().toString());
