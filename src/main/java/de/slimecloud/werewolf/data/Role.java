@@ -1,22 +1,16 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.main.Main;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public enum Role {
-	VILLAGER("Villager"),
-	WEREWOLF("Werewolf"),
-	WITCH("Witch"),
-	HUNTER("Hunter"),
-	AMOR("Amor"),
-	SEER("Seer");
+	VILLAGER(false),
+	WEREWOLF(false),
+	WITCH(true),
+	HUNTER(true),
+	SEER(true);
 
-	final String name;
-
-	public static Role getRandom() {
-		return values()[Main.random.nextInt(values().length - 1)];
-	}
+	private final boolean generate;
 }

@@ -8,6 +8,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import de.slimecloud.werewolf.data.Game;
+import de.slimecloud.werewolf.data.Player;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.http.Context;
 import io.javalin.http.InternalServerErrorResponse;
@@ -18,13 +20,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Base64;
 
 public class Authenticator {
-	private final Algorithm algorithm;
+	private final Main main;
 
+	private final Algorithm algorithm;
 	private final JWTVerifier verifier;
 
 	public Authenticator(@NotNull Main main) {
-		algorithm = Algorithm.HMAC512(Base64.getDecoder().decode(main.getCredentials().get("AUTH_SECRET")));
+		this.main = main;
 
+		algorithm = Algorithm.HMAC512(Base64.getDecoder().decode(main.getCredentials().get("AUTH_SECRET")));
 		verifier = JWT.require(algorithm)
 				.withClaimPresence("user")
 				.withClaimPresence("game")
@@ -53,10 +57,13 @@ public class Authenticator {
 
 		DecodedJWT decoded = parse(authorization);
 
-		return new AuthorizationInfo(
-				decoded.getClaim("user").asString(),
-				decoded.getClaim("game").asString()
-		);
+		Game game = main.getGames().get(decoded.getClaim("game").asString());
+		if(game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
+
+		Player player = game.getPlayers().get(decoded.getClaim("user").asString());
+		if(player == null) throw new ErrorResponse(ErrorResponseType.PLAYER_LEFT);
+
+		return new AuthorizationInfo(player, game);
 	}
 
 	@NotNull

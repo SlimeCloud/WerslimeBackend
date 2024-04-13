@@ -12,7 +12,6 @@ public class GameInfo {
 	private final String id;
 	private final List<PlayerInfo> players;
 	private final String master;
-	private final String mayor;
 	private final boolean started;
 	private final GameSettings settings;
 
@@ -23,7 +22,6 @@ public class GameInfo {
 				game.getId().toString(),
 				game.getPlayers().values().stream().map(PlayerInfo::create).toList(),
 				game.getMaster().toString(),
-				game.getMayor().toString(),
 				game.isStarted(),
 				game.getSettings()
 		);

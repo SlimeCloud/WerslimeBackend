@@ -6,7 +6,8 @@ import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
 import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.GameInfoEndpoint;
 import de.slimecloud.werewolf.api.endpoints.game.SettingsEndpoint;
-import de.slimecloud.werewolf.api.endpoints.game.Gateway;
+import de.slimecloud.werewolf.api.endpoints.game.EventSource;
+import de.slimecloud.werewolf.api.endpoints.game.StartEndpoint;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;
 import io.javalin.config.Key;
@@ -35,10 +36,7 @@ public class Server {
 	private final Main main;
 	private final Javalin server;
 
-	private final Gateway gateway;
-
 	public Server(Main main) {
-		this.gateway = new Gateway(main);
 
 		this.main = main;
 		this.server = Javalin.create(config -> {
@@ -70,8 +68,9 @@ public class Server {
 				get("/games/{id}", new GameInfoEndpoint());
 				post("/games/{id}/join", new JoinEndpoint());
 				post("/games/{id}/settings", new SettingsEndpoint());
+				post("/games/{id}/start", new StartEndpoint());
 
-				ws("/gateway", gateway);
+				sse("/events", new EventSource());
 			});
 
 			config.appData(MAIN_KEY, main);
