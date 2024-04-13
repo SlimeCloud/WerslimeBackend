@@ -19,7 +19,7 @@ public class PlayerInfo {
 				player.getId().toString(),
 				player.getName(),
 				player.isMaster(),
-				player.getRole().getName()
+				player.getRole().name()
 		);
 	}
 }
