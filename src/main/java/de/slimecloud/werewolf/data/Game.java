@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,9 +53,10 @@ public class Game {
 		started = true;
 	}
 
-	private <T> T removeRandom(List<T> list) {
+	@Nullable
+	private <T> T removeRandom(@NotNull List<T> list) {
 		if (list.isEmpty()) return null;
-		return list.remove(Main.random.nextInt(list.size()-1));
+		return list.remove(Main.random.nextInt(list.size() - 1));
 	}
 
 	public void pushEvent(@NotNull EventType type, @NotNull Event event, @NotNull Predicate<Player> filter) {

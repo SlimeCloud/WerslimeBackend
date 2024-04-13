@@ -13,7 +13,8 @@ import io.javalin.http.Handler;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import static io.javalin.apibuilder.ApiBuilder.*;
+import static io.javalin.apibuilder.ApiBuilder.path;
+import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class GameEndpoints implements EndpointGroup {
 	@Override
@@ -25,8 +26,8 @@ public class GameEndpoints implements EndpointGroup {
 		post("/start", new StartEndpoint());
 
 		path("/action", () -> {
-			for(Role role : Role.values()) {
-				if(!role.isSpecial()) continue;
+			for (Role role : Role.values()) {
+				if (!role.isSpecial()) continue;
 				post("/" + role.name().toLowerCase(), new RoleActionEndpoint(role));
 			}
 		});
@@ -40,8 +41,8 @@ public class GameEndpoints implements EndpointGroup {
 		public void handle(@NotNull Context ctx) throws Exception {
 			AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 
-			if(info.getPlayer().getRole() != role) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
-			if(info.getGame().getCurrent() != role) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+			if (info.getPlayer().getRole() != role) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
+			if (info.getGame().getCurrent() != role) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 			role.handle(info.getGame(), info.getPlayer(), ctx);
 		}
