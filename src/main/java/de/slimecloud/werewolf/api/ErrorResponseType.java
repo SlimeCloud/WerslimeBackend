@@ -22,6 +22,7 @@ public enum ErrorResponseType {
 	INVALID_TURN(HttpStatus.CONFLICT),
 
 	GAME_STARTED(HttpStatus.CONFLICT),
+	GAME_NOT_STARTED(HttpStatus.CONFLICT),
 	GAME_NOT_FOUND(HttpStatus.NOT_FOUND);
 
 	private final HttpStatus status;

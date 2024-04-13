@@ -23,7 +23,9 @@ public class GameEndpoints implements EndpointGroup {
 
 		post("/join", new JoinEndpoint());
 		post("/settings", new SettingsEndpoint());
+
 		post("/start", new StartEndpoint());
+		post("/next", new NextEndpoint());
 
 		path("/action", () -> {
 			for (Role role : Role.values()) {

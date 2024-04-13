@@ -48,6 +48,12 @@ public class Game {
 		sendUpdate();
 	}
 
+	public void next() {
+		if(!started) return;
+
+		//TODO lifecycle
+	}
+
 	public void sendUpdate() {
 		players.values().forEach(p -> p.sendUpdate(this));
 	}
