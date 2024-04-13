@@ -28,19 +28,30 @@ public class Game {
 	private GameSettings settings = new GameSettings();
 
 	public void start() {
+		List<Integer> playerPool = new ArrayList<>();
+		for (int i = 0; i < players.size(); i++) playerPool.add(i);
+
 		Set<Integer> werewolfIndexes = new HashSet<>();
-		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(Main.random.nextInt(players.size()-1));
+		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(removeRandom(playerPool));
+
+		Map<Integer, Role> roleMap = new HashMap<>();
+		for (Role role : settings.getRoles()) roleMap.put(removeRandom(playerPool), role);
 
 		AtomicInteger i = new AtomicInteger();
 		players.values().forEach(player -> {
 			Role role;
 			if (werewolfIndexes.contains(i.getAndIncrement())) role = Role.WEREWOLF;
-			else role = settings.getRoles()[Main.random.nextInt(settings.getRoles().length-1)];
+			else role = roleMap.getOrDefault(i.get(), Role.VILLAGER);
 
 			player.pushEvent(EventType.START, new StartEvent(this, role));
 		});
 
 		started = true;
+	}
+
+	private <T> T removeRandom(List<T> list) {
+		if (list.isEmpty()) return null;
+		return list.remove(Main.random.nextInt(list.size()-1));
 	}
 
 	public void pushEvent(@NotNull EventType type,  @NotNull Event event, @NotNull Predicate<Player> filter) {
