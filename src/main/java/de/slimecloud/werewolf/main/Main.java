@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import de.slimecloud.werewolf.api.Authenticator;
 import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.data.Game;
+import de.slimecloud.werewolf.data.Player;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +40,17 @@ public class Main {
 		this.server = new Server(this);
 
 		this.server.start();
+	}
+
+	@NotNull
+	public Game create(@NotNull String name) {
+		Player player = new Player(true, name);
+		Game game = new Game(this, player.getId());
+
+		game.getPlayers().put(player.getId().toString(), player);
+		games.put(name, game);
+
+		return game;
 	}
 
 	public void stop() {

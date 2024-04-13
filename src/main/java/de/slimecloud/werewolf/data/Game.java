@@ -4,6 +4,7 @@ import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -21,6 +22,13 @@ public class Game {
 
 	@Setter
 	private GameSettings settings = new GameSettings();
+
+	@NotNull
+	public Player join(@NotNull String name) {
+		Player player = new Player(false, name);
+		players.put(player.getId().toString(), player);
+		return player;
+	}
 
 	public void start() {
 		List<Role> roles = new ArrayList<>(players.size());
