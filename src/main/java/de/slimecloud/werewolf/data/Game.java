@@ -1,18 +1,11 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.api.event.Event;
-import de.slimecloud.werewolf.api.event.EventType;
-import de.slimecloud.werewolf.api.event.StartEvent;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 @Getter
 @RequiredArgsConstructor
@@ -30,43 +23,24 @@ public class Game {
 	private GameSettings settings = new GameSettings();
 
 	public void start() {
-		List<Integer> playerPool = new ArrayList<>();
-		for (int i = 0; i < players.size(); i++) playerPool.add(i);
+		List<Role> roles = new ArrayList<>(players.size());
+		for(int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
-		Set<Integer> werewolfIndexes = new HashSet<>();
-		for (int i = 0; i < settings.getWerewolfAmount(); i++) werewolfIndexes.add(removeRandom(playerPool));
+		roles.addAll(settings.getRoles().stream()
+				.sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder()))
+				.limit(players.size() - settings.getWerewolfAmount())
+				.toList()
+		);
 
-		Map<Integer, Role> roleMap = new HashMap<>();
-		List<Role> roles = settings.getRoles().stream().sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder())).toList();
+		for(int i = roles.size(); i < players.size(); i++) roles.add(Role.VILLAGER);
 
-		for (Role role : roles) roleMap.put(removeRandom(playerPool), role);
-
-		AtomicInteger i = new AtomicInteger();
-		players.values().forEach(player -> {
-			Role role;
-			if (werewolfIndexes.contains(i.getAndIncrement())) role = Role.WEREWOLF;
-			else role = roleMap.getOrDefault(i.get(), Role.VILLAGER);
-
-			player.pushEvent(EventType.START, new StartEvent(this, role));
-		});
+		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
 		started = true;
+		sendUpdate();
 	}
 
-	@Nullable
-	private <T> T removeRandom(@NotNull List<T> list) {
-		if (list.isEmpty()) return null;
-		return list.remove(Main.random.nextInt(list.size() - 1));
-	}
-
-	public void pushEvent(@NotNull EventType type, @NotNull Event event, @NotNull Predicate<Player> filter) {
-		players.values().forEach(player -> {
-			if (!filter.test(player)) return;
-			player.pushEvent(type, event);
-		});
-	}
-
-	public void pushEvent(@NotNull EventType type, @NotNull Event event) {
-		pushEvent(type, event, p -> true);
+	public void sendUpdate() {
+		players.values().forEach(p -> p.sendUpdate(this));
 	}
 }

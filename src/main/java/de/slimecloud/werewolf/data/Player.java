@@ -1,7 +1,5 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.api.event.Event;
-import de.slimecloud.werewolf.api.event.EventType;
 import io.javalin.http.sse.SseClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,7 @@ public class Player {
 	private boolean mayor = false;
 	private boolean alive = false;
 
-	public void pushEvent(@NotNull EventType type, @NotNull Event event) {
-		if (client != null) client.sendEvent(type.name(), event, UUID.randomUUID().toString());
+	public void sendUpdate(@NotNull Game game) {
+		if (client != null) client.sendEvent("UPDATE", GameState.create(game, this), UUID.randomUUID().toString());
 	}
 }
