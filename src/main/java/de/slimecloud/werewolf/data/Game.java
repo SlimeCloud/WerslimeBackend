@@ -24,7 +24,7 @@ public class Game {
 
 	public void start() {
 		List<Role> roles = new ArrayList<>(players.size());
-		for(int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);
+		for (int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
 		roles.addAll(settings.getRoles().stream()
 				.sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder()))
@@ -32,7 +32,7 @@ public class Game {
 				.toList()
 		);
 
-		for(int i = roles.size(); i < players.size(); i++) roles.add(Role.VILLAGER);
+		for (int i = roles.size(); i < players.size(); i++) roles.add(Role.VILLAGER);
 
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
