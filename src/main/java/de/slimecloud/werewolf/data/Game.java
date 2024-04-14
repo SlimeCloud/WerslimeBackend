@@ -31,6 +31,10 @@ public class Game {
 		return player;
 	}
 
+	public void leave(@NotNull Player player) {
+		players.remove(player.getId().toString());
+	}
+
 	public void start() {
 		if (started) return;
 

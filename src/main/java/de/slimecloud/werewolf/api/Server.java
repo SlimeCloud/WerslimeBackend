@@ -2,7 +2,7 @@ package de.slimecloud.werewolf.api;
 
 import com.google.gson.JsonSyntaxException;
 import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
-import de.slimecloud.werewolf.api.endpoints.game.EventSource;
+import de.slimecloud.werewolf.api.endpoints.EventSource;
 import de.slimecloud.werewolf.api.endpoints.game.GameEndpoints;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.Javalin;

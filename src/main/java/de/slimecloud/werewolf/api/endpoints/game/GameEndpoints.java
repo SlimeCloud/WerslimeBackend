@@ -4,8 +4,6 @@ import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.api.endpoints.CreateEndpoint;
-import de.slimecloud.werewolf.api.endpoints.JoinEndpoint;
 import de.slimecloud.werewolf.data.Role;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
@@ -22,6 +20,8 @@ public class GameEndpoints implements EndpointGroup {
 		post(new CreateEndpoint());
 
 		post("/join", new JoinEndpoint());
+		post("/leave", new LeaveEndpoint());
+
 		post("/settings", new SettingsEndpoint());
 
 		post("/start", new StartEndpoint());

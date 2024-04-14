@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.api.endpoints;
+package de.slimecloud.werewolf.api.endpoints.game;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;

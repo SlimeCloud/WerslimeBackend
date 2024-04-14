@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.api.endpoints.game;
+package de.slimecloud.werewolf.api.endpoints;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.Server;
