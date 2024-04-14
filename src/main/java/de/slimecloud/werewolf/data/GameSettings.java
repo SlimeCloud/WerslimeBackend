@@ -9,6 +9,8 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class GameSettings {
-	private final int werewolfAmount = 2;
-	private final List<Role> roles = Arrays.stream(Role.values()).filter(Role::isSpecial).toList();
+	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.stream(Role.values()).filter(Role::isSpecial).toList());
+
+	private final int werewolfAmount;
+	private final List<Role> roles;
 }

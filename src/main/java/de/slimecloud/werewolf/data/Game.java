@@ -1,5 +1,6 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.data.request.WitchRequest;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,34 @@ public class Game {
 	private final UUID master;
 
 	@Setter
-	private GameSettings settings = new GameSettings();
+	private GameSettings settings = GameSettings.DEFAULT;
 
 	private boolean started = false;
+
+	@Setter
 	private String victim = null;
 	private Role current = null;
+	private EnumSet<WitchRequest.WitchAction> witchActions;
 
 	@NotNull
 	public Player join(@NotNull String name) {
 		Player player = new Player(false, name);
 		players.put(player.getId().toString(), player);
+		sendUpdate();
+
 		return player;
 	}
 
-	public void leave(@NotNull Player player) {
-		players.remove(player.getId().toString());
+	public boolean leave(@NotNull String player) {
+		boolean removed = players.remove(player) != null;
+		sendUpdate();
+		return removed;
 	}
 
 	public void reset() {
+		started = false;
+		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
+
 		players.values().forEach(player -> {
 			player.setAlive(true);
 			player.setMayor(false);
