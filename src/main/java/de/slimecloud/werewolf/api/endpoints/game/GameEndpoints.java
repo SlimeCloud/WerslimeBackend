@@ -21,6 +21,7 @@ public class GameEndpoints implements EndpointGroup {
 
 		post("/join", new JoinEndpoint());
 		post("/leave", new LeaveEndpoint());
+		post("/reset", new ResetEndpoint());
 
 		post("/settings", new SettingsEndpoint());
 
