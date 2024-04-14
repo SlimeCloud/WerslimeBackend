@@ -48,7 +48,7 @@ public class Main {
 		Game game = new Game(this, player.getId());
 
 		game.getPlayers().put(player.getId().toString(), player);
-		games.put(name, game);
+		games.put(game.getId().toString(), game);
 
 		return game;
 	}
