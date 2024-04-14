@@ -20,6 +20,7 @@ public enum ErrorResponseType {
 
 	PLAYER_LEFT(HttpStatus.FORBIDDEN),
 	INVALID_TURN(HttpStatus.CONFLICT),
+	INVALID_TARGET(HttpStatus.CONFLICT),
 
 	GAME_STARTED(HttpStatus.CONFLICT),
 	GAME_NOT_STARTED(HttpStatus.CONFLICT),
