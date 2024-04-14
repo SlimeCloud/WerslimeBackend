@@ -17,10 +17,11 @@ public class SettingsEndpoint implements Handler {
 
 		GameSettings settings = ctx.bodyValidator(GameSettings.class)
 				.check(s -> s.getRoles() != null, "Invalid 'roles'")
-				.check(s -> s.getWerewolfAmount() > 1, "Invalid 'werewolfAmount'")
+				.check(s -> s.getWerewolfAmount() >= 1, "Invalid 'werewolfAmount'")
 				.get();
 
 		info.getGame().setSettings(settings);
+
 		info.getGame().sendUpdate();
 	}
 }

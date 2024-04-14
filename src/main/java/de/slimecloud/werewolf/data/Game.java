@@ -18,7 +18,7 @@ public class Game {
 	private final UUID master;
 
 	@Setter
-	private GameSettings settings = new GameSettings();
+	private GameSettings settings = GameSettings.DEFAULT;
 
 	private boolean started = false;
 	private String victim = null;
@@ -39,6 +39,7 @@ public class Game {
 	}
 
 	public void reset() {
+		started = false;
 		players.values().forEach(player -> {
 			player.setAlive(true);
 			player.setMayor(false);
