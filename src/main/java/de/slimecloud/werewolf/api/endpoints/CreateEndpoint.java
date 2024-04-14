@@ -32,5 +32,6 @@ public class CreateEndpoint implements Handler {
 				game.getMaster().toString(),
 				game.getId().toString())
 		));
+		game.sendUpdate();
 	}
 }
