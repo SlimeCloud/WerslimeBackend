@@ -18,6 +18,7 @@ public enum Role {
 	WITCH(true, 3) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+			if (!player.isAlive()) return;
 			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
 					.check(Role.validateId(game), "Invalid 'id'")
 					.get();
@@ -37,15 +38,23 @@ public enum Role {
 	HUNTER(true, 1) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
-			//TODO implement role logic
+			if (!player.isAlive()) return;
+			TargetRequest request = ctx.bodyValidator(TargetRequest.class)
+					.check(Role.validateId(game), "Invalid 'id'")
+					.get();
+			Player target = game.getPlayers().get(request.getId());
+			Role.checkAlive(target, true);
+			target.setAlive(false);
 		}
 	},
 	SEER(true, 2) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+			if (!player.isAlive()) return;
 			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
-			//TODO implement role logic
+			Player target = game.getPlayers().get(request.getId());
+			Role.checkAlive(target, true);
+			ctx.json(target.getRole());
 		}
 	};
 
