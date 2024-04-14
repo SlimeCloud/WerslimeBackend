@@ -13,13 +13,18 @@ public class PlayerInfo {
 	private final boolean master;
 	private final Role role;
 
+	private final boolean alive;
+	private final boolean mayor;
+
 	@NotNull
 	public static PlayerInfo create(@NotNull Player player, boolean role) {
 		return new PlayerInfo(
 				player.getId().toString(),
 				player.getName(),
 				player.isMaster(),
-				role ? player.getRole() : null
+				role ? player.getRole() : null,
+				player.isAlive(),
+				player.isMayor()
 		);
 	}
 }

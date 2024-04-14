@@ -13,9 +13,8 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	VILLAGER(false, 0),
-	WEREWOLF(false, 0),
-	WITCH(true, 3) {
+	WEREWOLF(false, true, 0),
+	WITCH(true, true, 3) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
@@ -38,7 +37,19 @@ public enum Role {
 			game.getWitchActions().remove(request.getAction());
 		}
 	},
-	HUNTER(true, 1) {
+	SEER(true, true, 2) {
+		@Override
+		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+			if (!player.isAlive()) return;
+			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
+
+			Player target = game.getPlayers().get(request.getId());
+			checkAlive(target, true);
+			ctx.json(target.getRole());
+		}
+	},
+	VILLAGER(false, true,0),
+	HUNTER(true, false, 1) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
@@ -50,25 +61,14 @@ public enum Role {
 			checkAlive(target, true);
 			target.setAlive(false);
 		}
-	},
-	SEER(true, 2) {
-		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			if (!player.isAlive()) return;
-			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
-
-			Player target = game.getPlayers().get(request.getId());
-			checkAlive(target, true);
-			ctx.json(target.getRole());
-		}
 	};
 
 	private final boolean special;
+	private final boolean automatic;
 	private final int priority;
 
 
 	public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-
 	}
 
 	@NotNull

@@ -66,7 +66,7 @@ public class Game {
 
 		roles.addAll(settings.getRoles().stream()
 				.sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder()))
-				.limit(players.size() - settings.getWerewolfAmount())
+				.limit(Math.max(players.size() - settings.getWerewolfAmount(), 0))
 				.toList()
 		);
 
@@ -80,8 +80,7 @@ public class Game {
 
 	public void next() {
 		if (!started) return;
-
-		current = Role.WEREWOLF;
+		if(current == null) current = Role.WEREWOLF;
 
 		sendUpdate();
 
