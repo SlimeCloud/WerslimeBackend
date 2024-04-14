@@ -21,14 +21,15 @@ public enum Role {
 			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
 					.check(Role.validateId(game), "Invalid 'id'")
 					.get();
+
 			Player target = game.getPlayers().get(request.getId());
 			switch (request.getType()) {
 				case HEAL -> {
-					Role.checkAlive(target, false);
+					checkAlive(target, false);
 					target.setAlive(true);
 				}
 				case KILL -> {
-					Role.checkAlive(target, true);
+					checkAlive(target, true);
 					target.setAlive(false);
 				}
 			}
@@ -57,11 +58,12 @@ public enum Role {
 
 	}
 
+	@NotNull
 	private static <T extends TargetRequest> Function1<T, Boolean> validateId(@NotNull Game game) {
 		return request -> game.getPlayers().containsKey(request.getId());
 	}
 
-	private static void checkAlive(Player player, boolean shouldAlive) {
+	private static void checkAlive(@NotNull Player player, boolean shouldAlive) {
 		if (player.isAlive() != shouldAlive) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 	}
 }
