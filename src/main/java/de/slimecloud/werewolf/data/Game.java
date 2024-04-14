@@ -17,11 +17,12 @@ public class Game {
 	private final Map<String, Player> players = new HashMap<>();
 	private final UUID master;
 
-	private boolean started = false;
-	private final Role current = null;
-
 	@Setter
 	private GameSettings settings = new GameSettings();
+
+	private boolean started = false;
+	private final String victim;
+	private final Role current = null;
 
 	@NotNull
 	public Player join(@NotNull String name) {
