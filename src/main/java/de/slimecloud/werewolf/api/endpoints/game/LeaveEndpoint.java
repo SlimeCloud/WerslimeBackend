@@ -10,6 +10,6 @@ public class LeaveEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
-		info.getGame().leave(info.getPlayer());
+		info.getGame().leave(info.getPlayer().getId().toString());
 	}
 }

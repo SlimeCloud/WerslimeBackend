@@ -33,9 +33,10 @@ public class Game {
 		return player;
 	}
 
-	public void leave(@NotNull Player player) {
-		players.remove(player.getId().toString());
+	public boolean leave(@NotNull String player) {
+		boolean removed = players.remove(player) != null;
 		sendUpdate();
+		return removed;
 	}
 
 	public void reset() {
