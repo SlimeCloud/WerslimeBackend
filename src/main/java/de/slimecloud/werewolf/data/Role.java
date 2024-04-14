@@ -19,20 +19,23 @@ public enum Role {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
-					.check(Role.validateId(game), "Invalid 'id'")
+					.check(r -> r.getId() != null, "Invalid 'id'")
+					.check(r -> r.getAction() != null, "Invalid 'action'")
+					.check(validateId(game), "Invalid 'id'")
 					.get();
 
+			if(!game.getWitchActions().contains(request.getAction())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
 			Player target = game.getPlayers().get(request.getId());
-			switch (request.getType()) {
-				case HEAL -> {
-					checkAlive(target, false);
-					target.setAlive(true);
-				}
+			switch (request.getAction()) {
+				case HEAL -> game.setVictim(null);
 				case KILL -> {
 					checkAlive(target, true);
 					target.setAlive(false);
 				}
 			}
+
+			game.getWitchActions().remove(request.getAction());
 		}
 	},
 	HUNTER(true, 1) {

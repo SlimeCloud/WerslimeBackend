@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class WitchRequest extends TargetRequest {
 
-	private Type type;
+	private WitchAction action;
 
-	public enum Type {
+	public enum WitchAction {
 		HEAL,
 		KILL
 	}
