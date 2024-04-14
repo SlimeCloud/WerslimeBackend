@@ -20,7 +20,6 @@ public enum Role {
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
 			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
-					.check(r -> r.getId() != null, "Invalid 'id'")
 					.check(r -> r.getAction() != null, "Invalid 'action'")
 					.check(validateId(game), "Invalid 'id'")
 					.get();
@@ -72,7 +71,7 @@ public enum Role {
 
 	@NotNull
 	private static <T extends TargetRequest> Function1<T, Boolean> validateId(@NotNull Game game) {
-		return request -> game.getPlayers().containsKey(request.getId());
+		return request -> request.getId() != null && game.getPlayers().containsKey(request.getId());
 	}
 
 	private static void checkAlive(@NotNull Player player, boolean shouldAlive) {
