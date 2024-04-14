@@ -13,9 +13,11 @@ import java.util.UUID;
 public class GameInfo {
 	private final String id;
 	private final List<PlayerInfo> players;
-	private final String master;
+
 	private final boolean started;
 	private final GameSettings settings;
+
+	private final Role current;
 
 
 	@NotNull
@@ -23,9 +25,9 @@ public class GameInfo {
 		return new GameInfo(
 				game.getId().toString(),
 				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p, !p.isAlive() || p.getId().equals(self))).toList(),
-				game.getMaster().toString(),
 				game.isStarted(),
-				game.getSettings()
+				game.getSettings(),
+				game.getCurrent()
 		);
 	}
 }
