@@ -23,6 +23,10 @@ public class Player {
 	private boolean alive = false;
 
 	public void sendUpdate(@NotNull Game game) {
-		if (client != null) client.sendEvent("UPDATE", GameState.create(game, this), UUID.randomUUID().toString());
+		sendEvent("UPDATE", GameState.create(game, this));
+	}
+
+	public void sendEvent(@NotNull String name, @NotNull Object data) {
+		if (client != null) client.sendEvent(name, data, UUID.randomUUID().toString());
 	}
 }

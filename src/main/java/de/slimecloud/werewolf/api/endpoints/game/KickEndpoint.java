@@ -25,5 +25,6 @@ public class KickEndpoint implements Handler {
 				.get();
 
 		if (!info.getGame().leave(request.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+		info.getPlayer().sendEvent("KICK", new Object());
 	}
 }
