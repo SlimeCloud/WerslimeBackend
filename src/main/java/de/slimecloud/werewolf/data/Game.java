@@ -21,11 +21,11 @@ public class Game {
 	@Setter
 	private GameSettings settings = GameSettings.DEFAULT;
 
-	private boolean started = false;
+	private boolean started;
 
 	@Setter
-	private String victim = null;
-	private Role current = null;
+	private String victim;
+	private Role current;
 	private EnumSet<WitchRequest.WitchAction> witchActions;
 
 	@NotNull
@@ -37,8 +37,8 @@ public class Game {
 		return player;
 	}
 
-	public boolean leave(@NotNull String player) {
-		boolean removed = players.remove(player) != null;
+	public Player leave(@NotNull String player) {
+		Player removed = players.remove(player);
 		sendUpdate();
 		return removed;
 	}
@@ -46,6 +46,9 @@ public class Game {
 	public void reset() {
 		started = false;
 		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
+
+		current = null;
+		victim = null;
 
 		players.values().forEach(player -> {
 			player.setAlive(true);
@@ -77,6 +80,10 @@ public class Game {
 
 	public void next() {
 		if (!started) return;
+
+		current = Role.WEREWOLF;
+
+		sendUpdate();
 
 		//TODO lifecycle
 	}

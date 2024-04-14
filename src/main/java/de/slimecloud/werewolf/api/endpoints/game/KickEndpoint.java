@@ -4,6 +4,7 @@ import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
+import de.slimecloud.werewolf.data.Player;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import lombok.Getter;
@@ -24,7 +25,9 @@ public class KickEndpoint implements Handler {
 				.check(r -> r.id != null, "Invalid 'id'")
 				.get();
 
-		if (!info.getGame().leave(request.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-		info.getPlayer().sendEvent("KICK", new Object());
+		Player player = info.getGame().leave(request.getId());
+		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+		player.sendEvent("KICK", new Object());
 	}
 }
