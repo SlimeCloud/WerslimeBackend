@@ -14,6 +14,7 @@ public class ResetEndpoint implements Handler {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 		if(!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
-		info.getGame().reset(true);
+		info.getGame().reset();
+		info.getGame().sendUpdate();
 	}
 }

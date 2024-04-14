@@ -35,19 +35,17 @@ public class Game {
 		players.remove(player.getId().toString());
 	}
 
-	public void reset(boolean update) {
+	public void reset() {
 		players.values().forEach(player -> {
 			player.setAlive(true);
 			player.setMayor(false);
 		});
-
-		if(update) sendUpdate();
 	}
 
 	public void start() {
 		if (started) return;
 
-		reset(false);
+		reset();
 
 		List<Role> roles = new ArrayList<>(players.size());
 		for (int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);

@@ -21,5 +21,6 @@ public class SettingsEndpoint implements Handler {
 				.get();
 
 		info.getGame().setSettings(settings);
+		info.getGame().sendUpdate();
 	}
 }
