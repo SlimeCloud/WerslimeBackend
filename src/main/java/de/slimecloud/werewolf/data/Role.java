@@ -24,7 +24,7 @@ public enum Role {
 					.check(validateId(game), "Invalid 'id'")
 					.get();
 
-			if(!game.getWitchActions().contains(request.getAction())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (!game.getWitchActions().contains(request.getAction())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 			Player target = game.getPlayers().get(request.getId());
 			switch (request.getAction()) {
@@ -45,8 +45,9 @@ public enum Role {
 			TargetRequest request = ctx.bodyValidator(TargetRequest.class)
 					.check(Role.validateId(game), "Invalid 'id'")
 					.get();
+
 			Player target = game.getPlayers().get(request.getId());
-			Role.checkAlive(target, true);
+			checkAlive(target, true);
 			target.setAlive(false);
 		}
 	},
@@ -55,8 +56,9 @@ public enum Role {
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
 			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
+
 			Player target = game.getPlayers().get(request.getId());
-			Role.checkAlive(target, true);
+			checkAlive(target, true);
 			ctx.json(target.getRole());
 		}
 	};
