@@ -18,8 +18,20 @@ public enum Role {
 	WITCH(true, 3) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			WitchRequest request = ctx.bodyValidator(WitchRequest.class).get();
-			//TODO implement role logic
+			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
+					.check(Role.validateId(game), "Invalid 'id'")
+					.get();
+			Player target = game.getPlayers().get(request.getId());
+			switch (request.getType()) {
+				case HEAL -> {
+					Role.checkAlive(target, false);
+					target.setAlive(true);
+				}
+				case KILL -> {
+					Role.checkAlive(target, true);
+					target.setAlive(false);
+				}
+			}
 		}
 	},
 	HUNTER(true, 1) {
