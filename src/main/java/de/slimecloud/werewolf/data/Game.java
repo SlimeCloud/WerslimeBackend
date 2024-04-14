@@ -51,8 +51,7 @@ public class Game {
 	}
 
 	public void next() {
-		if (!started) {
-		}
+		if (!started) return;
 
 		//TODO lifecycle
 	}
