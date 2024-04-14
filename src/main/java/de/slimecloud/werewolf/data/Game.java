@@ -28,11 +28,14 @@ public class Game {
 	public Player join(@NotNull String name) {
 		Player player = new Player(false, name);
 		players.put(player.getId().toString(), player);
+		sendUpdate();
+
 		return player;
 	}
 
 	public void leave(@NotNull Player player) {
 		players.remove(player.getId().toString());
+		sendUpdate();
 	}
 
 	public void reset() {
