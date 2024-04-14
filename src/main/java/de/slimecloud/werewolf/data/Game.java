@@ -21,8 +21,8 @@ public class Game {
 	private GameSettings settings = new GameSettings();
 
 	private boolean started = false;
-	private final String victim;
-	private final Role current = null;
+	private String victim = null;
+	private Role current = null;
 
 	@NotNull
 	public Player join(@NotNull String name) {
