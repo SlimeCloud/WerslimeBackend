@@ -7,20 +7,19 @@ import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.data.GameSettings;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class SettingsEndpoint implements Handler {
-	@Getter
-	public static class Request {
-		public GameSettings settings;
-	}
-
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
-		info.getGame().setSettings(ctx.bodyAsClass(Request.class).getSettings());
+		GameSettings settings = ctx.bodyValidator(GameSettings.class)
+				.check(s -> s.getRoles() != null, "Invalid 'roles'")
+				.check(s -> s.getWerewolfAmount() > 1, "Invalid 'werewolfAmount'")
+				.get();
+
+		info.getGame().setSettings(settings);
 	}
 }
