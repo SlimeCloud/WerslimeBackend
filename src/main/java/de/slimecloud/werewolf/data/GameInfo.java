@@ -45,7 +45,7 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				self != null && (self.getRole() == Role.WITCH || self.getRole() == Role.WEREWOLF) ? game.getVictim() : null,
-				(game.getCurrent() == Role.VILLAGER || (self != null && self.getRole() == game.getCurrent())) ? game.getVotes() :Collections.emptyMap(),
+				(game.getCurrent() == Role.VILLAGER || (self != null && self.getRole() == game.getCurrent())) ? game.getVotes() : Collections.emptyMap(),
 				game.getInteracted().size(),
 				(int) game.getPlayers().values().stream().filter(p -> p.getRole() == game.getCurrent()).count()
 		);
