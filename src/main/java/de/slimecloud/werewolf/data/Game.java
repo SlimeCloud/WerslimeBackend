@@ -112,8 +112,10 @@ public class Game {
 			return;
 		}
 
+		victim = null;
 		votes.clear();
 		interacted.clear();
+
 		checkMayor();
 
 		checkWin();
