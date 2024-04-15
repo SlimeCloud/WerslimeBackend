@@ -102,11 +102,15 @@ public class Game {
 		});
 
 		int i = Role.values.indexOf(current);
-		while (!Role.values()[i++ % Role.values().length].isAutomatic()) ;
+		while (!Role.values()[i++ % Role.values().length].isAutomatic());
 
 		current = Role.values()[i % Role.values().length];
 
 		if (current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+		if (current == Role.WITCH && witchActions.isEmpty()) {
+			next();
+			return;
+		}
 
 		votes.clear();
 		interacted.clear();
