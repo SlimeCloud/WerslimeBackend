@@ -172,7 +172,7 @@ public class Game {
 				reset();
 				break;
 			}
-		} while(!Role.values()[i.get()].isAutomatic() || players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()]));
+		} while(!Role.values()[i.get()].isAutomatic() || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
 
 		return Role.values()[i.get()];
 	}
