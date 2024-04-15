@@ -27,6 +27,7 @@ public enum Role {
 			game.getSeerVisible().add(target.getId().toString());
 
 			ctx.json(target.getRole());
+			game.next();
 		}
 	},
 	WEREWOLF(false, true, 0),
