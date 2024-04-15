@@ -16,6 +16,20 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum Role {
+	SEER(true, true, 2) {
+		@Override
+		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+			if (!player.isAlive()) return;
+			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
+
+			Player target = game.getPlayers().get(request.getId());
+			checkAlive(target, true);
+
+			game.getSeerVisible().add(target.getId().toString());
+
+			ctx.json(target.getRole());
+		}
+	},
 	WEREWOLF(false, true, 0),
 	WITCH(true, true, 3) {
 		@Override
@@ -38,20 +52,6 @@ public enum Role {
 			}
 
 			game.getWitchActions().remove(request.getAction());
-		}
-	},
-	SEER(true, true, 2) {
-		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			if (!player.isAlive()) return;
-			TargetRequest request = ctx.bodyValidator(TargetRequest.class).get();
-
-			Player target = game.getPlayers().get(request.getId());
-			checkAlive(target, true);
-
-			game.getSeerVisible().add(target.getId().toString());
-
-			ctx.json(target.getRole());
 		}
 	},
 	VILLAGER(false, true, 0),
