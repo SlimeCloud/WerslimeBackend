@@ -36,7 +36,7 @@ public enum Role {
 			if (!player.isAlive()) return;
 			WitchRequest request = ctx.bodyValidator(WitchRequest.class)
 					.check(r -> r.getAction() != null, "Invalid 'action'")
-					.check(r -> r.getAction() == WitchRequest.WitchAction.HEAL || validateId(r, game), "Invalid 'id'")
+					.check(r -> r.getAction() == WitchRequest.WitchAction.KILL && validateId(r, game), "Invalid 'id'")
 					.get();
 
 			if (!game.getWitchActions().contains(request.getAction())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
@@ -51,6 +51,7 @@ public enum Role {
 			}
 
 			game.getWitchActions().remove(request.getAction());
+			game.next();
 		}
 	},
 	VILLAGER(false, true, 0),
@@ -65,6 +66,7 @@ public enum Role {
 			Player target = game.getPlayers().get(request.getId());
 			checkAlive(target, true);
 			target.kill(game);
+			game.next();
 		}
 	};
 

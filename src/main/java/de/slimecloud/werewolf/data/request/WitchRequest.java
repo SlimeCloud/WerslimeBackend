@@ -9,7 +9,8 @@ public class WitchRequest extends TargetRequest {
 
 	public enum WitchAction {
 		HEAL,
-		KILL
+		KILL,
+		NOTHING
 	}
 
 }
