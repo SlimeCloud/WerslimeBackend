@@ -31,12 +31,14 @@ public class Player {
 	}
 
 	public void revive(@NotNull Game game) {
-
+		this.alive = true;
 	}
 
 	public void kill(@NotNull Game game) {
 		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
 		else sendEvent("KiLL", new Object());
+
+		this.alive = false;
 	}
 
 	public void sendUpdate(@NotNull Game game) {
