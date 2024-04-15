@@ -106,13 +106,15 @@ public class Game {
 
 		current = Role.values()[i % Role.values().length];
 
-		if (current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+		if (current == Role.VILLAGER) {
+			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+			victim = null;
+		}
 		if (current == Role.WITCH && witchActions.isEmpty()) {
 			next();
 			return;
 		}
 
-		victim = null;
 		votes.clear();
 		interacted.clear();
 
