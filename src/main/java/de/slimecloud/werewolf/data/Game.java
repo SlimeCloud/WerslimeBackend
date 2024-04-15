@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @RequiredArgsConstructor
@@ -53,14 +54,14 @@ public class Game {
 		started = false;
 		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
 
-		current = Role.values()[0];
-		victim = null;
-
 		players.values().forEach(player -> {
 			player.setRole(null);
 			player.revive(this);
 			player.setMayor(false);
 		});
+
+		current = null;
+		victim = null;
 
 		seerVisible.clear();
 		votes.clear();
@@ -85,6 +86,7 @@ public class Game {
 
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
+		current = getNextRole(-1);
 		started = true;
 
 		checkMayor();
@@ -101,10 +103,7 @@ public class Game {
 			}
 		});
 
-		int i = Role.values.indexOf(current);
-		while (!Role.values()[i++ % Role.values().length].isAutomatic()) ;
-
-		current = Role.values()[i % Role.values().length];
+		current = getNextRole(Role.values.indexOf(current));
 
 		if (current == Role.VILLAGER) {
 			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
@@ -160,5 +159,21 @@ public class Game {
 
 	public void sendUpdate() {
 		players.values().forEach(p -> p.sendUpdate(this));
+	}
+
+	@NotNull
+	private Role getNextRole(int current) {
+		AtomicInteger i = new AtomicInteger(current);
+		int j = 0;
+
+		do {
+			i.updateAndGet(t -> (t + 1) % Role.values().length);
+			if(j++ > Role.values().length * 2) {
+				reset();
+				break;
+			}
+		} while(!Role.values()[i.get()].isAutomatic() || players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()]));
+
+		return Role.values()[i.get()];
 	}
 }
