@@ -86,7 +86,6 @@ public enum Role {
 		checkAlive(target, true);
 
 		game.getVotes().put(player.getId().toString(), target.getId().toString());
-		game.sendUpdate();
 	}
 
 	@NotNull

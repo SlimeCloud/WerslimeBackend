@@ -49,6 +49,8 @@ public class GameEndpoints implements EndpointGroup {
 
 			role.handle(info.getGame(), info.getPlayer(), ctx);
 			info.getGame().getInteracted().add(info.getPlayer().getId().toString());
+
+			info.getGame().sendUpdate();
 		}
 	}
 }
