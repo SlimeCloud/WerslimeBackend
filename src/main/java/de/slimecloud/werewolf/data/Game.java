@@ -142,10 +142,13 @@ public class Game {
 
 	@NotNull
 	private Optional<String> getVoted() {
-		Map<String, Integer> votes = new HashMap<>();
-		this.votes.values().forEach(t -> votes.compute(t, (k, v) -> v == null ? 1 : v + 1));
+		Map<String, Double> votes = new HashMap<>();
+		this.votes.values().forEach(t -> {
+			double weight = Optional.ofNullable(players.get(t)).filter(Player::isMayor).map(p -> 1.5).orElse(1.0);
+			votes.compute(t, (k, v) -> v == null ? weight : v + weight);
+		});
 		return votes.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue())
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.findAny().map(Map.Entry::getKey);
 	}
 
