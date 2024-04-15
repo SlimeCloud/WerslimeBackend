@@ -44,8 +44,10 @@ public class GameEndpoints implements EndpointGroup {
 		public void handle(@NotNull Context ctx) throws Exception {
 			AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 
-			if (info.getPlayer().getRole() != role) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
-			if (info.getGame().getCurrent() != role && role != Role.VILLAGER) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+			if (role != Role.VILLAGER) {
+				if (info.getPlayer().getRole() != role) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
+				if (info.getGame().getCurrent() != role) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+			}
 
 			if (role.isSpecial() && info.getGame().getInteracted().contains(info.getPlayer().getId().toString())) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
