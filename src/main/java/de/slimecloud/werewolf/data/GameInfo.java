@@ -19,6 +19,7 @@ public class GameInfo {
 	private final GameSettings settings;
 
 	private final Role current;
+	private final String victim;
 
 	private final Map<String, String> votes;
 
@@ -40,6 +41,7 @@ public class GameInfo {
 				game.isStarted(),
 				game.getSettings(),
 				game.getCurrent(),
+				game.getVictim(),
 				game.getVotes()
 		);
 	}

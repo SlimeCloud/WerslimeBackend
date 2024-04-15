@@ -103,6 +103,8 @@ public class Game {
 
 		current = Role.values()[i];
 
+		if(current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+
 		votes.clear();
 		checkMayor();
 
