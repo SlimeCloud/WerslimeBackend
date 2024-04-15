@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				self != null && (self.getRole() == Role.WITCH || self.getRole() == Role.WEREWOLF) ? game.getVictim() : null,
-				game.getVotes(),
+				(game.getCurrent() == Role.VILLAGER || (self != null && self.getRole() == game.getCurrent())) ? game.getVotes() :Collections.emptyMap(),
 				game.getInteracted().size(),
 				(int) game.getPlayers().values().stream().filter(p -> p.getRole() == game.getCurrent()).count()
 		);
