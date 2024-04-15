@@ -41,7 +41,7 @@ public class GameInfo {
 				game.isStarted(),
 				game.getSettings(),
 				game.getCurrent(),
-				game.getVictim(),
+				self != null && (self.getRole() == Role.WITCH || self.getRole() == Role.WEREWOLF) ? game.getVictim() : null,
 				game.getVotes()
 		);
 	}
