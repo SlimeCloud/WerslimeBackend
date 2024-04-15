@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,11 +30,11 @@ public class GameInfo {
 				game.getPlayers().values().stream().map(p ->
 						PlayerInfo.create(p,
 								!p.isAlive() ||
-								(self != null && (
-										p.getId().equals(self.getId()) ||
-										(self.getRole() == Role.SEER && game.getSeerVisible().contains(p.getId().toString())) ||
-										(self.getRole() == Role.WEREWOLF && p.getRole() == Role.WEREWOLF)
-								))
+										(self != null && (
+												p.getId().equals(self.getId()) ||
+														(self.getRole() == Role.SEER && game.getSeerVisible().contains(p.getId().toString())) ||
+														(self.getRole() == Role.WEREWOLF && p.getRole() == Role.WEREWOLF)
+										))
 						)
 				).collect(Collectors.toMap(PlayerInfo::getId, p -> p)),
 				game.isStarted(),

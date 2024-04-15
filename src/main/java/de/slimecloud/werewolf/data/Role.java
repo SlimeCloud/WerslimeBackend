@@ -54,7 +54,7 @@ public enum Role {
 			ctx.json(target.getRole());
 		}
 	},
-	VILLAGER(false, true,0),
+	VILLAGER(false, true, 0),
 	HUNTER(true, false, 1) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {

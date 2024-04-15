@@ -26,8 +26,8 @@ public class Player {
 	private boolean alive = false;
 
 	public void setAlive(@NotNull Game game, boolean alive) {
-		if(alive && !this.alive) revive(game);
-		if(!alive && this.alive) kill(game);
+		if (alive && !this.alive) revive(game);
+		if (!alive && this.alive) kill(game);
 	}
 
 	public void revive(@NotNull Game game) {
@@ -35,7 +35,7 @@ public class Player {
 	}
 
 	public void kill(@NotNull Game game) {
-		if(role == Role.HUNTER) game.setCurrent(Role.HUNTER);
+		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
 	}
 
 	public void sendUpdate(@NotNull Game game) {

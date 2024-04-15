@@ -99,11 +99,11 @@ public class Game {
 		});
 
 		int i = Role.values.indexOf(current);
-		while(!Role.values()[i++ % Role.values().length].isAutomatic());
+		while (!Role.values()[i++ % Role.values().length].isAutomatic()) ;
 
 		current = Role.values()[i];
 
-		if(current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+		if (current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
 
 		votes.clear();
 		checkMayor();
@@ -121,7 +121,7 @@ public class Game {
 	}
 
 	private void checkMayor() {
-		if(players.values().stream().noneMatch(Player::isMayor)) {
+		if (players.values().stream().noneMatch(Player::isMayor)) {
 			new ArrayList<>(players.values()).get(Main.random.nextInt(players.size())).setMayor(true);
 		}
 	}
