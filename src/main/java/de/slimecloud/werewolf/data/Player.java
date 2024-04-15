@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.data;
 
 import io.javalin.http.sse.SseClient;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,7 +21,22 @@ public class Player {
 
 	private Role role = null;
 	private boolean mayor = false;
+
+	@Setter(AccessLevel.NONE)
 	private boolean alive = false;
+
+	public void setAlive(@NotNull Game game, boolean alive) {
+		if(alive && !this.alive) revive(game);
+		if(!alive && this.alive) kill(game);
+	}
+
+	public void revive(@NotNull Game game) {
+
+	}
+
+	public void kill(@NotNull Game game) {
+		if(role == Role.HUNTER) game.setCurrent(Role.HUNTER);
+	}
 
 	public void sendUpdate(@NotNull Game game) {
 		sendEvent("UPDATE", GameState.create(game, this));

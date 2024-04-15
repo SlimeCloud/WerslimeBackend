@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public enum Role {
@@ -30,7 +33,7 @@ public enum Role {
 				case HEAL -> game.setVictim(null);
 				case KILL -> {
 					checkAlive(target, true);
-					target.setAlive(false);
+					target.kill(game);
 				}
 			}
 
@@ -45,6 +48,9 @@ public enum Role {
 
 			Player target = game.getPlayers().get(request.getId());
 			checkAlive(target, true);
+
+			game.getSeerVisible().add(target.getId().toString());
+
 			ctx.json(target.getRole());
 		}
 	},
@@ -59,9 +65,11 @@ public enum Role {
 
 			Player target = game.getPlayers().get(request.getId());
 			checkAlive(target, true);
-			target.setAlive(false);
+			target.kill(game);
 		}
 	};
+
+	public final static List<Role> values = Arrays.asList(values());
 
 	private final boolean special;
 	private final boolean automatic;
@@ -69,6 +77,16 @@ public enum Role {
 
 
 	public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+		if (!player.isAlive()) return;
+		TargetRequest request = ctx.bodyValidator(TargetRequest.class)
+				.check(Role.validateId(game), "Invalid 'id'")
+				.get();
+
+		Player target = game.getPlayers().get(request.getId());
+		checkAlive(target, true);
+
+		game.getVotes().put(player.getId().toString(), target.getId().toString());
+		game.sendUpdate();
 	}
 
 	@NotNull

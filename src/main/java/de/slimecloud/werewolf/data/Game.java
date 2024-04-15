@@ -25,8 +25,12 @@ public class Game {
 
 	@Setter
 	private String victim;
+	@Setter
 	private Role current;
+
 	private EnumSet<WitchRequest.WitchAction> witchActions;
+	private final Set<String> seerVisible = new HashSet<>();
+	private final Map<String, String> votes = new HashMap<>();
 
 	@NotNull
 	public Player join(@NotNull String name) {
@@ -37,6 +41,7 @@ public class Game {
 		return player;
 	}
 
+	@NotNull
 	public Player leave(@NotNull String player) {
 		Player removed = players.remove(player);
 		sendUpdate();
@@ -47,13 +52,16 @@ public class Game {
 		started = false;
 		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
 
-		current = null;
+		current = Role.WEREWOLF;
 		victim = null;
 
 		players.values().forEach(player -> {
-			player.setAlive(true);
+			player.revive(this);
 			player.setMayor(false);
 		});
+
+		seerVisible.clear();
+		votes.clear();
 	}
 
 	public void start() {
@@ -75,16 +83,45 @@ public class Game {
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
 		started = true;
+
+		checkMayor();
 		sendUpdate();
 	}
 
 	public void next() {
 		if (!started) return;
-		if(current == null) current = Role.WEREWOLF;
+
+		getVoted().ifPresent(player -> {
+			switch (current) {
+				case VILLAGER -> getVoted().map(players::get).ifPresent(p -> p.kill(this));
+				case WEREWOLF -> victim = player;
+			}
+		});
+
+		int i = Role.values.indexOf(current);
+		while(!Role.values()[i++ % Role.values().length].isAutomatic());
+
+		current = Role.values()[i];
+
+		votes.clear();
+		checkMayor();
 
 		sendUpdate();
+	}
 
-		//TODO lifecycle
+	@NotNull
+	private Optional<String> getVoted() {
+		Map<String, Integer> votes = new HashMap<>();
+		this.votes.values().forEach(t -> votes.compute(t, (k, v) -> v == null ? 1 : v + 1));
+		return votes.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue())
+				.findAny().map(Map.Entry::getKey);
+	}
+
+	private void checkMayor() {
+		if(players.values().stream().noneMatch(Player::isMayor)) {
+			new ArrayList<>(players.values()).get(Main.random.nextInt(players.size())).setMayor(true);
+		}
 	}
 
 	public void sendUpdate() {
