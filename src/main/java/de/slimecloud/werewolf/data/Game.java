@@ -31,6 +31,7 @@ public class Game {
 	private EnumSet<WitchRequest.WitchAction> witchActions;
 	private final Set<String> seerVisible = new HashSet<>();
 	private final Map<String, String> votes = new HashMap<>();
+	private final Set<String> interacted = new HashSet<>();
 
 	@NotNull
 	public Player join(@NotNull String name) {
@@ -56,12 +57,14 @@ public class Game {
 		victim = null;
 
 		players.values().forEach(player -> {
+			player.setRole(null);
 			player.revive(this);
 			player.setMayor(false);
 		});
 
 		seerVisible.clear();
 		votes.clear();
+		interacted.clear();
 	}
 
 	public void start() {
@@ -106,6 +109,7 @@ public class Game {
 		if (current == Role.VILLAGER) Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
 
 		votes.clear();
+		interacted.clear();
 		checkMayor();
 
 		sendUpdate();

@@ -22,6 +22,9 @@ public class GameInfo {
 
 	private final Map<String, String> votes;
 
+	private final int interacted;
+	private final int total;
+
 
 	@NotNull
 	public static GameInfo create(@NotNull Game game, @Nullable Player self) {
@@ -41,7 +44,9 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				self != null && (self.getRole() == Role.WITCH || self.getRole() == Role.WEREWOLF) ? game.getVictim() : null,
-				game.getVotes()
+				game.getVotes(),
+				game.getInteracted().size(),
+				(int) game.getPlayers().values().stream().filter(p -> p.getRole() == game.getCurrent()).count()
 		);
 	}
 }

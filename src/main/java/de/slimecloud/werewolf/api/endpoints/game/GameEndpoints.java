@@ -49,6 +49,7 @@ public class GameEndpoints implements EndpointGroup {
 			if (info.getGame().getCurrent() != role && info.getGame().getCurrent() != Role.VILLAGER) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 			role.handle(info.getGame(), info.getPlayer(), ctx);
+			info.getGame().getInteracted().add(info.getPlayer().getId().toString());
 		}
 	}
 }
