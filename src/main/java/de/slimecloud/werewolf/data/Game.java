@@ -116,7 +116,18 @@ public class Game {
 		interacted.clear();
 		checkMayor();
 
+		checkWin();
 		sendUpdate();
+	}
+
+	private void checkWin() {
+		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
+
+		if(wolves == 0) {
+			//TODO Villger win
+		} else if(wolves >= players.size() / 2) {
+			//TODO Werewolve win
+		}
 	}
 
 	@NotNull
