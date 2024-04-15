@@ -122,12 +122,18 @@ public class Game {
 		sendUpdate();
 	}
 
+	public int getPlayerCount() {
+		return (int) players.values().stream()
+				.filter(Player::isAlive)
+				.count();
+	}
+
 	private void checkWin() {
 		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
 
 		if(wolves == 0) {
 			//TODO Villger win
-		} else if(wolves >= players.size() / 2) {
+		} else if(wolves >= getPlayerCount() / 2) {
 			//TODO Werewolve win
 		}
 	}
