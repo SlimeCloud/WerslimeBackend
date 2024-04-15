@@ -102,7 +102,7 @@ public class Game {
 		});
 
 		int i = Role.values.indexOf(current);
-		while (!Role.values()[i++ % Role.values().length].isAutomatic());
+		while (!Role.values()[i++ % Role.values().length].isAutomatic()) ;
 
 		current = Role.values()[i % Role.values().length];
 
@@ -133,9 +133,9 @@ public class Game {
 	private void checkWin() {
 		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
 
-		if(wolves == 0) {
+		if (wolves == 0) {
 			//TODO Villger win
-		} else if(wolves >= getPlayerCount() / 2) {
+		} else if (wolves >= getPlayerCount() / 2) {
 			//TODO Werewolve win
 		}
 	}
