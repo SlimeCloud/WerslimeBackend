@@ -53,7 +53,7 @@ public class Game {
 		started = false;
 		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
 
-		current = Role.WEREWOLF;
+		current = Role.values()[0];
 		victim = null;
 
 		players.values().forEach(player -> {
