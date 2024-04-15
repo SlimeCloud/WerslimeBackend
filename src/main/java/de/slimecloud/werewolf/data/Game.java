@@ -132,11 +132,11 @@ public class Game {
 	private void checkWin() {
 		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
 
-		if (wolves == 0) {
-			//TODO Villger win
-		} else if (wolves >= getPlayerCount() / 2) {
-			//TODO Werewolve win
-		}
+		if (wolves == 0) sendEvent("WIN", new WinData(Role.VILLAGER));
+		else if (wolves >= getPlayerCount() / 2) sendEvent("WIN", new WinData(Role.WEREWOLF));
+	}
+
+	private record WinData(Role winner) {
 	}
 
 	@NotNull
@@ -155,6 +155,10 @@ public class Game {
 		if (players.values().stream().noneMatch(Player::isMayor)) {
 			new ArrayList<>(players.values()).get(Main.random.nextInt(players.size())).setMayor(true);
 		}
+	}
+
+	public void sendEvent(@NotNull String name, @NotNull Object object) {
+		players.values().forEach(p -> p.sendEvent(name, object));
 	}
 
 	public void sendUpdate() {
