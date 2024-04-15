@@ -27,7 +27,6 @@ public enum Role {
 			game.getSeerVisible().add(target.getId().toString());
 
 			ctx.json(target.getRole());
-			game.next();
 		}
 	},
 	WEREWOLF(false, true, 0),
@@ -52,7 +51,6 @@ public enum Role {
 			}
 
 			game.getWitchActions().remove(request.getAction());
-			game.next();
 		}
 	},
 	VILLAGER(false, true, 0),
@@ -67,7 +65,6 @@ public enum Role {
 			Player target = game.getPlayers().get(request.getId());
 			checkAlive(target, true);
 			target.kill(game);
-			game.next();
 		}
 	};
 

@@ -47,6 +47,8 @@ public class GameEndpoints implements EndpointGroup {
 			if (info.getPlayer().getRole() != role) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 			if (info.getGame().getCurrent() != role && info.getGame().getCurrent() != Role.VILLAGER) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
+			if (role.isSpecial() && info.getGame().getInteracted().contains(info.getPlayer().getId().toString())) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+
 			role.handle(info.getGame(), info.getPlayer(), ctx);
 			info.getGame().getInteracted().add(info.getPlayer().getId().toString());
 
