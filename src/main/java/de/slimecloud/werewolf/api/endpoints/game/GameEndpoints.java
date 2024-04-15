@@ -31,7 +31,6 @@ public class GameEndpoints implements EndpointGroup {
 
 		path("/action", () -> {
 			for (Role role : Role.values()) {
-				if (!role.isSpecial()) continue;
 				post("/" + role.name().toLowerCase(), new RoleActionEndpoint(role));
 			}
 		});
