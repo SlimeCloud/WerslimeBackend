@@ -57,7 +57,6 @@ public enum Role {
 	HUNTER(true, false, 1) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			if (!player.isAlive()) return;
 			TargetRequest request = ctx.bodyValidator(TargetRequest.class)
 					.check(r -> validateId(r, game), "Invalid 'id'")
 					.get();
