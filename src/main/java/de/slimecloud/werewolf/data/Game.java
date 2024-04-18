@@ -47,6 +47,11 @@ public class Game {
 	public Player leave(@NotNull String player) {
 		Player removed = players.remove(player);
 		sendUpdate();
+
+		if (players.values().stream().noneMatch(Player::isMaster)) {
+			//TODO delete game
+		}
+
 		return removed;
 	}
 
