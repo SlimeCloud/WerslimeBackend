@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	SEER(true, true, 2) {
+	SEER(true, true, 50) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
@@ -30,7 +30,7 @@ public enum Role {
 		}
 	},
 	WEREWOLF(false, true, 0),
-	WITCH(true, true, 3) {
+	WITCH(true, true, 100) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			if (!player.isAlive()) return;
@@ -54,7 +54,7 @@ public enum Role {
 		}
 	},
 	VILLAGER(false, true, 0),
-	HUNTER(true, false, 1) {
+	HUNTER(true, false, 10) {
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			TargetRequest request = ctx.bodyValidator(TargetRequest.class)
