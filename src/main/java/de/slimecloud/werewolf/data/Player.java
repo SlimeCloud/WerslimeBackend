@@ -22,13 +22,14 @@ public class Player {
 	private Role role = null;
 
 	private boolean mayor = false;
-	@Setter(AccessLevel.NONE) private boolean alive = false;
+	@Setter(AccessLevel.NONE)
+	private boolean alive = false;
 
 	private SseClient client = null;
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
-		if(!player.isAlive()) return true;
-		if(this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, Collections::emptySet).contains(player.getId());
+		if (!player.isAlive()) return true;
+		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, Collections::emptySet).contains(player.getId());
 
 		return false;
 	}

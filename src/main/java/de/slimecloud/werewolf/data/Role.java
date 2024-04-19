@@ -32,8 +32,8 @@ public enum Role {
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			Player target = getTarget(game, ctx, Player::isAlive);
 
-			if(target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-			if(game.getRoleMetaData(this, Collections::emptySet).contains(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (game.getRoleMetaData(this, Collections::emptySet).contains(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 			ctx.json(new Response(player.getRole()));
 		}
@@ -64,8 +64,8 @@ public enum Role {
 
 			Set<WitchAction> actions = game.getRoleMetaData(this, () -> Set.of(WitchAction.POISON, WitchAction.HEAL));
 
-			if(action == WitchAction.SKIP) return;
-			if(!actions.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+			if (action == WitchAction.SKIP) return;
+			if (!actions.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 			switch (action) {
 				case HEAL -> game.setVictim(null);
@@ -86,7 +86,7 @@ public enum Role {
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
 			Player target = getTarget(game, ctx, Player::isAlive);
 
-			if(target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 			target.kill(game);
 		}
@@ -113,8 +113,8 @@ public enum Role {
 
 		Player player = game.getPlayers().get(target);
 
-		if(player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-		if(condition != null && !condition.test(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+		if (condition != null && !condition.test(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 		return player;
 	}

@@ -23,10 +23,13 @@ public class Game {
 	private final Map<String, Player> players = new HashMap<>();
 	private boolean started;
 
-	@Setter private GameSettings settings = GameSettings.DEFAULT;
+	@Setter
+	private GameSettings settings = GameSettings.DEFAULT;
 
-	@Setter private String victim;
-	@Setter private Role current;
+	@Setter
+	private String victim;
+	@Setter
+	private Role current;
 
 	private final Map<String, Object> interactions = new HashMap<>();
 	private final Map<Role, Object> roleMetaData = new HashMap<>();
@@ -175,14 +178,15 @@ public class Game {
 
 		do {
 			i.updateAndGet(t -> (t + 1) % Role.values().length);
-			if(j++ > Role.values().length * 2) {
+			if (j++ > Role.values().length * 2) {
 				reset();
 				break;
 			}
-		} while(!Role.values()[i.get()].canUseRole(this) || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
+		} while (!Role.values()[i.get()].canUseRole(this) || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
 
 		return Role.values()[i.get()];
 	}
 
-	private record GameEnding(Role winner) {}
+	private record GameEnding(Role winner) {
+	}
 }
