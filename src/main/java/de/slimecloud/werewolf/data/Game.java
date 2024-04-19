@@ -1,55 +1,53 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.data.request.WitchRequest;
+import de.mineking.javautils.ID;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 @Getter
 @RequiredArgsConstructor
 public class Game {
 	private final Main main;
 
-	private final UUID id = UUID.randomUUID();
+	private final String id = ID.generate().asString();
+	private final String master;
+
 	private final Map<String, Player> players = new HashMap<>();
-	private final UUID master;
-
-	@Setter
-	private GameSettings settings = GameSettings.DEFAULT;
-
 	private boolean started;
 
-	@Setter
-	private String victim;
-	@Setter
-	private Role current;
+	@Setter private GameSettings settings = GameSettings.DEFAULT;
 
-	private EnumSet<WitchRequest.WitchAction> witchActions;
-	private final Set<String> seerVisible = new HashSet<>();
-	private final Map<String, String> votes = new HashMap<>();
-	private final Set<String> interacted = new HashSet<>();
+	@Setter private String victim;
+	@Setter private Role current;
+
+	private final Map<String, Object> interactions = new HashMap<>();
+	private final Map<Role, Object> roleMetaData = new HashMap<>();
 
 	@NotNull
 	public Player join(@NotNull String name) {
-		Player player = new Player(false, name);
-		players.put(player.getId().toString(), player);
+		Player player = new Player(name, false);
+		players.put(player.getId(), player);
 		sendUpdate();
 
 		return player;
 	}
 
-	@NotNull
+	@Nullable
 	public Player leave(@NotNull String player) {
 		Player removed = players.remove(player);
 		sendUpdate();
 
 		if (players.values().stream().noneMatch(Player::isMaster)) {
-			//TODO delete game
+			main.getGames().remove(id);
+			sendEvent("END", new GameEnding(null));
 		}
 
 		return removed;
@@ -57,8 +55,6 @@ public class Game {
 
 	public void reset() {
 		started = false;
-		witchActions = EnumSet.allOf(WitchRequest.WitchAction.class);
-
 		players.values().forEach(player -> {
 			player.setRole(null);
 			player.revive(this);
@@ -68,9 +64,8 @@ public class Game {
 		current = null;
 		victim = null;
 
-		seerVisible.clear();
-		votes.clear();
-		interacted.clear();
+		interactions.clear();
+		roleMetaData.clear();
 	}
 
 	public void start() {
@@ -101,9 +96,9 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
-		getVoted().ifPresent(player -> {
+		evaluateVote().ifPresent(player -> {
 			switch (current) {
-				case VILLAGER -> getVoted().map(players::get).ifPresent(p -> p.kill(this));
+				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this));
 				case WEREWOLF -> victim = player;
 			}
 		});
@@ -114,18 +109,20 @@ public class Game {
 			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
 			victim = null;
 		}
-		if (current == Role.WITCH && witchActions.isEmpty()) {
-			next();
-			return;
-		}
 
-		votes.clear();
-		interacted.clear();
+		interactions.clear();
 
 		checkMayor();
 
 		checkWin();
 		sendUpdate();
+	}
+
+	@NotNull
+	@SuppressWarnings("unchecked")
+	public <T> T getRoleMetaData(@NotNull Role role, @NotNull Supplier<T> defaultValue) {
+		roleMetaData.putIfAbsent(role, defaultValue.get());
+		return (T) roleMetaData.get(role);
 	}
 
 	public int getPlayerCount() {
@@ -137,20 +134,21 @@ public class Game {
 	private void checkWin() {
 		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
 
-		if (wolves == 0) sendEvent("WIN", new WinData(Role.VILLAGER));
-		else if (wolves >= getPlayerCount() / 2) sendEvent("WIN", new WinData(Role.WEREWOLF));
-	}
+		if (wolves == 0) sendEvent("END", new GameEnding(Role.VILLAGER));
+		else if (wolves >= getPlayerCount() / 2) sendEvent("END", new GameEnding(Role.WEREWOLF));
 
-	private record WinData(Role winner) {
+		reset();
 	}
 
 	@NotNull
-	private Optional<String> getVoted() {
+	private Optional<String> evaluateVote() {
 		Map<String, Double> votes = new HashMap<>();
-		this.votes.values().forEach(t -> {
-			double weight = Optional.ofNullable(players.get(t)).filter(Player::isMayor).map(p -> 1.5).orElse(1.0);
-			votes.compute(t, (k, v) -> v == null ? weight : v + weight);
+
+		interactions.values().stream().map(t -> (String) t).forEach(p -> {
+			double weight = Optional.ofNullable(players.get(p)).filter(Player::isMayor).map(m -> 1.5).orElse(1.0);
+			votes.compute(p, (k, v) -> v == null ? weight : v + weight);
 		});
+
 		return votes.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.findAny().map(Map.Entry::getKey);
@@ -181,8 +179,10 @@ public class Game {
 				reset();
 				break;
 			}
-		} while(!Role.values()[i.get()].isAutomatic() || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
+		} while(!Role.values()[i.get()].canUseRole(this) || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
 
 		return Role.values()[i.get()];
 	}
+
+	private record GameEnding(Role winner) {}
 }

@@ -44,11 +44,11 @@ public class Main {
 
 	@NotNull
 	public Game create(@NotNull String name) {
-		Player player = new Player(true, name);
+		Player player = new Player(name, true);
 		Game game = new Game(this, player.getId());
 
-		game.getPlayers().put(player.getId().toString(), player);
-		games.put(game.getId().toString(), game);
+		game.getPlayers().put(player.getId(), player);
+		games.put(game.getId(), game);
 
 		return game;
 	}

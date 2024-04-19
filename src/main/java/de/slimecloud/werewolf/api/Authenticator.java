@@ -61,7 +61,7 @@ public class Authenticator {
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
 		Player player = game.getPlayers().get(decoded.getClaim("user").asString());
-		if (player == null) throw new ErrorResponse(ErrorResponseType.PLAYER_LEFT);
+		if (player == null) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
 		return new AuthorizationInfo(player, game);
 	}

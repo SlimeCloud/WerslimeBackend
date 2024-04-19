@@ -13,7 +13,7 @@ public class StartEndpoint implements Handler {
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
-		if (info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
+		if (info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
 
 		info.getGame().start();
 	}

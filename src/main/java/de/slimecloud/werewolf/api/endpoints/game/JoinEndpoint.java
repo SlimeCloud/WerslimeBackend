@@ -31,13 +31,13 @@ public class JoinEndpoint implements Handler {
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().get(ctx.queryParam("id"));
 
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
-		if (game.isStarted()) throw new ErrorResponse(ErrorResponseType.GAME_STARTED);
+		if (game.isStarted()) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
 
 		Player player = game.join(request.getName());
 
 		ctx.json(new Response(ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(
-				player.getId().toString(),
-				game.getId().toString())
+				player.getId(),
+				game.getId())
 		));
 	}
 }

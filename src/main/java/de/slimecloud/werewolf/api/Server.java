@@ -12,15 +12,12 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.json.JsonMapper;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import io.javalin.validation.ValidationError;
 import io.javalin.validation.ValidationException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Map;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -66,25 +63,15 @@ public class Server {
 			config.appData(MAIN_KEY, main);
 		});
 
-		server.exception(JsonSyntaxException.class, (e, ctx) -> { throw new ErrorResponse(ErrorResponseType.INVALID_SYNTAX, Map.of("message", e.getMessage())); });
-		server.exception(ValidationException.class, (e, ctx) -> {
-			throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST, Map.of(
-					"fields",
-					e.getErrors().values().stream().findFirst().map(v -> v.stream().map(ValidationError::getMessage).toList()).orElse(Collections.emptyList())
-			));
-		});
+		server.exception(JsonSyntaxException.class, (e, ctx) -> { throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST); });
+		server.exception(ValidationException.class, (e, ctx) -> { throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST); });
 
 		server.exception(Exception.class, (e, ctx) -> {
 			logger.error("Error in http handler", e);
 			throw new InternalServerErrorResponse();
 		});
 
-		server.exception(HttpResponseException.class, (e, ctx) -> {
-			throw new ErrorResponse(
-					HttpStatus.forStatus(e.getStatus()),
-					Map.of("message", e.getMessage())
-			);
-		});
+		server.exception(HttpResponseException.class, (e, ctx) -> { throw new ErrorResponse(HttpStatus.forStatus(e.getStatus())); });
 
 		server.exception(ErrorResponse.class, (e, ctx) -> {
 			try {
