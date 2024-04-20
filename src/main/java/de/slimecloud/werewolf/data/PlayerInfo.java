@@ -15,6 +15,8 @@ public class PlayerInfo {
 	private final boolean alive;
 	private final boolean mayor;
 
+	private final boolean connected;
+
 	@NotNull
 	public static PlayerInfo create(@NotNull Player player, boolean role) {
 		return new PlayerInfo(
@@ -24,7 +26,9 @@ public class PlayerInfo {
 
 				player.isMaster(),
 				player.isAlive(),
-				player.isMayor()
+				player.isMayor(),
+
+				player.getClient() != null
 		);
 	}
 }

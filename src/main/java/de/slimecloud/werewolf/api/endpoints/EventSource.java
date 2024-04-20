@@ -19,9 +19,14 @@ public class EventSource implements Consumer<SseClient> {
 		AuthorizationInfo info = client.ctx().appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(client.ctx().queryParam("token"), true);
 
 		client.keepAlive();
-		client.onClose(() -> info.getPlayer().setClient(null));
+		client.onClose(() -> {
+			info.getPlayer().setClient(null);
+			info.getGame().sendUpdate();
+		});
 
 		info.getPlayer().setClient(client);
 		info.getPlayer().sendUpdate(info.getGame());
+
+		info.getGame().sendUpdate();
 	}
 }

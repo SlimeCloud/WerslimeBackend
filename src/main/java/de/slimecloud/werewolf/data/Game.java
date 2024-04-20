@@ -46,11 +46,17 @@ public class Game {
 	@Nullable
 	public Player leave(@NotNull String player) {
 		Player removed = players.remove(player);
-		sendUpdate();
 
-		if (players.values().stream().noneMatch(Player::isMaster)) {
-			main.getGames().remove(id);
-			sendEvent("END", new GameEnding(null));
+		if(removed != null) {
+			sendUpdate();
+
+			if (players.values().stream().noneMatch(Player::isMaster)) {
+				main.getGames().remove(id);
+				sendEvent("END", new GameEnding(null));
+			}
+
+			if(removed.getClient() != null) removed.getClient().close();
+			removed.setClient(null);
 		}
 
 		return removed;
