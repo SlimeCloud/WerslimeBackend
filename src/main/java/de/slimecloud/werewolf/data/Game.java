@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Getter
@@ -44,19 +45,21 @@ public class Game {
 	}
 
 	@Nullable
-	public Player leave(@NotNull String player) {
+	public Player leave(@NotNull String player, @Nullable Consumer<Player> event) {
 		Player removed = players.remove(player);
 
 		if(removed != null) {
-			sendUpdate();
-
 			if (players.values().stream().noneMatch(Player::isMaster)) {
 				main.getGames().remove(id);
-				sendEvent("END", new GameEnding(null));
+				sendEvent("CLOSE", new Object());
 			}
+
+			if(event != null) event.accept(removed);
 
 			if(removed.getClient() != null) removed.getClient().close();
 			removed.setClient(null);
+
+			sendUpdate();
 		}
 
 		return removed;

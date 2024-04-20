@@ -25,9 +25,7 @@ public class KickEndpoint implements Handler {
 				.check(r -> r.id != null, "Invalid 'id'")
 				.get();
 
-		Player player = info.getGame().leave(request.getId());
+		Player player = info.getGame().leave(request.getId(), p -> p.sendEvent("KICK", new Object()));
 		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-		player.sendEvent("KICK", new Object());
 	}
 }
