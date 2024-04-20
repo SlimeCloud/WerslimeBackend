@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Player {
 	private final String id = ID.generate().asString();
 	private final String name;
-	private final boolean master;
+	private boolean master = false;
 
 	private Role role = null;
 

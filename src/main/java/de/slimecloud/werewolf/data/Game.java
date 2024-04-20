@@ -37,7 +37,7 @@ public class Game {
 
 	@NotNull
 	public Player join(@NotNull String name) {
-		Player player = new Player(name, false);
+		Player player = new Player(name);
 		players.put(player.getId(), player);
 		sendUpdate();
 

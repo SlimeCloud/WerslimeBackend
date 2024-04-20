@@ -44,7 +44,9 @@ public class Main {
 
 	@NotNull
 	public Game create(@NotNull String name) {
-		Player player = new Player(name, true);
+		Player player = new Player(name);
+		player.setMaster(true);
+
 		Game game = new Game(this, player.getId());
 
 		game.getPlayers().put(player.getId(), player);
