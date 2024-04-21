@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class Player {
 	private SseClient client = null;
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
-		if(equals(player)) return true;
+		if (equals(player)) return true;
 
 		if (!player.isAlive()) return true;
 		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, HashSet::new).contains(player.getId());
