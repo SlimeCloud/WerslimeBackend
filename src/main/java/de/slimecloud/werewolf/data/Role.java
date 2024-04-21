@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	SEER(true, 50) {
+	SEER(false, 50) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Role role;
@@ -36,7 +36,7 @@ public enum Role {
 		}
 	},
 	WEREWOLF(true, 0),
-	WITCH(true, 100) {
+	WITCH(false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL,
