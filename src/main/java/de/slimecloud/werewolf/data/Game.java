@@ -30,7 +30,7 @@ public class Game {
 	@Setter
 	private String victim;
 	@Setter
-	private Role current;
+	private Role current = Role.VILLAGER;
 
 	private final Map<String, Object> interactions = new HashMap<>();
 	private final Map<Role, Object> roleMetaData = new HashMap<>();
