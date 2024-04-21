@@ -73,7 +73,7 @@ public class Game {
 			player.setMayor(false);
 		});
 
-		current = null;
+		current = Role.VILLAGER;
 		victim = null;
 
 		interactions.clear();
