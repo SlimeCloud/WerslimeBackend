@@ -147,9 +147,7 @@ public class Game {
 		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
 
 		if (wolves == 0) sendEvent("END", new GameEnding(Role.VILLAGER));
-		else if (wolves >= getPlayerCount() / 2) sendEvent("END", new GameEnding(Role.WEREWOLF));
-
-		reset();
+		else if (wolves >= getPlayerCount() / 2.0) sendEvent("END", new GameEnding(Role.WEREWOLF));
 	}
 
 	@NotNull
