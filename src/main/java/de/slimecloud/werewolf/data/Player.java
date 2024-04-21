@@ -48,6 +48,7 @@ public class Player {
 
 	public void kill(@NotNull Game game) {
 		game.getInteractions().remove(id);
+		mayor = false;
 
 		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
 		else sendEvent("KILL", new Object());
