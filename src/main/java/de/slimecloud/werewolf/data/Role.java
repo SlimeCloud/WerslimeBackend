@@ -8,10 +8,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Getter
@@ -25,7 +22,7 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return !game.getRoleMetaData(this, Collections::emptySet).containsAll(game.getPlayers().values().stream().filter(Player::isAlive).toList());
+			return !game.getRoleMetaData(this, HashSet::new).containsAll(game.getPlayers().values().stream().filter(Player::isAlive).toList());
 		}
 
 		@Override
@@ -33,9 +30,9 @@ public enum Role {
 			Player target = getTarget(game, ctx, Player::isAlive);
 
 			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-			if (game.getRoleMetaData(this, Collections::emptySet).contains(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (!game.getRoleMetaData(this, HashSet::new).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			ctx.json(new Response(player.getRole()));
+			ctx.json(new Response(target.getRole()));
 		}
 	},
 	WEREWOLF(true, 0),
@@ -53,7 +50,7 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return !game.getRoleMetaData(this, Collections::emptySet).isEmpty();
+			return !game.getRoleMetaData(this, HashMap::new).isEmpty();
 		}
 
 		@Override
@@ -62,7 +59,7 @@ public enum Role {
 					.check(r -> r.getAction() != null, "Invalid 'action'")
 					.get().getAction();
 
-			Set<WitchAction> actions = game.getRoleMetaData(this, () -> Set.of(WitchAction.POISON, WitchAction.HEAL));
+			Set<WitchAction> actions = game.getRoleMetaData(this, () -> new HashSet<>(Arrays.asList(WitchAction.POISON, WitchAction.HEAL)));
 
 			if (action == WitchAction.SKIP) return;
 			if (!actions.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);

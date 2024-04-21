@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Setter
@@ -31,7 +32,7 @@ public class Player {
 		if(equals(player)) return true;
 
 		if (!player.isAlive()) return true;
-		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, Collections::emptySet).contains(player.getId());
+		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, HashSet::new).contains(player.getId());
 
 		return false;
 	}
