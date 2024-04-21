@@ -25,7 +25,7 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return game.getRoleMetaData(this, Collections::emptySet).size() < game.getPlayerCount();
+			return !game.getRoleMetaData(this, Collections::emptySet).containsAll(game.getPlayers().values().stream().filter(Player::isAlive).toList());
 		}
 
 		@Override
