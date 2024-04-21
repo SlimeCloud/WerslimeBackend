@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public class GameInfo {
 	private final Role current;
 	private final String victim;
 
+	private final Map<String, Object> interactions;
 	private final int interacted;
 	private final int total;
 
@@ -33,6 +35,7 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				self != null && (self.getRole() == Role.WITCH || self.getRole() == Role.WEREWOLF) ? game.getVictim() : null,
+				game.getCurrent() == Role.VILLAGER || (self != null && self.getRole() == game.getCurrent()) ? game.getInteractions() : null,
 				game.getInteractions().size(),
 				game.getCurrent() == Role.VILLAGER ? game.getPlayerCount() : (int) game.getPlayers().values().stream().filter(p -> p.isAlive() && p.getRole() == game.getCurrent()).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
