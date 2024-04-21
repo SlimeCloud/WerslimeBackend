@@ -15,7 +15,7 @@ public class RoleActionEndpoint implements Handler {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 
 		if (info.getGame().getCurrent() != Role.VILLAGER && info.getGame().getCurrent() != info.getPlayer().getRole()) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
-		if (!info.getPlayer().isAlive() && info.getPlayer().getRole() != Role.HUNTER) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+		if (!info.getPlayer().isAlive() && !info.getPlayer().getRole().isDead()) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 		if (!info.getGame().getCurrent().isVote() && info.getGame().getInteractions().containsKey(info.getPlayer().getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 

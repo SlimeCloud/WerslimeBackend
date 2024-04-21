@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	SEER(false, 50) {
+	SEER(false, false, 50) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Role role;
@@ -38,8 +38,8 @@ public enum Role {
 			ctx.json(new Response(target.getRole()));
 		}
 	},
-	WEREWOLF(true, 0),
-	WITCH(false, 100) {
+	WEREWOLF(true, false, 0),
+	WITCH(false, false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL,
@@ -75,8 +75,8 @@ public enum Role {
 			actions.remove(action);
 		}
 	},
-	VILLAGER(true, 0),
-	HUNTER(false, 10) {
+	VILLAGER(true, false, 0),
+	HUNTER(false, true, 10) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -95,6 +95,7 @@ public enum Role {
 	public final static List<Role> values = Arrays.asList(values());
 
 	private final boolean vote;
+	private final boolean dead;
 	private final int priority;
 
 	public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
