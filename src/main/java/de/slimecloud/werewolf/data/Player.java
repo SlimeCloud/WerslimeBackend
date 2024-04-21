@@ -28,6 +28,8 @@ public class Player {
 	private SseClient client = null;
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
+		if(equals(player)) return true;
+
 		if (!player.isAlive()) return true;
 		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, Collections::emptySet).contains(player.getId());
 
