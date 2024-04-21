@@ -29,6 +29,7 @@ public class Player {
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
 		if (equals(player)) return true;
+		if (role == Role.WEREWOLF && role == player.getRole()) return true;
 
 		if (!player.isAlive()) return true;
 		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, HashSet::new).contains(player.getId());
