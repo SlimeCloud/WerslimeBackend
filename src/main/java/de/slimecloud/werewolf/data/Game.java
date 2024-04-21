@@ -108,7 +108,7 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
-		evaluateVote().ifPresent(player -> {
+		if(current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
 				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this));
 				case WEREWOLF -> victim = player;
