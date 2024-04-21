@@ -165,7 +165,7 @@ public class Game {
 	}
 
 	private void checkMayor() {
-		if (players.values().stream().noneMatch(Player::isMayor)) {
+		if (players.values().stream().filter(Player::isAlive).noneMatch(Player::isMayor)) {
 			new ArrayList<>(players.values()).get(Main.random.nextInt(players.size())).setMayor(true);
 		}
 	}
