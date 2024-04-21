@@ -144,7 +144,7 @@ public class Game {
 	}
 
 	private void checkWin() {
-		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).count();
+		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).filter(Player::isAlive).count();
 
 		if (wolves == 0) sendEvent("END", new GameEnding(Role.VILLAGER));
 		else if (wolves >= getPlayerCount() / 2.0) sendEvent("END", new GameEnding(Role.WEREWOLF));
