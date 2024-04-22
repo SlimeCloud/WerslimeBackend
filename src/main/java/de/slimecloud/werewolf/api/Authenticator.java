@@ -57,7 +57,7 @@ public class Authenticator {
 
 		DecodedJWT decoded = parse(authorization);
 
-		Game game = main.getGames().get(decoded.getClaim("game").asString());
+		Game game = main.getGames().getIfPresent(decoded.getClaim("game").asString());
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
 		Player player = game.getPlayers().get(decoded.getClaim("user").asString());

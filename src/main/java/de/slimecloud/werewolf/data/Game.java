@@ -56,7 +56,7 @@ public class Game {
 
 		if (removed != null) {
 			if (players.values().stream().noneMatch(Player::isMaster)) {
-				main.getGames().remove(id);
+				main.getGames().invalidate(id);
 				sendEvent("CLOSE", new Object());
 			}
 

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class ListEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
-		ctx.json(ctx.appData(Server.MAIN_KEY).getGames().values().stream()
+		ctx.json(ctx.appData(Server.MAIN_KEY).getGames().asMap().values().stream()
 				.filter(g -> g.getSettings().isPublic())
 				.map(g -> GameInfo.create(g, null))
 				.toList()

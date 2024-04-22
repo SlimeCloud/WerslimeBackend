@@ -1,5 +1,7 @@
 package de.slimecloud.werewolf.main;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 import de.slimecloud.werewolf.api.Authenticator;
 import de.slimecloud.werewolf.api.Server;
@@ -10,9 +12,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Getter
@@ -24,7 +25,9 @@ public class Main {
 		new Main(Config.readFromFile("config"), Dotenv.configure().filename("credentials").load());
 	}
 
-	private final Map<String, Game> games = new HashMap<>();
+	private final Cache<String, Game> games = Caffeine.newBuilder()
+			.expireAfterAccess(4, TimeUnit.HOURS)
+			.build();
 
 	private final Config config;
 	private final Dotenv credentials;
