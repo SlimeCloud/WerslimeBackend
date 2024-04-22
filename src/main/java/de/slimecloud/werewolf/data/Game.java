@@ -41,7 +41,7 @@ public class Game {
 
 		if(started) {
 			player.setRole(Role.VILLAGER);
-			player.setAlive(this, true);
+			player.setAlive(this, false);
 		}
 
 		players.put(player.getId(), player);
