@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.api.endpoints.data;
 
 import de.slimecloud.werewolf.api.Server;
+import de.slimecloud.werewolf.api.endpoints.game.JoinEndpoint;
 import de.slimecloud.werewolf.data.Game;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -23,7 +24,7 @@ public class CreateEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		Request request = ctx.bodyValidator(CreateEndpoint.Request.class)
-				.check(r -> !r.getMasterName().isBlank() && r.getMasterName().length() >= 4, "Invalid 'masterName'")
+				.check(r -> JoinEndpoint.NAME_PATTERN.asMatchPredicate().test(r.getMasterName()), "Invalid 'masterName'")
 				.get();
 
 		Game game = ctx.appData(Server.MAIN_KEY).create(request.getMasterName());

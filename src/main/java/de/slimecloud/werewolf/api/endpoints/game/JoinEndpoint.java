@@ -11,7 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Pattern;
+
 public class JoinEndpoint implements Handler {
+	public final static Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{3,16}$");
+
 	@Getter
 	public static class Request {
 		private String name;
@@ -25,7 +29,7 @@ public class JoinEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) {
 		Request request = ctx.bodyValidator(Request.class)
-				.check(r -> !r.getName().isBlank() && r.getName().length() >= 4, "Invalid 'name'")
+				.check(r -> NAME_PATTERN.asMatchPredicate().test(r.getName()), "Invalid 'name'")
 				.get();
 
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().getIfPresent(ctx.queryParam("id"));
