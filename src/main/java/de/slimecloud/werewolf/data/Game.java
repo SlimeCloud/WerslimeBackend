@@ -38,6 +38,12 @@ public class Game {
 	@NotNull
 	public Player join(@NotNull String name) {
 		Player player = new Player(name);
+
+		if(started) {
+			player.setRole(Role.VILLAGER);
+			player.setAlive(this, true);
+		}
+
 		players.put(player.getId(), player);
 		sendUpdate();
 

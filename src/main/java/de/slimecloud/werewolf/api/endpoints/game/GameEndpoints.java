@@ -1,5 +1,6 @@
 package de.slimecloud.werewolf.api.endpoints.game;
 
+import de.slimecloud.werewolf.api.endpoints.data.CreateEndpoint;
 import io.javalin.apibuilder.EndpointGroup;
 
 import static io.javalin.apibuilder.ApiBuilder.post;
@@ -7,8 +8,6 @@ import static io.javalin.apibuilder.ApiBuilder.post;
 public class GameEndpoints implements EndpointGroup {
 	@Override
 	public void addEndpoints() {
-		post(new CreateEndpoint());
-
 		post("join", new JoinEndpoint());
 		post("leave", new LeaveEndpoint());
 		post("kick", new KickEndpoint());

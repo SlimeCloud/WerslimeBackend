@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.api.endpoints.game;
+package de.slimecloud.werewolf.api.endpoints.data;
 
 import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.data.Game;

@@ -31,7 +31,7 @@ public class Player {
 		if (equals(player)) return true;
 		if (role == Role.WEREWOLF && role == player.getRole()) return true;
 
-		if (!player.isAlive()) return true;
+		if (!player.isAlive() && game.getSettings().isRevealDeadRoles()) return true;
 		if (this.role == Role.SEER) return game.getRoleMetaData(Role.SEER, HashSet::new).contains(player.getId());
 
 		return false;
