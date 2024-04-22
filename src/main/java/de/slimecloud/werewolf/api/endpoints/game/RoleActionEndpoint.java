@@ -20,7 +20,7 @@ public class RoleActionEndpoint implements Handler {
 		if (!info.getGame().getCurrent().isVote() && info.getGame().getInteractions().containsKey(info.getPlayer().getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 		info.getGame().getCurrent().handle(info.getGame(), info.getPlayer(), ctx);
-		info.getGame().getInteractions().putIfAbsent(info.getPlayer().getId(), null);
+		info.getGame().getInteractions().putIfAbsent(info.getPlayer().getId(), new Object());
 
 		info.getGame().sendUpdate();
 	}
