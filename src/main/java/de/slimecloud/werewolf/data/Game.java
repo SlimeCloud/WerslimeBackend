@@ -62,7 +62,7 @@ public class Game {
 
 			if (event != null) event.accept(removed);
 
-			if (removed.getClient() != null) removed.getClient().close();
+			if (removed.getClient() != null) removed.getClient().closeSession();
 			removed.setClient(null);
 
 			sendUpdate();

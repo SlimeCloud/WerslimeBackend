@@ -56,7 +56,7 @@ public class Server {
 
 			config.router.apiBuilder(() -> {
 				get("/@me", new MeEndpoint());
-				sse("/events", new EventSource());
+				ws("/events", new EventSource(main));
 
 				path("/games", new GameDataEndpoints());
 				path("/game", new GameEndpoints());

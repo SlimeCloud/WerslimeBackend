@@ -1,7 +1,7 @@
 package de.slimecloud.werewolf.data;
 
 import de.mineking.javautils.ID;
-import io.javalin.http.sse.SseClient;
+import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -25,7 +24,7 @@ public class Player {
 	@Setter(AccessLevel.NONE)
 	private boolean alive = false;
 
-	private SseClient client = null;
+	private WsContext client = null;
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
 		if (equals(player)) return true;
@@ -61,7 +60,7 @@ public class Player {
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object data) {
-		if (client != null) client.sendEvent(name, data, UUID.randomUUID().toString());
+		if (client != null) client.send(new EventPayload(name, data));
 	}
 
 	@Override
@@ -73,4 +72,6 @@ public class Player {
 	public int hashCode() {
 		return id.hashCode();
 	}
+
+	private record EventPayload(String name, Object data) {}
 }

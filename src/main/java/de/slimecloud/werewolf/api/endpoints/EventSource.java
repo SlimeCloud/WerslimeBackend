@@ -1,8 +1,8 @@
 package de.slimecloud.werewolf.api.endpoints;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
-import de.slimecloud.werewolf.api.Server;
-import io.javalin.http.sse.SseClient;
+import de.slimecloud.werewolf.main.Main;
+import io.javalin.websocket.WsConfig;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,22 +13,27 @@ import java.util.function.Consumer;
 @Slf4j
 @Getter
 @RequiredArgsConstructor
-public class EventSource implements Consumer<SseClient> {
+public class EventSource implements Consumer<WsConfig> {
+	private final Main main;
+
 	@Override
-	public void accept(@NotNull SseClient client) {
-		AuthorizationInfo info = client.ctx().appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(client.ctx().queryParam("token"), true);
+	public void accept(@NotNull WsConfig config) {
+		config.onConnect(ctx -> {
+			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
 
-		if (info.getPlayer().getClient() != null) info.getPlayer().getClient().close();
+			if (info.getPlayer().getClient() != null) info.getPlayer().getClient().closeSession();
 
-		client.keepAlive();
-		client.onClose(() -> {
+			ctx.enableAutomaticPings();
+			info.getPlayer().setClient(ctx);
+			info.getPlayer().sendUpdate(info.getGame());
+
+			info.getGame().sendUpdate();
+		});
+		config.onClose(ctx -> {
+			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
+
 			info.getPlayer().setClient(null);
 			info.getGame().sendUpdate();
 		});
-
-		info.getPlayer().setClient(client);
-		info.getPlayer().sendUpdate(info.getGame());
-
-		info.getGame().sendUpdate();
 	}
 }
