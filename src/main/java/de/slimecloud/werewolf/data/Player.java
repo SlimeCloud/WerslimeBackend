@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -24,7 +25,7 @@ public class Player {
 	@Setter(AccessLevel.NONE)
 	private boolean alive = false;
 
-	private WsContext client = null;
+	private Set<WsContext> clients = new HashSet<>();
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
 		if (equals(player)) return true;
@@ -60,7 +61,7 @@ public class Player {
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object data) {
-		if (client != null) client.send(new EventPayload(name, data));
+		clients.forEach(client -> client.send(new EventPayload(name, data)));
 	}
 
 	@Override

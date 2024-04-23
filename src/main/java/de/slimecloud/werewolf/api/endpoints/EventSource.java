@@ -21,10 +21,8 @@ public class EventSource implements Consumer<WsConfig> {
 		config.onConnect(ctx -> {
 			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
 
-			if (info.getPlayer().getClient() != null) info.getPlayer().getClient().closeSession();
-
 			ctx.enableAutomaticPings();
-			info.getPlayer().setClient(ctx);
+			info.getPlayer().getClients().add(ctx);
 			info.getPlayer().sendUpdate(info.getGame());
 
 			info.getGame().sendUpdate();
@@ -32,7 +30,7 @@ public class EventSource implements Consumer<WsConfig> {
 		config.onClose(ctx -> {
 			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
 
-			info.getPlayer().setClient(null);
+			info.getPlayer().getClients().remove(ctx);
 			info.getGame().sendUpdate();
 		});
 	}

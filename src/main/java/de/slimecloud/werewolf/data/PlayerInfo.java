@@ -28,7 +28,7 @@ public class PlayerInfo {
 				player.isAlive(),
 				player.isMayor(),
 
-				player.getClient() != null
+				!player.getClients().isEmpty()
 		);
 	}
 }
