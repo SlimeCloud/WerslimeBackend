@@ -74,7 +74,7 @@ public enum Role {
 	AURA_SEER(Team.VILLAGE, false, false, 5) {
 		@AllArgsConstructor
 		public static class Response {
-			private final Team role;
+			private final Team team;
 		}
 
 		@Override
