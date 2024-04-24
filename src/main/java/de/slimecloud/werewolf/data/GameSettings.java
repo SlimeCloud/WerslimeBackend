@@ -9,11 +9,12 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class GameSettings {
-	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.SEER), false, true);
+	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true);
 
 	private final int werewolfAmount;
 	private final List<Role> roles;
 
 	private final boolean isPublic;
 	private final boolean revealDeadRoles;
+	private final boolean deadSpectators;
 }

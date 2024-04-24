@@ -9,6 +9,8 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class SettingsEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
@@ -16,7 +18,7 @@ public class SettingsEndpoint implements Handler {
 		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
 		GameSettings settings = ctx.bodyValidator(GameSettings.class)
-				.check(s -> s.getRoles() != null, "Invalid 'roles'")
+				.check(s -> s.getRoles() != null && s.getRoles().stream().noneMatch(Objects::isNull), "Invalid 'roles'")
 				.check(s -> s.getWerewolfAmount() >= 1, "Invalid 'werewolfAmount'")
 				.get();
 

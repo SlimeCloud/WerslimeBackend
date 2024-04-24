@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Getter
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class Game {
 
 		if(started) {
 			player.setRole(Role.VILLAGER);
-			player.setAlive(this, false);
+			player.setAlive(this, false, null);
 		}
 
 		players.put(player.getId(), player);
@@ -79,6 +78,7 @@ public class Game {
 			player.setRole(null);
 			player.revive(this);
 			player.setMayor(false);
+			player.setLover(false);
 		});
 
 		current = Role.VILLAGER;
@@ -86,6 +86,7 @@ public class Game {
 
 		interactions.clear();
 		roleMetaData.clear();
+		Role.values.forEach(r -> r.initialize(this));
 	}
 
 	public void start() {
@@ -118,7 +119,7 @@ public class Game {
 
 		if (current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
-				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this));
+				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this, KillReason.VILLAGE_VOTE));
 				case WEREWOLF -> victim = player;
 			}
 		});
@@ -126,7 +127,7 @@ public class Game {
 		current = getNextRole(Role.values.indexOf(current));
 
 		if (current == Role.VILLAGER) {
-			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this));
+			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this, KillReason.WEREWOLF_ATTACK));
 			victim = null;
 		}
 
@@ -140,8 +141,7 @@ public class Game {
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public <T> T getRoleMetaData(@NotNull Role role, @NotNull Supplier<T> defaultValue) {
-		roleMetaData.putIfAbsent(role, defaultValue.get());
+	public <T> T getRoleMetaData(@NotNull Role role) {
 		return (T) roleMetaData.get(role);
 	}
 
@@ -152,10 +152,15 @@ public class Game {
 	}
 
 	private void checkWin() {
-		long wolves = players.values().stream().filter(p -> p.getRole() == Role.WEREWOLF).filter(Player::isAlive).count();
+		long wolves = players.values().stream().filter(p -> p.getTeam() == Team.WEREWOLF).filter(Player::isAlive).count();
 
-		if (wolves == 0) sendEvent("END", new GameEnding(Role.VILLAGER));
-		else if (wolves >= getPlayerCount() / 2.0) sendEvent("END", new GameEnding(Role.WEREWOLF));
+		if (wolves == 0) sendWin(Winner.VILLAGER);
+		else if (wolves >= getPlayerCount() / 2.0) sendWin(Winner.WEREWOLF);
+		if (players.values().stream().filter(Player::isLover).filter(Player::isAlive).count() >= getPlayerCount() / 2.0 && wolves == 0) sendWin(Winner.LOVER);
+	}
+
+	public void sendWin(@NotNull Winner winner) {
+		sendEvent("END", new GameEnding(winner));
 	}
 
 	@NotNull
@@ -202,6 +207,6 @@ public class Game {
 		return Role.values()[i.get()];
 	}
 
-	private record GameEnding(Role winner) {
+	private record GameEnding(Winner winner) {
 	}
 }

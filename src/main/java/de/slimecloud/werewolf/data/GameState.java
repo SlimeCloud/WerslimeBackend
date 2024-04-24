@@ -12,6 +12,6 @@ public class GameState {
 
 	@NotNull
 	public static GameState create(@NotNull Game game, @NotNull Player player) {
-		return new GameState(GameInfo.create(game, player), PlayerInfo.create(player, true));
+		return new GameState(GameInfo.create(game, player), PlayerInfo.create(player, true, true, true));
 	}
 }
