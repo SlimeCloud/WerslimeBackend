@@ -1,6 +1,5 @@
 package de.slimecloud.werewolf.api.endpoints.game;
 
-import de.slimecloud.werewolf.api.endpoints.data.CreateEndpoint;
 import io.javalin.apibuilder.EndpointGroup;
 
 import static io.javalin.apibuilder.ApiBuilder.post;

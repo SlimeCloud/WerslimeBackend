@@ -49,7 +49,7 @@ public class Player {
 	}
 
 	public boolean canSeeTeam(@NotNull Game game, @NotNull Player player) {
-		if(canSeeRole(game, player)) return true;
+		if (canSeeRole(game, player)) return true;
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
@@ -69,11 +69,11 @@ public class Player {
 		mayor = false;
 
 		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
-		else if(role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
+		else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
 		else sendEvent("KILL", new Object());
 
-		if(lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
-			if(p.isLover()) p.kill(game, KillReason.LOVER);
+		if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
+			if (p.isLover()) p.kill(game, KillReason.LOVER);
 		});
 
 		this.alive = false;
@@ -97,5 +97,6 @@ public class Player {
 		return id.hashCode();
 	}
 
-	private record EventPayload(String name, Object data) {}
+	private record EventPayload(String name, Object data) {
+	}
 }

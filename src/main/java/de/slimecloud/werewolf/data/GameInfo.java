@@ -39,7 +39,7 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				game.getCurrent() == Role.VILLAGER || (self != null && (self.getRole() == game.getCurrent()  || (game.getSettings().isDeadSpectators() && !self.isAlive()))) ? game.getInteractions() : null,
+				game.getCurrent() == Role.VILLAGER || (self != null && (self.getRole() == game.getCurrent() || (game.getSettings().isDeadSpectators() && !self.isAlive()))) ? game.getInteractions() : null,
 				game.getInteractions().size(),
 				game.getCurrent() == Role.VILLAGER ? game.getPlayerCount() : (int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && p.getRole() == game.getCurrent()).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null

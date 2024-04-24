@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	AMOR(Team.VILLAGE, false, false,  75) {
+	AMOR(Team.VILLAGE, false, false, 75) {
 		@Getter
 		public static class AmorRequest {
 			private String first;
@@ -183,7 +183,7 @@ public enum Role {
 		game.getInteractions().put(player.getId(), getTarget(game, ctx, Player::isAlive).getId());
 	}
 
-	public void initialize(@NotNull Game game) {  }
+	public void initialize(@NotNull Game game) { }
 
 	public boolean canUseRole(@NotNull Game game) {
 		return true;
