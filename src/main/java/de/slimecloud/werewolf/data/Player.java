@@ -39,6 +39,7 @@ public class Player {
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
 		if (equals(player)) return true;
+		if (isLover() && player.isLover()) return true;
 		if (role == Role.WEREWOLF && role == player.getRole()) return true;
 
 		if (!player.isAlive() && game.getSettings().isRevealDeadRoles()) return true;
