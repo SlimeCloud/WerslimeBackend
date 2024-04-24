@@ -154,9 +154,9 @@ public class Game {
 	private void checkWin() {
 		long wolves = players.values().stream().filter(p -> p.getTeam() == Team.WEREWOLF).filter(Player::isAlive).count();
 
-		if (wolves == 0) sendWin(Winner.VILLAGER);
+		if (players.values().stream().filter(Player::isLover).filter(Player::isAlive).count() >= getPlayerCount() / 2.0 && players.values().stream().filter(p -> p.getTeam() == Team.WEREWOLF).filter(p -> !p.isLover()).noneMatch(Player::isAlive)) sendWin(Winner.LOVER);
+		else if (wolves == 0) sendWin(Winner.VILLAGER);
 		else if (wolves >= getPlayerCount() / 2.0) sendWin(Winner.WEREWOLF);
-		if (players.values().stream().filter(Player::isLover).filter(Player::isAlive).count() >= getPlayerCount() / 2.0 && wolves == 0) sendWin(Winner.LOVER);
 	}
 
 	public void sendWin(@NotNull Winner winner) {
