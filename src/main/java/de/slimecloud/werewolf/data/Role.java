@@ -103,7 +103,7 @@ public enum Role {
 			return true;
 		}
 	},
-	WITCH(Team.VILLAGE, false, false, 100) {
+	WITCH(Team.VILLAGE, true, false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL,

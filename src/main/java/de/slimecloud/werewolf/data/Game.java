@@ -168,7 +168,7 @@ public class Game {
 	private Optional<String> evaluateVote() {
 		Map<String, Double> votes = new HashMap<>();
 
-		interactions.values().stream().map(t -> (String) t).forEach(p -> {
+		interactions.values().stream().filter(t -> t instanceof String).map(t -> (String) t).forEach(p -> {
 			double weight = Optional.ofNullable(players.get(p)).filter(Player::isMayor).map(m -> 1.5).orElse(1.0);
 			votes.compute(p, (k, v) -> v == null ? weight : v + weight);
 		});
