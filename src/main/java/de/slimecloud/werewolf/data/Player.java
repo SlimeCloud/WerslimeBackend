@@ -20,8 +20,6 @@ public class Player {
 	private final String name;
 	private boolean master = false;
 
-	@Setter(AccessLevel.NONE)
-	private Team team = null;
 	private Role role = null;
 
 	private boolean mayor = false;
@@ -31,11 +29,6 @@ public class Player {
 	private boolean alive = false;
 
 	private Set<WsContext> clients = new HashSet<>();
-
-	public void setRole(@Nullable Role role) {
-		this.role = role;
-		this.team = role != null ? role.getTeam() : null;
-	}
 
 	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
 		if (equals(player)) return true;

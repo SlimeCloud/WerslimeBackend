@@ -25,7 +25,7 @@ public class PlayerInfo {
 				player.getId(),
 				player.getName(),
 				role ? player.getRole() : null,
-				team ? player.getTeam() : null,
+				team && player.getRole() != null ? player.getRole().getTeam() : null,
 
 				player.isMaster(),
 				player.isAlive(),
