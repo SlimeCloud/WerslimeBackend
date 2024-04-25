@@ -17,13 +17,13 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	VILLAGER_ELECT(Team.VILLAGE, true, false, 0) {
+	VILLAGER_ELECT(Team.VILLAGE, true, false, false, 0) {
 		@Override
 		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
 			return true;
 		}
 	},
-	AMOR(Team.VILLAGE, false, false, 75) {
+	AMOR(Team.VILLAGE, false, false, false, 75) {
 		@Getter
 		public static class AmorRequest {
 			private String first;
@@ -51,7 +51,7 @@ public enum Role {
 			second.setLover(true);
 		}
 	},
-	SEER(Team.VILLAGE, false, false, 50) {
+	SEER(Team.VILLAGE, false, false, false, 50) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Role role;
@@ -77,7 +77,7 @@ public enum Role {
 			ctx.json(new Response(target.getRole()));
 		}
 	},
-	AURA_SEER(Team.VILLAGE, false, false, 5) {
+	AURA_SEER(Team.VILLAGE, false, false, false, 5) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Team team;
@@ -103,13 +103,13 @@ public enum Role {
 			ctx.json(new Response(target.getRole().getTeam()));
 		}
 	},
-	WEREWOLF(Team.WEREWOLF, true, false, 0) {
+	WEREWOLF(Team.WEREWOLF, true, false, false, 0) {
 		@Override
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
 		}
 	},
-	WITCH(Team.VILLAGE, true, false, 100) {
+	WITCH(Team.VILLAGE, true, false, false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL,
@@ -155,13 +155,13 @@ public enum Role {
 			actions.remove(action);
 		}
 	},
-	VILLAGER(Team.VILLAGE, true, false, 0) {
+	VILLAGER(Team.VILLAGE, true, false, false, 0) {
 		@Override
 		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
 			return true;
 		}
 	},
-	HUNTER(Team.VILLAGE, false, true, 10) {
+	HUNTER(Team.VILLAGE, false, false, true, 10) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -176,7 +176,7 @@ public enum Role {
 			target.kill(game, KillReason.HUNTER);
 		}
 	},
-	JESTER(Team.NEUTRAL, false, false, 2) {
+	JESTER(Team.NEUTRAL, false, true, false, 2) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -187,6 +187,7 @@ public enum Role {
 
 	private final Team team;
 	private final boolean vote;
+	private final boolean soloWin;
 	private final boolean dead;
 	private final int priority;
 

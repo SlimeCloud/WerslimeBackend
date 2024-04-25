@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 public enum Winner {
 	LOVER(game -> game.getPlayers().values().stream().filter(Player::isAlive).allMatch(Player::isLover)),
 	WEREWOLF(game -> game.getPlayers().values().stream().filter(Player::isAlive).allMatch(p -> p.getRole().getTeam() == Team.WEREWOLF)),
-	VILLAGER(game -> game.getPlayers().values().stream().filter(Player::isAlive).allMatch(p -> p.getRole().getTeam() == Team.VILLAGE)),
+	VILLAGER(game -> game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole().isSoloWin())),
 	JESTER(game -> false);
 
 	private final Predicate<Game> condition;
