@@ -8,10 +8,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Getter
@@ -112,13 +109,12 @@ public enum Role {
 	WITCH(Team.VILLAGE, true, false, false, 100) {
 		public enum WitchAction {
 			POISON,
-			HEAL,
-			SKIP
+			HEAL
 		}
 
 		@Getter
 		public static class WitchRequest {
-			private WitchAction action;
+			private Map<WitchAction, String> actions;
 		}
 
 		@Override
@@ -138,21 +134,32 @@ public enum Role {
 
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			WitchAction action = ctx.bodyValidator(WitchRequest.class)
-					.check(r -> r.getAction() != null, "Invalid 'action'")
-					.get().getAction();
+			Set<WitchAction> available = game.getRoleMetaData(this);
+			Map<WitchAction, String> targets = ctx.bodyValidator(WitchRequest.class)
+					.check(r -> r.getActions() != null, "Invalid 'action'")
+					.get().getActions();
 
-			Set<WitchAction> actions = game.getRoleMetaData(this);
+			Set<Runnable> execute = new HashSet<>();
 
-			if (action == WitchAction.SKIP) return;
-			if (!actions.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
+			targets.forEach((action, target) -> {
+				if(target == null) return;
+				if(!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			switch (action) {
-				case HEAL -> game.setVictim(null);
-				case POISON -> getTarget(game, ctx, Player::isAlive).kill(game, KillReason.WITCH_POISON);
-			}
+				switch (action) {
+					case HEAL -> {
+						if(!target.equals(game.getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+						execute.add(() -> game.setVictim(null));
+					}
+					case POISON -> {
+						Player p = getTarget(game, ctx, Player::isAlive);
+						execute.add(() -> p.kill(game, KillReason.WITCH_POISON));
+					}
+				}
 
-			actions.remove(action);
+				available.remove(action);
+			});
+
+			execute.forEach(Runnable::run);
 		}
 	},
 	VILLAGER(Team.VILLAGE, true, false, false, 0) {
