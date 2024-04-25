@@ -17,7 +17,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class Player {
 	private final String id = ID.generate().asString();
-	private final String name;
+
+	@NotNull
+	private String name;
 	private boolean master = false;
 
 	private Role role = null;
