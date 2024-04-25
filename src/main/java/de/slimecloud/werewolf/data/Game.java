@@ -145,7 +145,7 @@ public class Game {
 
 	private void checkWin() {
 		for (Winner candidate : Winner.values()) {
-			if(candidate.isWinning(this)) sendWin(candidate);
+			if (candidate.isWinning(this)) sendWin(candidate);
 			return;
 		}
 	}

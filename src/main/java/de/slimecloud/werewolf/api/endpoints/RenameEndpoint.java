@@ -19,7 +19,7 @@ public class RenameEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
-		if(info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
+		if (info.getGame().isStarted()) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
 
 		Request request = ctx.bodyValidator(Request.class)
 				.check(r -> JoinEndpoint.NAME_PATTERN.asMatchPredicate().test(r.getName()), "Invalid 'name'")
