@@ -110,7 +110,6 @@ public class Game {
 		current = getNextRole(-1);
 		started = true;
 
-		checkMayor();
 		sendUpdate();
 	}
 
@@ -120,6 +119,7 @@ public class Game {
 		if (current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
 				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this, KillReason.VILLAGE_VOTE));
+				case VILLAGER_ELECT -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.setMayor(true));
 				case WEREWOLF -> victim = player;
 			}
 		});
@@ -133,8 +133,6 @@ public class Game {
 
 		interactions.clear();
 
-		checkMayor();
-
 		checkWin();
 		sendUpdate();
 	}
@@ -143,12 +141,6 @@ public class Game {
 	@SuppressWarnings("unchecked")
 	public <T> T getRoleMetaData(@NotNull Role role) {
 		return (T) roleMetaData.get(role);
-	}
-
-	public int getPlayerCount() {
-		return (int) players.values().stream()
-				.filter(Player::isAlive)
-				.count();
 	}
 
 	private void checkWin() {
@@ -176,12 +168,6 @@ public class Game {
 				.findAny().map(Map.Entry::getKey);
 	}
 
-	private void checkMayor() {
-		if (players.values().stream().filter(Player::isAlive).noneMatch(Player::isMayor)) {
-			new ArrayList<>(players.values()).get(Main.random.nextInt(players.size())).setMayor(true);
-		}
-	}
-
 	public void sendEvent(@NotNull String name, @NotNull Object object) {
 		players.values().forEach(p -> p.sendEvent(name, object));
 	}
@@ -201,7 +187,7 @@ public class Game {
 				reset();
 				break;
 			}
-		} while (!Role.values()[i.get()].canUseRole(this) || (Role.values()[i.get()] != Role.VILLAGER && players.values().stream().noneMatch(p -> p.isAlive() && p.getRole() == Role.values()[i.get()])));
+		} while (!Role.values()[i.get()].canUseRole(this) || players.values().stream().noneMatch(p -> p.isAlive() && Role.values()[i.get()].hasRole(this, p)));
 
 		return Role.values()[i.get()];
 	}

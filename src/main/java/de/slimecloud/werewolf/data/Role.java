@@ -17,6 +17,12 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
+	VILLAGER_ELECT(Team.VILLAGE, true, false, 0) {
+		@Override
+		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+			return true;
+		}
+	},
 	AMOR(Team.VILLAGE, false, false, 75) {
 		@Getter
 		public static class AmorRequest {
@@ -149,7 +155,12 @@ public enum Role {
 			actions.remove(action);
 		}
 	},
-	VILLAGER(Team.VILLAGE, true, false, 0),
+	VILLAGER(Team.VILLAGE, true, false, 0) {
+		@Override
+		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+			return true;
+		}
+	},
 	HUNTER(Team.VILLAGE, false, true, 10) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
@@ -184,6 +195,10 @@ public enum Role {
 	}
 
 	public void initialize(@NotNull Game game) { }
+
+	public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+		return player.getRole() == this;
+	}
 
 	public boolean canUseRole(@NotNull Game game) {
 		return true;

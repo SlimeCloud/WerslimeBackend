@@ -39,9 +39,9 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				game.getCurrent() == Role.VILLAGER || (self != null && (self.getRole() == game.getCurrent() || (game.getSettings().isDeadSpectators() && !self.isAlive()))) ? game.getInteractions() : null,
+				self != null && (game.getCurrent().hasRole(game, self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				game.getInteractions().size(),
-				game.getCurrent() == Role.VILLAGER ? game.getPlayerCount() : (int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && p.getRole() == game.getCurrent()).count(),
+				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(game, p)).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
 		);
 	}
