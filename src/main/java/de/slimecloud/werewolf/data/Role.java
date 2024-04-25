@@ -103,7 +103,7 @@ public enum Role {
 			ctx.json(new Response(target.getRole().getTeam()));
 		}
 	},
-	WEREWOLF(Team.WEREWOLF, true, false, false, 0) {
+	WEREWOLF(Team.WEREWOLF, true, true, false, 0) {
 		@Override
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
@@ -176,7 +176,7 @@ public enum Role {
 			target.kill(game, KillReason.HUNTER);
 		}
 	},
-	JESTER(Team.NEUTRAL, false, true, false, 2) {
+	JESTER(Team.NEUTRAL, false, false, false, 2) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -187,7 +187,7 @@ public enum Role {
 
 	private final Team team;
 	private final boolean vote;
-	private final boolean soloWin;
+	private final boolean killing;
 	private final boolean dead;
 	private final int priority;
 

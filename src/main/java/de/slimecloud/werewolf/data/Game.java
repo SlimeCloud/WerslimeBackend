@@ -128,12 +128,12 @@ public class Game {
 
 		if (current == Role.VILLAGER) {
 			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this, KillReason.WEREWOLF_ATTACK));
+			checkWin();
 			victim = null;
 		}
 
 		interactions.clear();
 
-		checkWin();
 		sendUpdate();
 	}
 
@@ -145,8 +145,10 @@ public class Game {
 
 	private void checkWin() {
 		for (Winner candidate : Winner.values()) {
-			if (candidate.isWinning(this)) sendWin(candidate);
-			return;
+			if (candidate.isWinning(this)) {
+				sendWin(candidate);
+				return;
+			}
 		}
 	}
 
