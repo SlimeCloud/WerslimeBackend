@@ -1,12 +1,20 @@
-package de.slimecloud.werewolf.main;
+package de.slimecloud.werewolf.config;
 
+import de.slimecloud.werewolf.main.Main;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
+@Getter
 public class Config {
-	public int port;
+	private int port;
+
+	private ActivityConfig activity;
+	private List<LogForwarding> logForwarding = Collections.emptyList();
 
 	@NotNull
 	public static Config readFromFile(@NotNull String path) throws IOException {

@@ -89,7 +89,7 @@ public class Server {
 	}
 
 	public void start() {
-		server.start(main.getConfig().port);
+		server.start(main.getConfig().getPort());
 	}
 
 	public void stop() {

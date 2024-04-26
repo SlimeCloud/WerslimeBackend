@@ -5,8 +5,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 import de.slimecloud.werewolf.api.Authenticator;
 import de.slimecloud.werewolf.api.Server;
+import de.slimecloud.werewolf.config.Config;
 import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
+import de.slimecloud.werewolf.discord.DiscordBot;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +36,15 @@ public class Main {
 
 	private final Authenticator authenticator;
 	private final Server server;
+	private final DiscordBot bot;
 
-	public Main(Config config, Dotenv credentials) {
+	public Main(@NotNull Config config, @NotNull Dotenv credentials) {
 		this.config = config;
 		this.credentials = credentials;
 
 		this.authenticator = new Authenticator(this);
 		this.server = new Server(this);
+		this.bot = new DiscordBot(this);
 
 		this.server.start();
 	}
