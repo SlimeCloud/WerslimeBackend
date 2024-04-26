@@ -167,7 +167,9 @@ public class Game {
 
 		return votes.entrySet().stream()
 				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.findAny().map(Map.Entry::getKey);
+				.findAny()
+				.filter(e -> votes.values().stream().filter(v -> Objects.equals(v, e.getValue())).count() == 1) // Ignore voting result on tie
+				.map(Map.Entry::getKey);
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object object) {

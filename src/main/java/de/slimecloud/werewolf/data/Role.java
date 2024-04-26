@@ -66,12 +66,12 @@ public enum Role {
 
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			Player target = getTarget(game, ctx, Player::isAlive);
+			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-			if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-			ctx.json(new Response(target.getRole()));
+				ctx.json(new Response(target.getRole()));
+			});
 		}
 	},
 	AURA_SEER(Team.VILLAGE, false, false, false, 5) {
@@ -92,12 +92,12 @@ public enum Role {
 
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			Player target = getTarget(game, ctx, Player::isAlive);
+			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-			if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-			ctx.json(new Response(target.getRole().getTeam()));
+				ctx.json(new Response(target.getRole().getTeam()));
+			});
 		}
 	},
 	WEREWOLF(Team.WEREWOLF, true, true, false, 0) {
@@ -151,7 +151,7 @@ public enum Role {
 						execute.add(() -> game.setVictim(null));
 					}
 					case POISON -> {
-						Player p = getTarget(game, ctx, Player::isAlive);
+						Player p = getTarget(game, ctx, Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 						execute.add(() -> p.kill(game, KillReason.WITCH_POISON));
 					}
 				}
@@ -176,11 +176,10 @@ public enum Role {
 
 		@Override
 		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			Player target = getTarget(game, ctx, Player::isAlive);
-
-			if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-			target.kill(game, KillReason.HUNTER);
+			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				target.kill(game, KillReason.HUNTER);
+			});
 		}
 	},
 	JESTER(Team.NEUTRAL, false, false, false, 2) {
@@ -199,7 +198,7 @@ public enum Role {
 	private final int priority;
 
 	public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-		game.getInteractions().put(player.getId(), getTarget(game, ctx, Player::isAlive).getId());
+		game.getInteractions().put(player.getId(), getTarget(game, ctx, Player::isAlive).map(Player::getId).orElse(""));
 	}
 
 	public void initialize(@NotNull Game game) { }
@@ -217,17 +216,16 @@ public enum Role {
 	}
 
 	@NotNull
-	private static Player getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {
-		String target = ctx.bodyValidator(TargetRequest.class)
-				.check(t -> t.getTarget() != null, "Invalid 'target'")
-				.get().getTarget();
+	private static Optional<Player> getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {
+		String target = ctx.bodyAsClass(TargetRequest.class).getTarget();
+		if(target == null || target.isBlank()) return Optional.empty();
 
 		Player player = game.getPlayers().get(target);
 
 		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 		if (condition != null && !condition.test(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-		return player;
+		return Optional.of(player);
 	}
 
 	@Getter
