@@ -217,7 +217,7 @@ public enum Role {
 
 	@NotNull
 	private static Optional<Player> getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {
-		String target = ctx.bodyAsClass(TargetRequest.class).getTarget();
+		String target = ctx.bodyValidator(TargetRequest.class).get().getTarget();
 		if(target == null || target.isBlank()) return Optional.empty();
 
 		Player player = game.getPlayers().get(target);
