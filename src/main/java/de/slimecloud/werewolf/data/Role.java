@@ -142,7 +142,7 @@ public enum Role {
 			Set<Runnable> execute = new HashSet<>();
 
 			targets.forEach((action, target) -> {
-				if(target == null) return;
+				if(target == null || target.isBlank()) return;
 				if(!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				switch (action) {
