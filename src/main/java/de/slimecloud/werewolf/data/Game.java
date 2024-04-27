@@ -15,32 +15,36 @@ import java.util.function.Consumer;
 @Getter
 @RequiredArgsConstructor
 public class Game {
-	private final Main main;
+	protected final Main main;
 
-	private final String id = ID.generate().asString();
-	private final String master;
+	protected final String id;
+	protected final String master;
 
-	private final Map<String, Player> players = new HashMap<>();
-	private boolean started;
-
-	@Setter
-	private GameSettings settings = GameSettings.DEFAULT;
+	protected final Map<String, Player> players = new HashMap<>();
+	protected boolean started;
 
 	@Setter
-	private String victim;
-	@Setter
-	private Role current = Role.VILLAGER;
+	protected GameSettings settings = GameSettings.DEFAULT;
 
-	private final Map<String, Object> interactions = new HashMap<>();
-	private final Map<Role, Object> roleMetaData = new HashMap<>();
+	@Setter
+	protected String victim;
+	@Setter
+	protected Role current = Role.VILLAGER;
+
+	protected final Map<String, Object> interactions = new HashMap<>();
+	protected final Map<Role, Object> roleMetaData = new HashMap<>();
+
+	public boolean isPublic() {
+		return settings.isPublic();
+	}
 
 	@NotNull
 	public Player join(@NotNull String name) {
-		Player player = new Player(name);
+		Player player = new Player(this, ID.generate().asString(), name);
 
 		if (started) {
 			player.setRole(Role.VILLAGER);
-			player.setAlive(this, false, null);
+			player.setAlive(false, null);
 		}
 
 		players.put(player.getId(), player);
@@ -76,7 +80,7 @@ public class Game {
 		started = false;
 		players.values().forEach(player -> {
 			player.setRole(null);
-			player.revive(this);
+			player.revive();
 			player.setMayor(false);
 			player.setLover(false);
 		});
@@ -118,7 +122,7 @@ public class Game {
 
 		if (current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
-				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(this, KillReason.VILLAGE_VOTE));
+				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(KillReason.VILLAGE_VOTE));
 				case VILLAGER_ELECT -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.setMayor(true));
 				case WEREWOLF -> victim = player;
 			}
@@ -127,7 +131,7 @@ public class Game {
 		current = getNextRole(Role.values.indexOf(current));
 
 		if (current == Role.VILLAGER) {
-			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(this, KillReason.WEREWOLF_ATTACK));
+			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
 			checkWin();
 			victim = null;
 		}
@@ -177,7 +181,7 @@ public class Game {
 	}
 
 	public void sendUpdate() {
-		players.values().forEach(p -> p.sendUpdate(this));
+		players.values().forEach(Player::sendUpdate);
 	}
 
 	@NotNull
@@ -191,11 +195,13 @@ public class Game {
 				reset();
 				break;
 			}
-		} while (!Role.values()[i.get()].canUseRole(this) || players.values().stream().noneMatch(p -> p.isAlive() && Role.values()[i.get()].hasRole(this, p)));
+		} while (!Role.values()[i.get()].canUseRole(this) || players.values().stream().filter(Player::isAlive).noneMatch(Role.values()[i.get()]::hasRole));
 
 		return Role.values()[i.get()];
 	}
 
 	private record GameEnding(Winner winner) {
 	}
+
+	public void cleanup() {}
 }

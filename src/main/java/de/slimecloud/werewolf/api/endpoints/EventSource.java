@@ -23,7 +23,7 @@ public class EventSource implements Consumer<WsConfig> {
 
 			ctx.enableAutomaticPings();
 			info.getPlayer().getClients().add(ctx);
-			info.getPlayer().sendUpdate(info.getGame());
+			info.getPlayer().sendUpdate();
 
 			info.getGame().sendUpdate();
 		});

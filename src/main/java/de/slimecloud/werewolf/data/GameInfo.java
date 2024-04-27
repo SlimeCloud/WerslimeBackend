@@ -1,5 +1,6 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.data.discord.DiscordGame;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class GameInfo {
 	private final String id;
+	private final boolean discord;
 	private final List<PlayerInfo> players;
 
 	private final boolean started;
@@ -30,18 +32,19 @@ public class GameInfo {
 	public static GameInfo create(@NotNull Game game, @Nullable Player self) {
 		return new GameInfo(
 				game.getId(),
+				game instanceof DiscordGame,
 				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p,
 						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeRole(game, p) || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeTeam(game, p) || (game.getSettings().isDeadSpectators() && !self.isAlive()))
+						self != null && (self.canSeeRole(p) || (game.getSettings().isDeadSpectators() && !self.isAlive())),
+						self != null && (self.canSeeTeam(p) || (game.getSettings().isDeadSpectators() && !self.isAlive()))
 				)).toList(),
 				game.isStarted(),
 				game.getSettings(),
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				self != null && (game.getCurrent().hasRole(game, self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
+				self != null && (game.getCurrent().hasRole(self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				game.getInteractions().size(),
-				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(game, p)).count(),
+				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
 		);
 	}

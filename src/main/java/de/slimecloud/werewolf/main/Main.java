@@ -2,12 +2,17 @@ package de.slimecloud.werewolf.main;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.google.gson.Gson;
+import de.mineking.javautils.ID;
 import de.slimecloud.werewolf.api.Authenticator;
 import de.slimecloud.werewolf.api.Server;
+import de.slimecloud.werewolf.config.Config;
 import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
+import de.slimecloud.werewolf.discord.DiscordBot;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.mokulu.discord.oauth.DiscordOAuth;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +32,7 @@ public class Main {
 
 	private final Cache<String, Game> games = Caffeine.newBuilder()
 			.expireAfterAccess(4, TimeUnit.HOURS)
+			.removalListener((String id, Game game, RemovalCause cause) -> game.cleanup())
 			.build();
 
 	private final Config config;
@@ -34,12 +40,16 @@ public class Main {
 
 	private final Authenticator authenticator;
 	private final Server server;
+	private final DiscordBot bot;
+	private final DiscordOAuth oauth2;
 
-	public Main(Config config, Dotenv credentials) {
+	public Main(@NotNull Config config, @NotNull Dotenv credentials) {
 		this.config = config;
 		this.credentials = credentials;
 
 		this.authenticator = new Authenticator(this);
+		this.bot = new DiscordBot(this);
+		this.oauth2 = new DiscordOAuth(credentials.get("DISCORD_ID"), credentials.get("DISCORD_SECRET"), config.getUrl() + "/oauth2", new String[] {"identify"});
 		this.server = new Server(this);
 
 		this.server.start();
@@ -47,10 +57,12 @@ public class Main {
 
 	@NotNull
 	public Game create(@NotNull String name) {
-		Player player = new Player(name);
-		player.setMaster(true);
+		String id = ID.generate().asString();
 
-		Game game = new Game(this, player.getId());
+		Game game = new Game(this, ID.generate().asString(), id);
+
+		Player player = new Player(game, id, name);
+		player.setMaster(true);
 
 		game.getPlayers().put(player.getId(), player);
 		games.put(game.getId(), game);

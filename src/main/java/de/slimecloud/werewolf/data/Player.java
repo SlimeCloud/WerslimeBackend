@@ -1,6 +1,5 @@
 package de.slimecloud.werewolf.data;
 
-import de.mineking.javautils.ID;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,23 +15,33 @@ import java.util.Set;
 @Getter
 @RequiredArgsConstructor
 public class Player {
-	private final String id = ID.generate().asString();
+	protected final Game game;
+	protected final String id;
 
 	@NotNull
-	private String name;
-	private boolean master = false;
+	protected String name;
+	protected boolean master = false;
 
-	private Role role = null;
+	protected Role role = null;
 
-	private boolean mayor = false;
-	private boolean lover;
+	protected boolean mayor = false;
+	protected boolean lover;
 
 	@Setter(AccessLevel.NONE)
-	private boolean alive = false;
+	protected boolean alive = false;
 
-	private Set<WsContext> clients = new HashSet<>();
+	protected Set<WsContext> clients = new HashSet<>();
 
-	public boolean canSeeRole(@NotNull Game game, @NotNull Player player) {
+	@Nullable
+	public String getAvatar() {
+		return null;
+	}
+
+	public boolean canSpeak() {
+		return !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
+	}
+
+	public boolean canSeeRole(@NotNull Player player) {
 		if (equals(player)) return true;
 		if (isLover() && player.isLover() && game.getSettings().isRevealLoverRoles()) return true;
 		if (role == Role.WEREWOLF && role == player.getRole()) return true;
@@ -43,23 +52,23 @@ public class Player {
 		return false;
 	}
 
-	public boolean canSeeTeam(@NotNull Game game, @NotNull Player player) {
-		if (canSeeRole(game, player)) return true;
+	public boolean canSeeTeam(@NotNull Player player) {
+		if (canSeeRole(player)) return true;
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
 	}
 
-	public void setAlive(@NotNull Game game, boolean alive, @Nullable KillReason reason) {
-		if (alive && !this.alive) revive(game);
-		if (!alive && this.alive) kill(game, reason != null ? reason : KillReason.UNKNOWN);
+	public void setAlive(boolean alive, @Nullable KillReason reason) {
+		if (alive && !this.alive) revive();
+		if (!alive && this.alive) kill(reason != null ? reason : KillReason.UNKNOWN);
 	}
 
-	public void revive(@NotNull Game game) {
+	public void revive() {
 		this.alive = true;
 	}
 
-	public void kill(@NotNull Game game, @NotNull KillReason reason) {
+	public void kill(@NotNull KillReason reason) {
 		game.getInteractions().remove(id);
 		mayor = false;
 
@@ -68,13 +77,13 @@ public class Player {
 		else sendEvent("KILL", new Object());
 
 		if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
-			if (p.isLover()) p.kill(game, KillReason.LOVER);
+			if (p.isLover()) p.kill(KillReason.LOVER);
 		});
 
 		this.alive = false;
 	}
 
-	public void sendUpdate(@NotNull Game game) {
+	public void sendUpdate() {
 		sendEvent("UPDATE", GameState.create(game, this));
 	}
 

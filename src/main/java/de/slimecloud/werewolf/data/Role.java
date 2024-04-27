@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 public enum Role {
 	VILLAGER_ELECT(Team.VILLAGE, true, false, false, 0) {
 		@Override
-		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+		public boolean hasRole(@NotNull Player player) {
 			return true;
 		}
 	},
@@ -33,14 +33,14 @@ public enum Role {
 		}
 
 		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			AmorRequest request = ctx.bodyValidator(AmorRequest.class)
 					.check(r -> r.getFirst() != null, "Invalid 'first'")
 					.check(r -> r.getSecond() != null, "Invalid 'second'")
 					.get();
 
-			Player first = game.getPlayers().get(request.getFirst());
-			Player second = game.getPlayers().get(request.getSecond());
+			Player first = player.getGame().getPlayers().get(request.getFirst());
+			Player second = player.getGame().getPlayers().get(request.getSecond());
 
 			if (first == null || !first.isAlive() || second == null || !second.isAlive()) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
@@ -65,10 +65,10 @@ public enum Role {
 		}
 
 		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-				if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				ctx.json(new Response(target.getRole()));
 			});
@@ -91,10 +91,10 @@ public enum Role {
 		}
 
 		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-				if (!game.<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				ctx.json(new Response(target.getRole().getTeam()));
 			});
@@ -133,8 +133,8 @@ public enum Role {
 		}
 
 		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			Set<WitchAction> available = game.getRoleMetaData(this);
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			Set<WitchAction> available = player.getGame().getRoleMetaData(this);
 			Map<WitchAction, String> targets = ctx.bodyValidator(WitchRequest.class)
 					.check(r -> r.getActions() != null, "Invalid 'action'")
 					.get().getActions();
@@ -142,17 +142,17 @@ public enum Role {
 			Set<Runnable> execute = new HashSet<>();
 
 			targets.forEach((action, target) -> {
-				if(target == null || target.isBlank()) return;
-				if(!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (target == null || target.isBlank()) return;
+				if (!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				switch (action) {
 					case HEAL -> {
-						if(!target.equals(game.getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-						execute.add(() -> game.setVictim(null));
+						if (!target.equals(player.getGame().getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+						execute.add(() -> player.getGame().setVictim(null));
 					}
 					case POISON -> {
-						Player p = getTarget(game, ctx, Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
-						execute.add(() -> p.kill(game, KillReason.WITCH_POISON));
+						Player p = getTarget(player.getGame(), ctx, Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+						execute.add(() -> p.kill(KillReason.WITCH_POISON));
 					}
 				}
 
@@ -164,7 +164,7 @@ public enum Role {
 	},
 	VILLAGER(Team.VILLAGE, true, false, false, 0) {
 		@Override
-		public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+		public boolean hasRole(@NotNull Player player) {
 			return true;
 		}
 	},
@@ -175,10 +175,10 @@ public enum Role {
 		}
 
 		@Override
-		public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-			getTarget(game, ctx, Player::isAlive).ifPresent(target -> {
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-				target.kill(game, KillReason.HUNTER);
+				target.kill(KillReason.HUNTER);
 			});
 		}
 	},
@@ -197,13 +197,13 @@ public enum Role {
 	private final boolean dead;
 	private final int priority;
 
-	public void handle(@NotNull Game game, @NotNull Player player, @NotNull Context ctx) {
-		game.getInteractions().put(player.getId(), getTarget(game, ctx, Player::isAlive).map(Player::getId).orElse(""));
+	public void handle(@NotNull Player player, @NotNull Context ctx) {
+		player.getGame().getInteractions().put(player.getId(), getTarget(player.getGame(), ctx, Player::isAlive).map(Player::getId).orElse(""));
 	}
 
 	public void initialize(@NotNull Game game) { }
 
-	public boolean hasRole(@NotNull Game game, @NotNull Player player) {
+	public boolean hasRole(@NotNull Player player) {
 		return player.getRole() == this;
 	}
 
@@ -218,7 +218,7 @@ public enum Role {
 	@NotNull
 	private static Optional<Player> getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {
 		String target = ctx.bodyValidator(TargetRequest.class).get().getTarget();
-		if(target == null || target.isBlank()) return Optional.empty();
+		if (target == null || target.isBlank()) return Optional.empty();
 
 		Player player = game.getPlayers().get(target);
 

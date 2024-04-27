@@ -57,6 +57,7 @@ public class Server {
 
 			config.router.apiBuilder(() -> {
 				get("/@me", new MeEndpoint());
+				post("/@me/authenticate", new AuthenticateEndpoint());
 				patch("/@me", new RenameEndpoint());
 
 				ws("/events", new EventSource(main));
@@ -89,7 +90,7 @@ public class Server {
 	}
 
 	public void start() {
-		server.start(main.getConfig().port);
+		server.start(main.getConfig().getPort());
 	}
 
 	public void stop() {
