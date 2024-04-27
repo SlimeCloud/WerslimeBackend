@@ -15,6 +15,7 @@ repositories {
     mavenCentral()
     maven { url "https://maven.mineking.dev/releases" }
     maven { url "https://maven.mineking.dev/snapshots" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
 
     implementation 'net.dv8tion:JDA:5.0.0-beta.23'
     implementation 'de.mineking:DiscordUtils:ce37da4'
+    implementation 'com.github.Mokulu:discord-oauth2-api:1.0.4'
     implementation 'de.mineking:JavaUtils:1.8.0'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'

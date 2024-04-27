@@ -8,7 +8,8 @@ import static io.javalin.apibuilder.ApiBuilder.post;
 public class GameDataEndpoints implements EndpointGroup {
 	@Override
 	public void addEndpoints() {
-		post(new CreateEndpoint());
+		get("/{id}", new InfoEndpoint());
 		get(new ListEndpoint());
+		post(new CreateEndpoint());
 	}
 }

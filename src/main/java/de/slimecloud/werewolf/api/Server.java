@@ -57,6 +57,7 @@ public class Server {
 
 			config.router.apiBuilder(() -> {
 				get("/@me", new MeEndpoint());
+				post("/@me/authenticate", new AuthenticateEndpoint());
 				patch("/@me", new RenameEndpoint());
 
 				ws("/events", new EventSource(main));

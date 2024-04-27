@@ -60,7 +60,7 @@ public class CreateCommand {
 						return;
 					}
 
-					if (!game.getPlayers().containsKey(state.getEvent().getUser().getId())) game.join(state.getEvent().getMember());
+					if (!game.getPlayers().containsKey(state.getEvent().getUser().getId())) game.join(state.getEvent().getUser().getId(), state.getEvent().getUser().getName());
 
 					state.getEvent().reply(bot.getMain().getConfig().getUrl() + "/join?token=" + bot.getMain().getAuthenticator().generateToken(state.getEvent().getUser().getId(), id))
 							.setEphemeral(true)

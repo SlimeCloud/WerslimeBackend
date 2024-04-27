@@ -9,7 +9,6 @@ import de.slimecloud.werewolf.data.Role;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,11 +19,6 @@ public class DiscordGame extends Game {
 	public DiscordGame(@NotNull Main main, @NotNull Guild guild, @NotNull String master) {
 		super(main, ID.generate().asString(), master);
 		this.guild = guild.getIdLong();
-	}
-
-	@Override
-	public boolean isPublic() {
-		return false; //TODO allow public games and verify using oauth2
 	}
 
 	@Nullable
@@ -38,8 +32,9 @@ public class DiscordGame extends Game {
 		throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
 	}
 
-	public DiscordPlayer join(@NotNull Member user) {
-		DiscordPlayer player = new DiscordPlayer(this, user.getId(), user.getUser().getName());
+	@NotNull
+	public DiscordPlayer join(@NotNull String id, @NotNull String name) {
+		DiscordPlayer player = new DiscordPlayer(this, id, name);
 
 		if (isStarted()) {
 			player.setRole(Role.VILLAGER);

@@ -11,6 +11,7 @@ import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
 import de.slimecloud.werewolf.discord.DiscordBot;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.mokulu.discord.oauth.DiscordOAuth;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -38,14 +39,16 @@ public class Main {
 	private final Authenticator authenticator;
 	private final Server server;
 	private final DiscordBot bot;
+	private final DiscordOAuth oauth2;
 
 	public Main(@NotNull Config config, @NotNull Dotenv credentials) {
 		this.config = config;
 		this.credentials = credentials;
 
 		this.authenticator = new Authenticator(this);
-		this.server = new Server(this);
 		this.bot = new DiscordBot(this);
+		this.oauth2 = new DiscordOAuth(credentials.get("DISCORD_ID"), credentials.get("DISCORD_SECRET"), config.getUrl() + "/oauth2", new String[] { "identify" });
+		this.server = new Server(this);
 
 		this.server.start();
 	}
