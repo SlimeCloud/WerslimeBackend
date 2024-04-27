@@ -102,7 +102,7 @@ public class DiscordGame extends Game {
 	}
 
 	public void updateVoice() {
-		getChannel().ifPresent(channel -> {
+		/*getChannel().ifPresent(channel -> {
 			StageInstance stage = channel.getStageInstance();
 			if(stage == null) return;
 
@@ -125,6 +125,6 @@ public class DiscordGame extends Game {
 					.toList();
 
 			if (!actions.isEmpty()) RestAction.allOf(actions).queue();
-		});
+		});*/
 	}
 }
