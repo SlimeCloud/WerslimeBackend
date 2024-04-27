@@ -74,10 +74,7 @@ public class Player {
 
 		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
 		else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
-		else {
-			sendEvent("KILL", new Object());
-			playSound(Sound.DEATH, 1);
-		}
+		else sendEvent("KILL", new Object());
 
 		if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
 			if (p.isLover()) p.kill(KillReason.LOVER);
