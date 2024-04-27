@@ -32,16 +32,16 @@ public class GameInfo {
 				game.getId(),
 				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p,
 						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeRole(game, p) || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeTeam(game, p) || (game.getSettings().isDeadSpectators() && !self.isAlive()))
+						self != null && (self.canSeeRole(p) || (game.getSettings().isDeadSpectators() && !self.isAlive())),
+						self != null && (self.canSeeTeam(p) || (game.getSettings().isDeadSpectators() && !self.isAlive()))
 				)).toList(),
 				game.isStarted(),
 				game.getSettings(),
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				self != null && (game.getCurrent().hasRole(game, self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
+				self != null && (game.getCurrent().hasRole(self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				game.getInteractions().size(),
-				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(game, p)).count(),
+				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
 		);
 	}

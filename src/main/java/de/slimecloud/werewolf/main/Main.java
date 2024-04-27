@@ -3,6 +3,7 @@ package de.slimecloud.werewolf.main;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
+import de.mineking.javautils.ID;
 import de.slimecloud.werewolf.api.Authenticator;
 import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.config.Config;
@@ -51,10 +52,12 @@ public class Main {
 
 	@NotNull
 	public Game create(@NotNull String name) {
-		Player player = new Player(name);
-		player.setMaster(true);
+		String id = ID.generate().asString();
 
-		Game game = new Game(this, player.getId());
+		Game game = new Game(this, ID.generate().asString(), id);
+
+		Player player = new Player(game, id, name);
+		player.setMaster(true);
 
 		game.getPlayers().put(player.getId(), player);
 		games.put(game.getId(), game);

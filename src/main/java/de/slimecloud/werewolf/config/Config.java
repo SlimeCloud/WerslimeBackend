@@ -12,6 +12,8 @@ import java.util.List;
 @Getter
 public class Config {
 	private int port;
+	private String url;
+	private String color;
 
 	private ActivityConfig activity;
 	private List<LogForwarding> logForwarding = Collections.emptyList();

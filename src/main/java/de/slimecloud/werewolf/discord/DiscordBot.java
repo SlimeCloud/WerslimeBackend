@@ -3,6 +3,8 @@ package de.slimecloud.werewolf.discord;
 import de.mineking.discordutils.DiscordUtils;
 import de.slimecloud.werewolf.config.ActivityConfig;
 import de.slimecloud.werewolf.config.LogForwarding;
+import de.slimecloud.werewolf.data.discord.DiscordGame;
+import de.slimecloud.werewolf.data.discord.DiscordPlayer;
 import de.slimecloud.werewolf.discord.commands.CreateCommand;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
@@ -10,8 +12,13 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -33,6 +40,10 @@ public class DiscordBot extends ListenerAdapter {
 		JDABuilder builder = JDABuilder.createDefault(main.getCredentials().get("DISCORD_TOKEN"))
 				.setStatus(OnlineStatus.IDLE)
 				.setActivity(Activity.customStatus("Bot startet..."))
+
+				.enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
+				.enableCache(CacheFlag.VOICE_STATE)
 
 				.addEventListeners(this);
 
@@ -66,5 +77,18 @@ public class DiscordBot extends ListenerAdapter {
 				() -> jda.getPresence().setActivity(activities.get(Main.random.nextInt(activities.size()))),
 				0, main.getConfig().getActivity().interval, TimeUnit.SECONDS
 		);
+	}
+
+	@NotNull
+	public DiscordGame createGame(@NotNull Guild guild, @NotNull Member user) {
+		DiscordGame game = new DiscordGame(main, guild, user.getId());
+
+		DiscordPlayer player = new DiscordPlayer(game, user.getId(), user.getUser().getName());
+		player.setMaster(true);
+
+		game.getPlayers().put(player.getId(), player);
+		main.getGames().put(game.getId(), game);
+
+		return game;
 	}
 }

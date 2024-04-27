@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class PlayerInfo {
 	private final String id;
+	private final String avatar;
+
 	private final String name;
 	private final Role role;
 	private final Team team;
@@ -23,6 +25,8 @@ public class PlayerInfo {
 	public static PlayerInfo create(@NotNull Player player, boolean lover, boolean role, boolean team) {
 		return new PlayerInfo(
 				player.getId(),
+				player.getAvatar(),
+
 				player.getName(),
 				role ? player.getRole() : null,
 				team && player.getRole() != null ? player.getRole().getTeam() : null,
