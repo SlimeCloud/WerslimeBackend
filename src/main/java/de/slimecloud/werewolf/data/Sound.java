@@ -22,7 +22,12 @@ public enum Sound {
 	/**
 	 * Played when it's the WereSlime's turn
 	 */
-	HOWL;
+	HOWL,
+
+	/**
+	 * Played when Player wins the game
+	 */
+	WIN;
 
 	public Data data(float volume) {
 		return new Data(this, volume);
