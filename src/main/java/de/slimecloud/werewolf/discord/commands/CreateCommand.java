@@ -80,7 +80,12 @@ public class CreateCommand {
 			return;
 		}
 
-		DiscordGame game = bot.createGame(event.getGuild(), event.getMember());
+		if (bot.getGame(channel.getIdLong()).isPresent()) {
+			event.reply(":x: In diesem Kanal läuft bereits ein Spiel!").setEphemeral(true).queue();
+			return;
+		}
+
+		DiscordGame game = bot.createGame(channel, event.getMember());
 
 		menu.createState()
 				.setState("game", game.getId())

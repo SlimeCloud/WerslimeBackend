@@ -15,24 +15,24 @@ import java.util.function.Consumer;
 @Getter
 @RequiredArgsConstructor
 public class Game {
-	private final Main main;
+	protected final Main main;
 
-	private final String id;
-	private final String master;
+	protected final String id;
+	protected final String master;
 
-	private final Map<String, Player> players = new HashMap<>();
-	private boolean started;
-
-	@Setter
-	private GameSettings settings = GameSettings.DEFAULT;
+	protected final Map<String, Player> players = new HashMap<>();
+	protected boolean started;
 
 	@Setter
-	private String victim;
-	@Setter
-	private Role current = Role.VILLAGER;
+	protected GameSettings settings = GameSettings.DEFAULT;
 
-	private final Map<String, Object> interactions = new HashMap<>();
-	private final Map<Role, Object> roleMetaData = new HashMap<>();
+	@Setter
+	protected String victim;
+	@Setter
+	protected Role current = Role.VILLAGER;
+
+	protected final Map<String, Object> interactions = new HashMap<>();
+	protected final Map<Role, Object> roleMetaData = new HashMap<>();
 
 	public boolean isPublic() {
 		return settings.isPublic();
@@ -202,4 +202,6 @@ public class Game {
 
 	private record GameEnding(Winner winner) {
 	}
+
+	public void cleanup() {}
 }

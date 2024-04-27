@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.main;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.google.gson.Gson;
 import de.mineking.javautils.ID;
 import de.slimecloud.werewolf.api.Authenticator;
@@ -31,6 +32,7 @@ public class Main {
 
 	private final Cache<String, Game> games = Caffeine.newBuilder()
 			.expireAfterAccess(4, TimeUnit.HOURS)
+			.removalListener((String id, Game game, RemovalCause cause) -> game.cleanup())
 			.build();
 
 	private final Config config;

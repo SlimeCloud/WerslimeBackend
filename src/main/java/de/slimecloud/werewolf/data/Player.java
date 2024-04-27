@@ -15,26 +15,30 @@ import java.util.Set;
 @Getter
 @RequiredArgsConstructor
 public class Player {
-	private final Game game;
-	private final String id;
+	protected final Game game;
+	protected final String id;
 
 	@NotNull
-	private String name;
-	private boolean master = false;
+	protected String name;
+	protected boolean master = false;
 
-	private Role role = null;
+	protected Role role = null;
 
-	private boolean mayor = false;
-	private boolean lover;
+	protected boolean mayor = false;
+	protected boolean lover;
 
 	@Setter(AccessLevel.NONE)
-	private boolean alive = false;
+	protected boolean alive = false;
 
-	private Set<WsContext> clients = new HashSet<>();
+	protected Set<WsContext> clients = new HashSet<>();
 
 	@Nullable
 	public String getAvatar() {
 		return null;
+	}
+
+	public boolean canSpeak() {
+		return !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
 	}
 
 	public boolean canSeeRole(@NotNull Player player) {

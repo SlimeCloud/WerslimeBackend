@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class DiscordPlayer extends Player {
 	public DiscordPlayer(@NotNull DiscordGame game, @NotNull String id, @NotNull String name) {
 		super(game, id, name);
@@ -22,7 +20,7 @@ public class DiscordPlayer extends Player {
 	@Nullable
 	@Override
 	public String getAvatar() {
-		return Optional.ofNullable(getGame().getGuild()).map(g -> g.getMemberById(getId())).map(Member::getEffectiveAvatarUrl).orElse(null);
+		return getGame().getGuild().map(g -> g.getMemberById(id)).map(Member::getEffectiveAvatarUrl).orElse(null);
 	}
 
 	@Override
@@ -33,6 +31,6 @@ public class DiscordPlayer extends Player {
 	@NotNull
 	@Override
 	public String getName() {
-		return Optional.ofNullable(getGame().getGuild()).map(g -> g.getMemberById(getId())).map(Member::getEffectiveName).orElse(null);
+		return getGame().getGuild().map(g -> g.getMemberById(id)).map(Member::getEffectiveName).orElse(name);
 	}
 }

@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +46,8 @@ public class DiscordBot extends ListenerAdapter {
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.enableCache(CacheFlag.VOICE_STATE)
 
-				.addEventListeners(this);
+				.addEventListeners(this)
+				.addEventListeners(new VoiceUpdateListener(this));
 
 		discordUtils = DiscordUtils.create(builder, this)
 				.mirrorConsole(main.getConfig().getLogForwarding().stream().map(LogForwarding::build).toList())
@@ -80,8 +82,8 @@ public class DiscordBot extends ListenerAdapter {
 	}
 
 	@NotNull
-	public DiscordGame createGame(@NotNull Guild guild, @NotNull Member user) {
-		DiscordGame game = new DiscordGame(main, guild, user.getId());
+	public DiscordGame createGame(@NotNull StageChannel channel, @NotNull Member user) {
+		DiscordGame game = new DiscordGame(main, channel, user.getId());
 
 		DiscordPlayer player = new DiscordPlayer(game, user.getId(), user.getUser().getName());
 		player.setMaster(true);
@@ -90,5 +92,13 @@ public class DiscordBot extends ListenerAdapter {
 		main.getGames().put(game.getId(), game);
 
 		return game;
+	}
+
+	@NotNull
+	public Optional<DiscordGame> getGame(long channel) {
+		return main.getGames().asMap().values().stream()
+				.filter(g -> g instanceof DiscordGame dg && channel == dg.getChannelId())
+				.findAny()
+				.map(g -> (DiscordGame) g);
 	}
 }
