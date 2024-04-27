@@ -82,6 +82,10 @@ public class Player {
 		clients.forEach(client -> client.send(new EventPayload(name, data)));
 	}
 
+	public void playSound(@NotNull Sound sound, float volume) {
+		sendEvent("SOUND", sound.data(volume));
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof Player p && p.getId().equals(id);
