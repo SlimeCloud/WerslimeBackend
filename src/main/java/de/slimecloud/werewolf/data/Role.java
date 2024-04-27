@@ -100,7 +100,7 @@ public enum Role {
 			});
 		}
 	},
-	WEREWOLF(Team.WEREWOLF, true, true, false, 0) {
+	WEREWOLF(Team.HOSTILE, true, true, false, 0) {
 		@Override
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
