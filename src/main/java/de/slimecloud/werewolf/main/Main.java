@@ -47,7 +47,7 @@ public class Main {
 
 		this.authenticator = new Authenticator(this);
 		this.bot = new DiscordBot(this);
-		this.oauth2 = new DiscordOAuth(credentials.get("DISCORD_ID"), credentials.get("DISCORD_SECRET"), config.getUrl() + "/oauth2", new String[] { "identify" });
+		this.oauth2 = new DiscordOAuth(credentials.get("DISCORD_ID"), credentials.get("DISCORD_SECRET"), config.getUrl() + "/oauth2", new String[] {"identify"});
 		this.server = new Server(this);
 
 		this.server.start();

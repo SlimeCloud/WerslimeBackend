@@ -9,7 +9,6 @@ import io.mokulu.discord.oauth.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
 
 public class AuthenticateEndpoint implements Handler {
 	@Getter
