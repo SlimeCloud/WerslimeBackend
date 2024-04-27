@@ -142,12 +142,12 @@ public enum Role {
 			Set<Runnable> execute = new HashSet<>();
 
 			targets.forEach((action, target) -> {
-				if(target == null || target.isBlank()) return;
-				if(!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (target == null || target.isBlank()) return;
+				if (!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				switch (action) {
 					case HEAL -> {
-						if(!target.equals(player.getGame().getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+						if (!target.equals(player.getGame().getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 						execute.add(() -> player.getGame().setVictim(null));
 					}
 					case POISON -> {
@@ -218,7 +218,7 @@ public enum Role {
 	@NotNull
 	private static Optional<Player> getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {
 		String target = ctx.bodyValidator(TargetRequest.class).get().getTarget();
-		if(target == null || target.isBlank()) return Optional.empty();
+		if (target == null || target.isBlank()) return Optional.empty();
 
 		Player player = game.getPlayers().get(target);
 

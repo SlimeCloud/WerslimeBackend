@@ -46,8 +46,8 @@ public class CreateCommand {
 						.setThumbnail(s.getEvent().getGuild().getIconUrl())
 						.setDescription(
 								"Spielt mit bei Werslime in " + s.<StageChannel>getCache("channel").getAsMention() + "! \n\n" +
-								"Um der Runde beizutreten, [**verifiziere dich mit OAuth2**](" + bot.getMain().getConfig().getUrl() + "/game/" + s.getState("game", String.class) + ")" +
-								" oder verwende den **Knopf unter dieser Nachricht**, um ohne OAuth2 beizutreten!"
+										"Um der Runde beizutreten, [**verifiziere dich mit OAuth2**](" + bot.getMain().getConfig().getUrl() + "/game/" + s.getState("game", String.class) + ")" +
+										" oder verwende den **Knopf unter dieser Nachricht**, um ohne OAuth2 beizutreten!"
 						)
 						.build()
 				).withContent(s -> s.getCache("mention")),
@@ -72,8 +72,8 @@ public class CreateCommand {
 	@ApplicationCommandMethod
 	public void performCommand(@NotNull SlashCommandInteractionEvent event, @NotNull DiscordBot bot,
 	                           @Option(description = "Der Kanal, in dem gespielt wird", channelTypes = ChannelType.STAGE) StageChannel channel,
-                               @Option(description = "Der Titel der Nachricht") String title,
-                               @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
+	                           @Option(description = "Der Titel der Nachricht") String title,
+	                           @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
 	) {
 		if (!channel.isModerator(event.getGuild().getSelfMember())) {
 			event.reply(":x: Der Bot hat keine Moderator-Rechte für diesen Kanal!").setEphemeral(true).queue();
