@@ -203,5 +203,5 @@ public class Game {
 	private record GameEnding(Winner winner) {
 	}
 
-	public void cleanup() {}
+	public void cleanup() { }
 }
