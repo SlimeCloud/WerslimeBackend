@@ -161,6 +161,9 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Winner winner) {
+		players.values().stream()
+				.filter(winner::isMember)
+				.forEach(p -> p.playSound(Sound.WIN));
 		sendEvent("END", new GameEnding(winner));
 	}
 
@@ -186,6 +189,14 @@ public class Game {
 
 	public void sendUpdate() {
 		players.values().forEach(Player::sendUpdate);
+	}
+
+	public void playSound(@NotNull Sound sound) {
+		playSound(sound, 1);
+	}
+
+	public void playSound(@NotNull Sound sound, double volume) {
+		players.values().forEach(p -> p.playSound(sound, volume));
 	}
 
 	@NotNull
