@@ -30,6 +30,7 @@ public enum Sound {
 	WIN;
 
 	public Data data(double volume) {
+		if (volume < 0 || volume > 1) throw new IllegalArgumentException("Volume should be between 0 and 1. Volume " + volume + " is out of range");
 		return new Data(this, volume);
 	}
 
