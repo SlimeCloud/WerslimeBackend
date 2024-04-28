@@ -107,8 +107,8 @@ public enum Role {
 	},
 	WEREWOLF(Team.HOSTILE, true, true, false, 0) {
 		@Override
-		public void onTurn(@NotNull List<Player> players, @NotNull Game game) {
-			super.onTurn(players, game);
+		public void onTurn(@NotNull Game game) {
+			super.onTurn(game);
 			game.playSound(Sound.HOWL);
 		}
 
@@ -175,8 +175,8 @@ public enum Role {
 	},
 	VILLAGER(Team.VILLAGE, true, false, false, 0) {
 		@Override
-		public void onTurn(@NotNull List<Player> players, @NotNull Game game) {
-			super.onTurn(players, game);
+		public void onTurn(@NotNull Game game) {
+			super.onTurn(game);
 			game.playSound(Sound.VILLAGER);
 		}
 
@@ -214,8 +214,10 @@ public enum Role {
 	private final boolean dead;
 	private final int priority;
 
-	public void onTurn(@NotNull List<Player> players, @NotNull Game game) {
-		players.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
+	public void onTurn(@NotNull Game game) {
+		game.getPlayers().values().stream()
+				.filter(this::hasRole)
+				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
 	}
 
 	public void handle(@NotNull Player player, @NotNull Context ctx) {

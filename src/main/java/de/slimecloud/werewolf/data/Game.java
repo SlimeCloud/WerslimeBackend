@@ -120,8 +120,6 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
-		if (current == Role.VILLAGER) checkWin();
-
 		if (current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
 				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(KillReason.VILLAGE_VOTE));
@@ -129,6 +127,8 @@ public class Game {
 				case WEREWOLF -> victim = player;
 			}
 		});
+
+		if (current == Role.VILLAGER) checkWin();
 
 		current = getNextRole(Role.values.indexOf(current));
 
@@ -139,9 +139,7 @@ public class Game {
 
 		interactions.clear();
 
-		current.onTurn(players.values().stream()
-				.filter(current::hasRole)
-				.toList(), this);
+		current.onTurn(this);
 		sendUpdate();
 	}
 
@@ -177,8 +175,7 @@ public class Game {
 		});
 
 		return votes.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.findAny()
+				.max(Map.Entry.comparingByValue())
 				.filter(e -> votes.values().stream().filter(v -> Objects.equals(v, e.getValue())).count() == 1) // Ignore voting result on tie
 				.map(Map.Entry::getKey);
 	}
