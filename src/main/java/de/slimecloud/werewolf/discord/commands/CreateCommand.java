@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class CreateCommand {
 						.setAuthor(s.<Member>getCache("master").getEffectiveName(), null, s.<Member>getCache("master").getEffectiveAvatarUrl())
 						.setThumbnail(s.getEvent().getGuild().getIconUrl())
 						.setDescription(
-								"Spielt mit bei Werslime in " + s.<StageChannel>getCache("channel").getAsMention() + "! \n\n" +
+								"Spielt mit bei Werslime in " + s.<VoiceChannel>getCache("channel").getAsMention() + "! \n\n" +
 										"Um der Runde beizutreten, [**verifiziere dich mit OAuth2**](" + bot.getMain().getConfig().getUrl() + "/game/" + s.getState("game", String.class) + ")" +
 										" oder verwende den **Knopf unter dieser Nachricht**, um ohne OAuth2 beizutreten!"
 						)
@@ -71,15 +71,10 @@ public class CreateCommand {
 
 	@ApplicationCommandMethod
 	public void performCommand(@NotNull SlashCommandInteractionEvent event, @NotNull DiscordBot bot,
-	                           @Option(description = "Der Kanal, in dem gespielt wird", channelTypes = ChannelType.STAGE) StageChannel channel,
+	                           @Option(description = "Der Kanal, in dem gespielt wird", channelTypes = ChannelType.VOICE) VoiceChannel channel,
 	                           @Option(description = "Der Titel der Nachricht") String title,
 	                           @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
 	) {
-		if (!channel.isModerator(event.getGuild().getSelfMember())) {
-			event.reply(":x: Der Bot hat keine Moderator-Rechte für diesen Kanal!").setEphemeral(true).queue();
-			return;
-		}
-
 		if (bot.getGame(channel.getIdLong()).isPresent()) {
 			event.reply(":x: In diesem Kanal läuft bereits ein Spiel!").setEphemeral(true).queue();
 			return;

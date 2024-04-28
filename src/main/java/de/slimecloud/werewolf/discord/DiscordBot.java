@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -82,7 +83,7 @@ public class DiscordBot extends ListenerAdapter {
 	}
 
 	@NotNull
-	public DiscordGame createGame(@NotNull StageChannel channel, @NotNull Member user) {
+	public DiscordGame createGame(@NotNull VoiceChannel channel, @NotNull Member user) {
 		DiscordGame game = new DiscordGame(main, channel, user.getId());
 
 		DiscordPlayer player = new DiscordPlayer(game, user.getId(), user.getUser().getName());

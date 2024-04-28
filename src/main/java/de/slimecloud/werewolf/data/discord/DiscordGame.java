@@ -9,17 +9,14 @@ import de.slimecloud.werewolf.data.Role;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.StageInstance;
-import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -28,13 +25,13 @@ public class DiscordGame extends Game {
 	private final long guild;
 	private final long channel;
 
-	public DiscordGame(@NotNull Main main, @NotNull StageChannel channel, @NotNull String master) {
+	public DiscordGame(@NotNull Main main, @NotNull VoiceChannel channel, @NotNull String master) {
 		super(main, ID.generate().asString(), master);
 
 		this.guild = channel.getGuild().getIdLong();
 		this.channel = channel.getIdLong();
 
-		if (channel.getStageInstance() == null) channel.createStageInstance("Werslime").queue(x -> updateVoice());
+		updateVoice();
 	}
 
 	public long getGuildId() {
@@ -51,8 +48,8 @@ public class DiscordGame extends Game {
 	}
 
 	@NotNull
-	public Optional<StageChannel> getChannel() {
-		return Optional.ofNullable(main.getBot().getJda().getStageChannelById(channel));
+	public Optional<VoiceChannel> getChannel() {
+		return Optional.ofNullable(main.getBot().getJda().getVoiceChannelById(channel));
 	}
 
 	@NotNull
@@ -90,6 +87,12 @@ public class DiscordGame extends Game {
 	}
 
 	@Override
+	public void reset() {
+		super.reset();
+		updateVoice();
+	}
+
+	@Override
 	public void start() {
 		super.start();
 		updateVoice();
@@ -102,29 +105,20 @@ public class DiscordGame extends Game {
 	}
 
 	public void updateVoice() {
-		/*getChannel().ifPresent(channel -> {
-			StageInstance stage = channel.getStageInstance();
-			if(stage == null) return;
-
+		getChannel().ifPresent(channel -> {
 			List<RestAction<Result<Void>>> actions = channel.getMembers().stream()
-					.map(member -> {
-						GuildVoiceState state = member.getVoiceState();
-						if (state == null) return null;
-
-						Player player = players.get(member.getUser().getId());
-						if (player == null) return null;
-
-						if (player.canSpeak()) {
-							if(!stage.getSpeakers().contains(member)) return state.inviteSpeaker().and(state.approveSpeaker());
-							else return null;
-						}
-						else return state.declineSpeaker();
-					})
-					.filter(Objects::nonNull)
+					.map(member -> member.mute(shouldMute(member)))
 					.map(RestAction::mapToResult)
 					.toList();
 
 			if (!actions.isEmpty()) RestAction.allOf(actions).queue();
-		});*/
+		});
+	}
+
+	public boolean shouldMute(@NotNull Member member) {
+		Player player = players.get(member.getUser().getId());
+		if (player == null) return false;
+
+		return !player.canSpeak();
 	}
 }
