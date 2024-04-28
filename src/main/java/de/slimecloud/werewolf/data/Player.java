@@ -38,7 +38,7 @@ public class Player {
 	}
 
 	public boolean canSpeak() {
-		return !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
+		return !game.getSettings().isMuteMembers() || !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
 	}
 
 	public boolean canSeeRole(@NotNull Player player) {
