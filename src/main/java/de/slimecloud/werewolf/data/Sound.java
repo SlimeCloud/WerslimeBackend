@@ -27,7 +27,12 @@ public enum Sound {
 	/**
 	 * Played when Player wins the game
 	 */
-	WIN;
+	WIN,
+
+	/**
+	 * Played when it's the Villager's turn
+	 */
+	VILLAGER;
 
 	public Data data(double volume) {
 		if (volume < 0 || volume > 1) throw new IllegalArgumentException("Volume should be between 0 and 1. Volume " + volume + " is out of range");
