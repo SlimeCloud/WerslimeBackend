@@ -15,6 +15,5 @@ public class VoiceUpdateListener extends ListenerAdapter {
 			if (event.getVoiceState().isGuildMuted()) event.getGuild().kickVoiceMember(event.getMember()).queue();
 			else event.getMember().mute(game.shouldMute(event.getMember())).queue();
 		});
-		if (event.getChannelLeft() != null) bot.getGame(event.getChannelLeft().getIdLong()).ifPresent(game -> event.getMember().mute(false).queue());
 	}
 }
