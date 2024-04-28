@@ -29,11 +29,11 @@ public enum Sound {
 	 */
 	WIN;
 
-	public Data data(float volume) {
+	public Data data(double volume) {
 		return new Data(this, volume);
 	}
 
-	public record Data(@NotNull Sound sound, float volume) {
+	public record Data(@NotNull Sound sound, double volume) {
 
 	}
 }
