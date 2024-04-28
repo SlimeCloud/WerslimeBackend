@@ -139,6 +139,9 @@ public class Game {
 
 		interactions.clear();
 
+		current.onTurn(players.values().stream()
+				.filter(current::hasRole)
+				.toList(), this);
 		sendUpdate();
 	}
 
