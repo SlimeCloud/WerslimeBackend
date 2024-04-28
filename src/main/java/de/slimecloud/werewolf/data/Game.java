@@ -120,6 +120,8 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
+		if (current == Role.VILLAGER) checkWin();
+
 		if (current.isVote()) evaluateVote().ifPresent(player -> {
 			switch (current) {
 				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(KillReason.VILLAGE_VOTE));
@@ -132,7 +134,6 @@ public class Game {
 
 		if (current == Role.VILLAGER) {
 			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			checkWin();
 			victim = null;
 		}
 
