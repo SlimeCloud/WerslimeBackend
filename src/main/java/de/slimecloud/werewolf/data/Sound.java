@@ -42,7 +42,7 @@ public enum Sound {
 	private final int variantAmount;
 
 	public Data data(double volume) {
-		return data(volume, Main.random.nextInt(variantAmount+1));
+		return data(volume, Main.random.nextInt(variantAmount));
 	}
 
 	public Data data(double volume, int variant) {
