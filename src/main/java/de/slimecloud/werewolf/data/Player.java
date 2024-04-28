@@ -91,6 +91,10 @@ public class Player {
 		clients.forEach(client -> client.send(new EventPayload(name, data)));
 	}
 
+	public void playSound(@NotNull Sound sound) {
+		playSound(sound, 1);
+	}
+
 	public void playSound(@NotNull Sound sound, double volume) {
 		sendEvent("SOUND", sound.data(volume));
 	}

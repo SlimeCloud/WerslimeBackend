@@ -47,10 +47,10 @@ public enum Role {
 			first.setLover(true);
 			second.setLover(true);
 
-			first.playSound(Sound.LOVE, 1);
-			second.playSound(Sound.LOVE, 1);
+			first.playSound(Sound.LOVE);
+			second.playSound(Sound.LOVE);
 
-			if (!player.equals(first) && !player.equals(second)) player.playSound(Sound.LOVE, 1);
+			if (!player.equals(first) && !player.equals(second)) player.playSound(Sound.LOVE);
 		}
 	},
 	SEER(Team.VILLAGE, false, false, false, 50) {
