@@ -5,6 +5,7 @@ import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.eclipse.jetty.websocket.core.CloseStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +67,7 @@ public class Game {
 			if (event != null) event.accept(removed);
 
 			removed.getClients().removeIf(ctx -> {
-				ctx.closeSession();
+				ctx.closeSession(CloseStatus.NORMAL, "leave");
 				return true;
 			});
 
