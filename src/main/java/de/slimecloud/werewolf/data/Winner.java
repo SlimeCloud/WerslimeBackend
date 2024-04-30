@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 public enum Winner {
-	LOVER(Player::isLover, game -> game.getPlayers().values().stream().filter(Player::isAlive).filter(Player::isLover).count() >= game.getPlayers().values().stream().filter(Player::isAlive).filter(p -> !p.isLover()).count() && game.getPlayers().values().stream().filter(Player::isAlive).filter(p -> !p.isLover()).noneMatch(p -> p.getRole().isKilling())),
+	LOVER(Player::isLover, game -> game.getPlayers().values().stream().filter(Player::isAlive).allMatch(Player::isLover)),
 	WEREWOLF(Role.WEREWOLF::hasRole, game -> game.getPlayers().values().stream().filter(Player::isAlive).allMatch(p -> p.getRole().getTeam() == Team.HOSTILE)),
 	VILLAGER(p -> !Role.WEREWOLF.hasRole(p), game -> game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole().isKilling())),
 	JESTER(Role.WEREWOLF::hasRole, game -> false); //Player#kill
