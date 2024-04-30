@@ -62,7 +62,7 @@ public class Player {
 
 	public boolean canSeeTeam(@NotNull Player player) {
 		if (canSeeRole(player)) return true;
-		if (role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
+		if (this.role != null && this.role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
