@@ -101,7 +101,7 @@ public enum Role {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-				ctx.json(new Response(target.getRole().getTeam()));
+				ctx.json(new Response(target.getRole().displayTeam()));
 			});
 		}
 	},
@@ -204,6 +204,18 @@ public enum Role {
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
 		}
+	},
+	SPY(Team.VILLAGE, false, false, false, 1) {
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return false;
+		}
+
+		@NotNull
+		@Override
+		public Team displayTeam() {
+			return Team.HOSTILE;
+		}
 	};
 
 	public final static List<Role> values = Arrays.asList(values());
@@ -225,6 +237,11 @@ public enum Role {
 	}
 
 	public void initialize(@NotNull Game game) { }
+
+	@NotNull
+	public Team displayTeam() {
+		return team;
+	}
 
 	public boolean hasRole(@NotNull Player player) {
 		return player.getRole() == this;

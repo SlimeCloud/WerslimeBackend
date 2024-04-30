@@ -29,7 +29,7 @@ public class PlayerInfo {
 
 				player.getName(),
 				role ? player.getRole() : null,
-				team && player.getRole() != null ? player.getRole().getTeam() : null,
+				team && player.getRole() != null ? (role ? player.getRole().getTeam() : player.getRole().displayTeam()) : null,
 
 				player.isMaster(),
 				player.isAlive(),

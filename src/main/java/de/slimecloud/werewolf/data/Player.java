@@ -37,6 +37,15 @@ public class Player {
 		return null;
 	}
 
+	public double voteCount(@NotNull Role current) {
+		int votes = 1;
+
+		if (!current.hasRole(this)) return 0;
+		if (current == Role.WEREWOLF && role == Role.SPY) return 0;
+
+		return votes * (mayor ? 1.5 : 1);
+	}
+
 	public boolean canSpeak() {
 		return !game.getSettings().isMuteMembers() || !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
 	}
@@ -44,7 +53,6 @@ public class Player {
 	public boolean canSeeRole(@NotNull Player player) {
 		if (equals(player)) return true;
 		if (isLover() && player.isLover() && game.getSettings().isRevealLoverRoles()) return true;
-		if (role == Role.WEREWOLF && role == player.getRole()) return true;
 
 		if (!player.isAlive() && game.getSettings().isRevealDeadRoles()) return true;
 		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
@@ -54,6 +62,7 @@ public class Player {
 
 	public boolean canSeeTeam(@NotNull Player player) {
 		if (canSeeRole(player)) return true;
+		if (role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
