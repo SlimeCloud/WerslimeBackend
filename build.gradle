@@ -24,7 +24,9 @@ dependencies {
 
     implementation 'net.dv8tion:JDA:5.0.0-beta.23'
     implementation 'de.mineking:DiscordUtils:ce37da4'
-    implementation 'com.github.Mokulu:discord-oauth2-api:1.0.4'
+    implementation('com.github.Mokulu:discord-oauth2-api:1.0.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
     implementation 'de.mineking:JavaUtils:1.8.0'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
