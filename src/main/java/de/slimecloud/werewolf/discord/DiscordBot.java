@@ -12,14 +12,21 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,5 +107,20 @@ public class DiscordBot extends ListenerAdapter {
 				.filter(g -> g instanceof DiscordGame dg && channel == dg.getChannelId())
 				.findAny()
 				.map(g -> (DiscordGame) g);
+	}
+
+	@NotNull
+	public static AuditableRestAction<Void> updateMute(@NotNull GuildVoiceState state, @Nullable Boolean mute, @Nullable Boolean deafen) {
+		if (state.getChannel() == null) throw new IllegalStateException("Can only mute / deafen members who are currently in a voice channel");
+
+		DataObject body = DataObject.empty();
+
+		if (mute != null && mute != state.isGuildMuted()) body.put("mute", mute);
+		if (deafen != null && deafen != state.isGuildDeafened()) body.put("deaf", deafen);
+
+		if (body.keys().isEmpty()) return new CompletedRestAction<>(state.getJDA(), null);
+
+		Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(state.getGuild().getId(), state.getMember().getId());
+		return new AuditableRestActionImpl<>(state.getJDA(), route, body);
 	}
 }

@@ -6,13 +6,16 @@ import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
 import de.slimecloud.werewolf.data.Role;
+import de.slimecloud.werewolf.discord.DiscordBot;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Result;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,7 +110,7 @@ public class DiscordGame extends Game {
 	public void updateVoice() {
 		getChannel().ifPresent(channel -> {
 			List<RestAction<Result<Void>>> actions = channel.getMembers().stream()
-					.map(member -> member.mute(shouldMute(member)))
+					.map(this::updateVoiceMember)
 					.map(RestAction::mapToResult)
 					.toList();
 
@@ -115,10 +118,21 @@ public class DiscordGame extends Game {
 		});
 	}
 
-	public boolean shouldMute(@NotNull Member member) {
-		Player player = players.get(member.getUser().getId());
-		if (player == null) return false;
+	@NotNull
+	public RestAction<Void> updateVoiceMember(@NotNull Member member) {
+		GuildVoiceState state = member.getVoiceState();
+		if (state == null || !settings.isMuteMembers()) return new CompletedRestAction<>(member.getJDA(), null);
 
-		return !player.canSpeak();
+		Player player = players.get(member.getUser().getId());
+		return DiscordBot.updateMute(member.getVoiceState(),
+				started && (player == null || (current.isDay() ^ player.isAlive())),
+				started && (player != null && (!current.isDay() && player.isAlive()))
+		);
+	}
+
+	@Override
+	public void cleanup() {
+		started = false;
+		updateVoice();
 	}
 }

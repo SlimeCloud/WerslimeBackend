@@ -14,13 +14,13 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	VILLAGER_ELECT(Team.VILLAGE, true, false, false, 0) {
+	VILLAGER_ELECT(Team.VILLAGE, true, true, false, false, 0) {
 		@Override
 		public boolean hasRole(@NotNull Player player) {
 			return true;
 		}
 	},
-	AMOR(Team.VILLAGE, false, false, false, 75) {
+	AMOR(Team.VILLAGE, false, false, false, false, 75) {
 		@Getter
 		public static class AmorRequest {
 			private String first;
@@ -53,7 +53,7 @@ public enum Role {
 			if (!player.equals(first) && !player.equals(second)) player.playSound(Sound.LOVE);
 		}
 	},
-	SEER(Team.VILLAGE, false, false, false, 50) {
+	SEER(Team.VILLAGE, false, false, false, false, 50) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Role role;
@@ -79,7 +79,7 @@ public enum Role {
 			});
 		}
 	},
-	AURA_SEER(Team.VILLAGE, false, false, false, 5) {
+	AURA_SEER(Team.VILLAGE, false, false, false, false, 5) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Team team;
@@ -105,7 +105,7 @@ public enum Role {
 			});
 		}
 	},
-	WEREWOLF(Team.HOSTILE, true, true, false, 0) {
+	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
 		public void onTurn(@NotNull Game game) {
 			super.onTurn(game);
@@ -117,7 +117,7 @@ public enum Role {
 			return true;
 		}
 	},
-	WITCH(Team.VILLAGE, true, false, false, 100) {
+	WITCH(Team.VILLAGE, false, true, false, false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL
@@ -173,7 +173,7 @@ public enum Role {
 			execute.forEach(Runnable::run);
 		}
 	},
-	VILLAGER(Team.VILLAGE, true, false, false, 0) {
+	VILLAGER(Team.VILLAGE, true, true, false, false, 0) {
 		@Override
 		public void onTurn(@NotNull Game game) {
 			super.onTurn(game);
@@ -185,7 +185,7 @@ public enum Role {
 			return true;
 		}
 	},
-	HUNTER(Team.VILLAGE, false, false, true, 10) {
+	HUNTER(Team.VILLAGE, true, false, false, true, 10) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -199,13 +199,13 @@ public enum Role {
 			});
 		}
 	},
-	JESTER(Team.NEUTRAL, false, false, false, 2) {
+	JESTER(Team.NEUTRAL, false, false, false, false, 2) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
 		}
 	},
-	SPY(Team.VILLAGE, false, false, false, 1) {
+	SPY(Team.VILLAGE, false, false, false, false, 1) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -221,6 +221,7 @@ public enum Role {
 	public final static List<Role> values = Arrays.asList(values());
 
 	private final Team team;
+	private final boolean day;
 	private final boolean vote;
 	private final boolean killing;
 	private final boolean dead;

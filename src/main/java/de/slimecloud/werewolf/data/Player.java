@@ -46,10 +46,6 @@ public class Player {
 		return votes * (mayor ? 1.5 : 1);
 	}
 
-	public boolean canSpeak() {
-		return !game.getSettings().isMuteMembers() || !game.started || (alive && (game.getCurrent() == Role.VILLAGER || game.getCurrent() == Role.VILLAGER_ELECT));
-	}
-
 	public boolean canSeeRole(@NotNull Player player) {
 		if (equals(player)) return true;
 		if (isLover() && player.isLover() && game.getSettings().isRevealLoverRoles()) return true;
