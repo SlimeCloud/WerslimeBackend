@@ -43,7 +43,7 @@ public class OEmbedEndpoint implements Handler {
 			String token = url.substring("/join?token=".length());
 			AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(token, true);
 
-			ctx.json(new Response(info.getPlayer().getName(), "Tritt diesem Spiel bei!"));
+			ctx.json(new Response("Beitreten als: " + info.getPlayer().getName(), "Tritt diesem Spiel bei!"));
 		} else ctx.json(new Response("-- Slimecloud --", "Spiele Werslime"));
 	}
 }
