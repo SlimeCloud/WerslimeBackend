@@ -33,13 +33,13 @@ public class OEmbedEndpoint implements Handler {
 
 		url = url.replace(ctx.appData(Server.MAIN_KEY).getConfig().getUrl(), "");
 
-		if(url.matches("/game/[a-zA-Z0-9]+")) {
+		if (url.matches("/game/[a-zA-Z0-9]+")) {
 			String id = url.substring("/game/".length());
 			Game game = ctx.appData(Server.MAIN_KEY).getGames().getIfPresent(id);
 
 			if (game == null) ctx.json(new Response("Überprüfe die angegebene ID und stelle sicher, dass die Runde noch aktiv ist!", "Die gesuchte Runde wurde nicht gefunden!"));
 			else ctx.json(new Response("Spiel-Leiter: " + game.getPlayers().values().stream().filter(Player::isMaster).findFirst().map(Player::getName).orElse(null), "Komm und spiel mit!"));
-		} else if(url.matches("/join\\?token=.*")) {
+		} else if (url.matches("/join\\?token=.*")) {
 			String token = url.substring("/join?token=".length());
 			AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(token, true);
 
