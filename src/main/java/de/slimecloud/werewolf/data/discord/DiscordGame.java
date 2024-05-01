@@ -25,8 +25,8 @@ public class DiscordGame extends Game {
 	private final long guild;
 	private final long channel;
 
-	public DiscordGame(@NotNull Main main, @NotNull VoiceChannel channel, @NotNull String master) {
-		super(main, ID.generate().asString(), master);
+	public DiscordGame(@NotNull Main main, @NotNull VoiceChannel channel) {
+		super(main, ID.generate().asString());
 
 		this.guild = channel.getGuild().getIdLong();
 		this.channel = channel.getIdLong();

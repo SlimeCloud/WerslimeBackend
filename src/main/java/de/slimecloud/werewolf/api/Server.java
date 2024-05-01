@@ -3,6 +3,7 @@ package de.slimecloud.werewolf.api;
 import com.google.gson.JsonSyntaxException;
 import de.slimecloud.werewolf.api.endpoints.EventSource;
 import de.slimecloud.werewolf.api.endpoints.MeEndpoint;
+import de.slimecloud.werewolf.api.endpoints.OEmbedEndpoint;
 import de.slimecloud.werewolf.api.endpoints.RenameEndpoint;
 import de.slimecloud.werewolf.api.endpoints.data.GameDataEndpoints;
 import de.slimecloud.werewolf.api.endpoints.game.GameEndpoints;
@@ -61,6 +62,7 @@ public class Server {
 				patch("/@me", new RenameEndpoint());
 
 				ws("/events", new EventSource(main));
+				get("/oembed", new OEmbedEndpoint());
 
 				path("/games", new GameDataEndpoints());
 				path("/game", new GameEndpoints());

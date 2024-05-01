@@ -57,11 +57,9 @@ public class Main {
 
 	@NotNull
 	public Game create(@NotNull String name) {
-		String id = ID.generate().asString();
+		Game game = new Game(this, ID.generate().asString());
 
-		Game game = new Game(this, ID.generate().asString(), id);
-
-		Player player = new Player(game, id, name);
+		Player player = new Player(game, ID.generate().asString(), name);
 		player.setMaster(true);
 
 		game.getPlayers().put(player.getId(), player);

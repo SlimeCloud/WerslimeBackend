@@ -83,7 +83,7 @@ public class DiscordBot extends ListenerAdapter {
 
 	@NotNull
 	public DiscordGame createGame(@NotNull VoiceChannel channel, @NotNull Member user) {
-		DiscordGame game = new DiscordGame(main, channel, user.getId());
+		DiscordGame game = new DiscordGame(main, channel);
 
 		DiscordPlayer player = new DiscordPlayer(game, user.getId(), user.getUser().getName());
 		player.setMaster(true);

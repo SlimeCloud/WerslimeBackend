@@ -19,7 +19,6 @@ public class Game {
 	protected final Main main;
 
 	protected final String id;
-	protected final String master;
 
 	protected final Map<String, Player> players = new HashMap<>();
 	protected boolean started;
