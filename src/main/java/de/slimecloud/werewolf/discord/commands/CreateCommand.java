@@ -75,7 +75,7 @@ public class CreateCommand {
 	                           @Option(description = "Der Titel der Nachricht") String title,
 	                           @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
 	) {
-		if (bot.getGame(channel.getIdLong()).isPresent()) {
+		if (bot.getGame(channel.getId()).isPresent()) {
 			event.reply(":x: In diesem Kanal läuft bereits ein Spiel!").setEphemeral(true).queue();
 			return;
 		}

@@ -44,7 +44,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
 			) deafened.set(false);
 		}
 
-		bot.getGame(event.getChannelJoined().getIdLong()).ifPresentOrElse(
+		bot.getGame(event.getChannelJoined().getId()).ifPresentOrElse(
 				game -> {
 					if (muted.get() || deafened.get()) event.getGuild().kickVoiceMember(event.getMember()).queue();
 					else game.updateVoiceMember(event.getMember()).queue();

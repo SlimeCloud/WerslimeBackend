@@ -1,6 +1,5 @@
 package de.slimecloud.werewolf.data.discord;
 
-import de.mineking.javautils.ID;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.data.Game;
@@ -26,23 +25,13 @@ import java.util.function.Consumer;
 @Getter
 public class DiscordGame extends Game {
 	private final long guild;
-	private final long channel;
 
 	public DiscordGame(@NotNull Main main, @NotNull VoiceChannel channel) {
-		super(main, ID.generate().asString());
+		super(main, channel.getId());
 
 		this.guild = channel.getGuild().getIdLong();
-		this.channel = channel.getIdLong();
 
 		updateVoice();
-	}
-
-	public long getGuildId() {
-		return guild;
-	}
-
-	public long getChannelId() {
-		return channel;
 	}
 
 	@NotNull
@@ -52,7 +41,7 @@ public class DiscordGame extends Game {
 
 	@NotNull
 	public Optional<VoiceChannel> getChannel() {
-		return Optional.ofNullable(main.getBot().getJda().getVoiceChannelById(channel));
+		return Optional.ofNullable(main.getBot().getJda().getVoiceChannelById(id));
 	}
 
 	@NotNull

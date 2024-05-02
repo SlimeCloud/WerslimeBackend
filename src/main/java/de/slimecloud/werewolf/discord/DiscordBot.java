@@ -102,10 +102,9 @@ public class DiscordBot extends ListenerAdapter {
 	}
 
 	@NotNull
-	public Optional<DiscordGame> getGame(long channel) {
-		return main.getGames().asMap().values().stream()
-				.filter(g -> g instanceof DiscordGame dg && channel == dg.getChannelId())
-				.findAny()
+	public Optional<DiscordGame> getGame(@NotNull String channel) {
+		return Optional.ofNullable(main.getGames().getIfPresent(channel))
+				.filter(g -> g instanceof DiscordGame)
 				.map(g -> (DiscordGame) g);
 	}
 
