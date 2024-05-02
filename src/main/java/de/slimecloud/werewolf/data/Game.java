@@ -23,8 +23,7 @@ public class Game {
 	protected final Map<String, Player> players = new HashMap<>();
 	protected boolean started;
 
-	@Setter
-	protected GameSettings settings = GameSettings.DEFAULT;
+	protected final GameSettings settings = GameSettings.DEFAULT;
 
 	@Setter
 	protected String victim;
@@ -96,11 +95,11 @@ public class Game {
 		reset();
 
 		List<Role> roles = new ArrayList<>(players.size());
-		for (int i = 0; i < settings.getWerewolfAmount(); i++) roles.add(Role.WEREWOLF);
+		for (int i = 0; i < settings.werewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
-		roles.addAll(settings.getRoles().stream()
+		roles.addAll(settings.roles().stream()
 				.sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder()))
-				.limit(Math.max(players.size() - settings.getWerewolfAmount(), 0))
+				.limit(Math.max(players.size() - settings.werewolfAmount(), 0))
 				.toList()
 		);
 

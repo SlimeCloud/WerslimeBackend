@@ -50,9 +50,9 @@ public class Player {
 
 	public boolean canSeeRole(@NotNull Player player) {
 		if (equals(player)) return true;
-		if (isLover() && player.isLover() && game.getSettings().isRevealLoverRoles()) return true;
+		if (isLover() && player.isLover() && game.getSettings().revealLoverRoles()) return true;
 
-		if (!player.isAlive() && game.getSettings().isRevealDeadRoles()) return true;
+		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
 		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
 
 		return false;

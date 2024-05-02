@@ -114,7 +114,7 @@ public class DiscordGame extends Game {
 	@NotNull
 	public RestAction<Void> updateVoiceMember(@NotNull Member member) {
 		GuildVoiceState state = member.getVoiceState();
-		if (state == null || !settings.isMuteMembers()) return new CompletedRestAction<>(member.getJDA(), null);
+		if (state == null || !settings.muteMembers()) return new CompletedRestAction<>(member.getJDA(), null);
 
 		Player player = players.get(member.getUser().getId());
 		return DiscordBot.updateMute(member.getVoiceState(),

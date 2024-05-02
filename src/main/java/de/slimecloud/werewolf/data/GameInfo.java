@@ -34,15 +34,15 @@ public class GameInfo {
 				game.getId(),
 				game instanceof DiscordGame,
 				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p,
-						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeRole(p) || (game.getSettings().isDeadSpectators() && !self.isAlive())),
-						self != null && (self.canSeeTeam(p) || (game.getSettings().isDeadSpectators() && !self.isAlive()))
+						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().deadSpectators() && !self.isAlive())),
+						self != null && (self.canSeeRole(p) || (game.getSettings().deadSpectators() && !self.isAlive())),
+						self != null && (self.canSeeTeam(p) || (game.getSettings().deadSpectators() && !self.isAlive()))
 				)).toList(),
 				game.isStarted(),
 				game.getSettings(),
 				game.getCurrent(),
-				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				self != null && (game.getCurrent().hasRole(self) || (game.getSettings().isDeadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
+				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getVictim() : null,
+				self != null && (game.getCurrent().hasRole(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				game.getInteractions().size(),
 				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
