@@ -58,10 +58,7 @@ public class Game {
 		Player removed = players.remove(player);
 
 		if (removed != null) {
-			if (players.values().stream().noneMatch(Player::isMaster)) {
-				main.getGames().invalidate(id);
-				sendEvent("CLOSE", new Object());
-			}
+			if (players.values().stream().noneMatch(Player::isMaster)) main.getGames().invalidate(id); //Will automatically call cleanup due to removalListener
 
 			if (event != null) event.accept(removed);
 
@@ -215,5 +212,7 @@ public class Game {
 	private record GameEnding(Winner winner) {
 	}
 
-	public void cleanup() { }
+	public void cleanup() {
+		sendEvent("CLOSE", new Object());
+	}
 }

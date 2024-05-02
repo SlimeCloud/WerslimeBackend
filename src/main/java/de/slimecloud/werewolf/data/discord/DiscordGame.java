@@ -8,6 +8,7 @@ import de.slimecloud.werewolf.data.Role;
 import de.slimecloud.werewolf.discord.DiscordBot;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,6 +26,9 @@ import java.util.function.Consumer;
 @Getter
 public class DiscordGame extends Game {
 	private final long guild;
+
+	@Setter
+	private Runnable cleanup;
 
 	public DiscordGame(@NotNull Main main, @NotNull VoiceChannel channel) {
 		super(main, channel.getId());
@@ -123,5 +127,8 @@ public class DiscordGame extends Game {
 	public void cleanup() {
 		started = false;
 		updateVoice();
+
+		if(cleanup != null) cleanup.run();
+		super.cleanup();
 	}
 }

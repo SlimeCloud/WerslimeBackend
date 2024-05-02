@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -89,5 +91,7 @@ public class CreateCommand {
 				.setCache("master", event.getMember())
 				.setCache("channel", channel)
 				.display(event, false);
+
+		event.getHook().retrieveOriginal().queue(message -> game.setCleanup(() -> message.editMessageComponents(ActionRow.of(Button.secondary("---", "Runde Beendet").asDisabled())).queue()));
 	}
 }
