@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public enum Sound {
+	START(1),
 	DEATH(1),
 	WIN(1),
 

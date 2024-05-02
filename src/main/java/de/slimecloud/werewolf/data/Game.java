@@ -112,6 +112,7 @@ public class Game {
 
 		started = true;
 
+		playSound(Sound.START);
 		sendUpdate();
 	}
 
