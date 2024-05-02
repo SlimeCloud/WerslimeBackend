@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.api.endpoints;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
+import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.websocket.WsConfig;
 import lombok.Getter;
@@ -19,13 +20,20 @@ public class EventSource implements Consumer<WsConfig> {
 	@Override
 	public void accept(@NotNull WsConfig config) {
 		config.onConnect(ctx -> {
-			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
+			try {
+				AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
 
-			ctx.enableAutomaticPings();
-			info.getPlayer().getClients().add(ctx);
-			info.getPlayer().sendUpdate();
+				ctx.enableAutomaticPings();
+				info.getPlayer().getClients().add(ctx);
+				info.getPlayer().sendUpdate();
 
-			info.getGame().sendUpdate();
+				info.getGame().sendUpdate();
+			} catch (ErrorResponse e) {
+				ctx.closeSession(4000 + e.status, e.type.name());
+			} catch (Exception e) {
+				logger.error("Failed to handle websocket connection", e);
+				ctx.closeSession();
+			}
 		});
 		config.onClose(ctx -> {
 			AuthorizationInfo info = main.getAuthenticator().checkAuthorization(ctx.queryParam("token"), true);
