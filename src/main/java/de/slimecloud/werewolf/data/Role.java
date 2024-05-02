@@ -65,6 +65,11 @@ public enum Role {
 		}
 
 		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.playSound(Sound.SEER, 1);
+		}
+
+		@Override
 		public void initialize(@NotNull Game game) {
 			game.getRoleMetaData().put(this, new HashSet<>());
 		}
@@ -91,6 +96,11 @@ public enum Role {
 		}
 
 		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.playSound(Sound.SEER, 1);
+		}
+
+		@Override
 		public void initialize(@NotNull Game game) {
 			game.getRoleMetaData().put(this, new HashSet<>());
 		}
@@ -112,13 +122,8 @@ public enum Role {
 	},
 	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
-		public void onTurnStart(@NotNull Game game) {
-			super.onTurnStart(game);
-			game.playSound(Sound.HOWL, 0.5);
-		}
-
-		@Override
 		public void onTurnEnd(@NotNull Game game) {
+			game.playSound(Sound.HOWL, 0.5);
 			game.evaluateVote().ifPresent(player -> game.setVictim(player.getId()));
 		}
 

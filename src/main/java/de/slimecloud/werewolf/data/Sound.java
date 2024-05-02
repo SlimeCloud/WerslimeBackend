@@ -17,6 +17,7 @@ public enum Sound {
 	ACTIVE_TURN(1),
 	HOWL(1),
 	POTION(1),
+	SEER(1),
 	SHOOT(1),
 	VILLAGER(2);
 
