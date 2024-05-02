@@ -5,12 +5,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Setter
 @Getter
 @RequiredArgsConstructor
@@ -95,7 +97,13 @@ public class Player {
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object data) {
-		clients.forEach(client -> client.send(new EventPayload(name, data)));
+		clients.forEach(client -> {
+			try {
+				client.send(new EventPayload(name, data));
+			} catch (Exception e) {
+				logger.error("Failed to send event to {}", this, e);
+			}
+		});
 	}
 
 	public void playSound(@NotNull Sound sound) {
@@ -114,6 +122,11 @@ public class Player {
 	@Override
 	public int hashCode() {
 		return id.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return id + " (" + name + ")";
 	}
 
 	private record EventPayload(String name, Object data) {
