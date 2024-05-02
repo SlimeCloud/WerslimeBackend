@@ -19,6 +19,11 @@ public enum Role {
 		public boolean hasRole(@NotNull Player player) {
 			return true;
 		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.evaluateVote().ifPresent(player -> player.setMayor(true));
+		}
 	},
 	AMOR(Team.VILLAGE, false, false, false, false, 75) {
 		@Getter
@@ -113,6 +118,11 @@ public enum Role {
 		}
 
 		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.evaluateVote().ifPresent(player -> game.setVictim(player.getId()));
+		}
+
+		@Override
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
 		}
@@ -178,12 +188,14 @@ public enum Role {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.VILLAGER);
+
+			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			game.setVictim(null);
 		}
 
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			game.setVictim(null);
+			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
 		}
 
 		@Override

@@ -118,14 +118,6 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
-		if (current.isVote()) evaluateVote().ifPresent(player -> {
-			switch (current) {
-				case VILLAGER -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.kill(KillReason.VILLAGE_VOTE));
-				case VILLAGER_ELECT -> Optional.ofNullable(players.get(player)).ifPresent(p -> p.setMayor(true));
-				case WEREWOLF -> victim = player;
-			}
-		});
-
 		current.onTurnEnd(this);
 
 		if (current == Role.VILLAGER) checkWin();
@@ -160,7 +152,7 @@ public class Game {
 	}
 
 	@NotNull
-	private Optional<String> evaluateVote() {
+	public Optional<Player> evaluateVote() {
 		Map<String, Double> votes = new HashMap<>();
 
 		interactions.values().stream().filter(t -> t instanceof String).map(t -> (String) t).forEach(p -> {
@@ -171,7 +163,7 @@ public class Game {
 		return votes.entrySet().stream()
 				.max(Map.Entry.comparingByValue())
 				.filter(e -> votes.values().stream().filter(v -> Objects.equals(v, e.getValue())).count() == 1) // Ignore voting result on tie
-				.map(Map.Entry::getKey);
+				.map(Map.Entry::getKey).map(players::get);
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object object) {
