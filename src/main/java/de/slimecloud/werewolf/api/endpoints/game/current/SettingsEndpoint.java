@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.api.endpoints.game;
+package de.slimecloud.werewolf.api.endpoints.game.current;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.ErrorResponse;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class SettingsEndpoint implements Handler {
 	@Override
-	public void handle(@NotNull Context ctx) throws Exception {
+	public void handle(@NotNull Context ctx) throws Exception { //TODO allow to modify fields separately
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 		if (!info.getPlayer().isMaster()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 

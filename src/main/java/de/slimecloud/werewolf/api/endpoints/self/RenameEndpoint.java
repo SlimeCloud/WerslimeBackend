@@ -1,10 +1,9 @@
-package de.slimecloud.werewolf.api.endpoints;
+package de.slimecloud.werewolf.api.endpoints.self;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.api.endpoints.game.JoinEndpoint;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import lombok.Getter;

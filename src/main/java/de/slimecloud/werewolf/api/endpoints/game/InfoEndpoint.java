@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.api.endpoints.data;
+package de.slimecloud.werewolf.api.endpoints.game;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class InfoEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
-		String id = ctx.pathParam("id");
+		String id = ctx.pathParam("game_id");
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().getIfPresent(id);
 
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);

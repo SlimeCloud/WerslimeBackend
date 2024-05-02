@@ -1,22 +1,17 @@
 package de.slimecloud.werewolf.api.endpoints.game;
 
+import de.slimecloud.werewolf.api.endpoints.game.current.CurrentGameEndpoints;
 import io.javalin.apibuilder.EndpointGroup;
 
-import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class GameEndpoints implements EndpointGroup {
 	@Override
 	public void addEndpoints() {
-		post("join", new JoinEndpoint());
-		post("leave", new LeaveEndpoint());
-		post("kick", new KickEndpoint());
-		post("promote", new PromoteEndpoint());
+		get(new ListEndpoint());
+		post(new CreateEndpoint());
 
-		post("settings", new SettingsEndpoint());
-		post("reset", new ResetEndpoint());
-		post("start", new StartEndpoint());
-
-		post("next", new NextEndpoint());
-		post("action", new RoleActionEndpoint());
+		path("@me", new CurrentGameEndpoints());
+		get("{game_id}", new InfoEndpoint());
 	}
 }

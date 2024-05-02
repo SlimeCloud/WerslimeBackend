@@ -1,7 +1,7 @@
-package de.slimecloud.werewolf.api.endpoints.data;
+package de.slimecloud.werewolf.api.endpoints.game;
 
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.api.endpoints.game.JoinEndpoint;
+import de.slimecloud.werewolf.api.endpoints.self.JoinEndpoint;
 import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
 import io.javalin.http.Context;
