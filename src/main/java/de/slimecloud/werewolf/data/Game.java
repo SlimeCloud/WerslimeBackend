@@ -108,6 +108,8 @@ public class Game {
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
 		current = getNextRole(-1);
+		current.onTurnStart(this);
+
 		started = true;
 
 		sendUpdate();
@@ -124,18 +126,14 @@ public class Game {
 			}
 		});
 
+		current.onTurnEnd(this);
+
 		if (current == Role.VILLAGER) checkWin();
 
 		current = getNextRole(Role.values.indexOf(current));
-
-		if (current == Role.VILLAGER) {
-			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			victim = null;
-		}
+		current.onTurnStart(this);
 
 		interactions.clear();
-
-		current.onTurn(this);
 		sendUpdate();
 	}
 

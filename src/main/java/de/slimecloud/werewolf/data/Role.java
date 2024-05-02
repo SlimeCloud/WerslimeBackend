@@ -107,9 +107,9 @@ public enum Role {
 	},
 	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
-		public void onTurn(@NotNull Game game) {
-			super.onTurn(game);
-			game.playSound(Sound.HOWL);
+		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
+			game.playSound(Sound.HOWL, 0.5);
 		}
 
 		@Override
@@ -171,13 +171,19 @@ public enum Role {
 			});
 
 			execute.forEach(Runnable::run);
+			if (!execute.isEmpty()) player.getGame().playSound(Sound.POTION);
 		}
 	},
 	VILLAGER(Team.VILLAGE, true, true, false, false, 0) {
 		@Override
-		public void onTurn(@NotNull Game game) {
-			super.onTurn(game);
+		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.VILLAGER);
+		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			game.setVictim(null);
 		}
 
 		@Override
@@ -195,7 +201,9 @@ public enum Role {
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
 				target.kill(KillReason.HUNTER);
+				player.getGame().playSound(Sound.SHOOT);
 			});
 		}
 	},
@@ -227,10 +235,14 @@ public enum Role {
 	private final boolean dead;
 	private final int priority;
 
-	public void onTurn(@NotNull Game game) {
+	public void onTurnStart(@NotNull Game game) {
 		game.getPlayers().values().stream()
 				.filter(this::hasRole)
 				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
+	}
+
+	public void onTurnEnd(@NotNull Game game) {
+
 	}
 
 	public void handle(@NotNull Player player, @NotNull Context ctx) {

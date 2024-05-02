@@ -8,35 +8,15 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public enum Sound {
-
-	/**
-	 * Played on Death
-	 */
 	DEATH(1),
-
-	/**
-	 * Played when amor makes two people fall in love with each other
-	 */
-	LOVE(1),
-
-	/**
-	 * Played when it is the current player's turn to play
-	 */
-	ACTIVE_TURN(1),
-
-	/**
-	 * Played when it's the WereSlime's turn
-	 */
-	HOWL(1),
-
-	/**
-	 * Played when Player wins the game
-	 */
 	WIN(1),
 
-	/**
-	 * Played when it's the Villager's turn
-	 */
+	LOVE(1),
+
+	ACTIVE_TURN(1),
+	HOWL(1),
+	POTION(1),
+	SHOOT(1),
 	VILLAGER(2);
 
 	private final int variantAmount;
