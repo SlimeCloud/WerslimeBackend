@@ -21,7 +21,9 @@ public class Game {
 	protected final String id;
 
 	protected final Map<String, Player> players = new HashMap<>();
+
 	protected boolean started;
+	private int round;
 
 	protected final GameSettings settings = GameSettings.DEFAULT;
 
@@ -111,6 +113,7 @@ public class Game {
 		current.onTurnStart(this);
 
 		started = true;
+		round = 0;
 
 		playSound(Sound.START);
 		sendUpdate();
@@ -129,6 +132,8 @@ public class Game {
 
 		interactions.clear();
 		sendUpdate();
+
+		round++;
 	}
 
 	@NotNull
@@ -186,6 +191,8 @@ public class Game {
 
 	@NotNull
 	private Role getNextRole(int current) {
+		if (round == 0) current = -1;
+
 		AtomicInteger i = new AtomicInteger(current);
 		int j = 0;
 
