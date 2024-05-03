@@ -120,6 +120,11 @@ public enum Role {
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
 		}
+
+		@Override
+		public boolean canSeeInteractions(@NotNull Player player) {
+			return super.canSeeInteractions(player) || player.getRole() == SPY;
+		}
 	},
 	WITCH(Team.VILLAGE, false, true, false, false, 100) {
 		public enum WitchAction {
@@ -249,6 +254,11 @@ public enum Role {
 			return false;
 		}
 
+		@Override
+		public boolean canSeeVictim(@NotNull Game game) {
+			return true;
+		}
+
 		@NotNull
 		@Override
 		public Team displayTeam() {
@@ -288,6 +298,10 @@ public enum Role {
 
 	public boolean hasRole(@NotNull Player player) {
 		return player.getRole() == this;
+	}
+
+	public boolean canSeeInteractions(@NotNull Player player) {
+		return hasRole(player);
 	}
 
 	public boolean canUseRole(@NotNull Game game) {

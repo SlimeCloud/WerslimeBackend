@@ -42,7 +42,7 @@ public class GameInfo {
 				game.getSettings(),
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getVictim() : null,
-				self != null && (game.getCurrent().hasRole(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
+				self != null && (game.getCurrent().canSeeInteractions(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				game.getInteractions().size(),
 				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count(),
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null
