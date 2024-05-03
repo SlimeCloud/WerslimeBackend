@@ -55,6 +55,8 @@ public class Player {
 		if (isLover() && player.isLover() && game.getSettings().revealLoverRoles()) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+		if (!isAlive() && game.getSettings().deadSpectators()) return true;
+
 		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
 
 		return false;
@@ -64,7 +66,10 @@ public class Player {
 		if (canSeeRole(player)) return true;
 
 		if (this.role != null && this.role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
+
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+		if (!isAlive() && game.getSettings().deadSpectators()) return true;
+
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
