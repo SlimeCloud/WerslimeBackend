@@ -185,6 +185,14 @@ public enum Role {
 		}
 
 		@Override
+		public void onTurnStart(@NotNull Game game) {
+			game.playSound(Sound.VILLAGER);
+
+			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			game.setVictim(null);
+		}
+
+		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(Player::isMayor);
 		}
@@ -198,9 +206,6 @@ public enum Role {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.VILLAGER);
-
-			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			game.setVictim(null);
 		}
 
 		@Override
