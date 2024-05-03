@@ -166,7 +166,7 @@ public enum Role {
 						execute.add(() -> player.getGame().setVictim(null));
 					}
 					case POISON -> {
-						Player p = getTarget(player.getGame(), ctx, Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+						Player p = Optional.ofNullable(player.getGame().getPlayers().get(target)).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 						execute.add(() -> p.kill(KillReason.WITCH_POISON));
 					}
 				}
