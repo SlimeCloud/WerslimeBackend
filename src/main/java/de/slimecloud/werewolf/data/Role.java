@@ -143,11 +143,6 @@ public enum Role {
 		}
 
 		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return !game.<Set<WitchAction>>getRoleMetaData(this).isEmpty();
-		}
-
-		@Override
 		public boolean canSeeVictim(@NotNull Game game) {
 			return true;
 		}
