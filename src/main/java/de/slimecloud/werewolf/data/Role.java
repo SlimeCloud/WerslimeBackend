@@ -14,22 +14,6 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	VILLAGER_ELECT(Team.VILLAGE, true, true, false, false, 0) {
-		@Override
-		public boolean hasRole(@NotNull Player player) {
-			return true;
-		}
-
-		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(Player::isMayor);
-		}
-
-		@Override
-		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> player.setMayor(true));
-		}
-	},
 	AMOR(Team.VILLAGE, false, false, false, false, 75) {
 		@Getter
 		public static class AmorRequest {
@@ -192,6 +176,22 @@ public enum Role {
 
 			execute.forEach(Runnable::run);
 			if (!execute.isEmpty()) player.getGame().playSound(Sound.POTION);
+		}
+	},
+	VILLAGER_ELECT(Team.VILLAGE, true, true, false, false, 0) {
+		@Override
+		public boolean hasRole(@NotNull Player player) {
+			return true;
+		}
+
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(Player::isMayor);
+		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.evaluateVote().ifPresent(player -> player.setMayor(true));
 		}
 	},
 	VILLAGER(Team.VILLAGE, true, true, false, false, 0) {
