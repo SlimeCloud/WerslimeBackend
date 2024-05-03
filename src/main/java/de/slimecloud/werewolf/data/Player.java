@@ -40,7 +40,7 @@ public class Player {
 	}
 
 	public double voteCount(@NotNull Role current) {
-		int votes = 1;
+		double votes = 1;
 
 		if (!current.hasRole(this)) return 0;
 		if (current == Role.WEREWOLF && role == Role.SPY) return 0;
