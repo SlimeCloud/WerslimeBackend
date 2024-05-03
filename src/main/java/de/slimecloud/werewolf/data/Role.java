@@ -122,8 +122,8 @@ public enum Role {
 		}
 
 		@Override
-		public boolean canSeeInteractions(@NotNull Player player) {
-			return super.canSeeInteractions(player) || player.getRole() == SPY;
+		public boolean hasRole(@NotNull Player player) {
+			return super.hasRole(player) || player.getRole() == SPY;
 		}
 	},
 	WITCH(Team.VILLAGE, false, true, false, false, 100) {
