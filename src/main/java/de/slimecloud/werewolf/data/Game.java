@@ -127,7 +127,7 @@ public class Game {
 
 		if (current == Role.VILLAGER) checkWin();
 
-		if(current == temp) current = getNextRole(Role.values.indexOf(current));
+		if (current == temp) current = getNextRole(Role.values.indexOf(current));
 		current.onTurnStart(this);
 
 		interactions.clear();

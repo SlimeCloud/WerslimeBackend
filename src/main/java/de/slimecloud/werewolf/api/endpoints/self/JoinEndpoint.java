@@ -40,7 +40,7 @@ public class JoinEndpoint implements Handler {
 		Game game = ctx.appData(Server.MAIN_KEY).getGames().getIfPresent(ctx.pathParam("game_id"));
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
-		if(request.getName() != null) {
+		if (request.getName() != null) {
 			if (!NAME_PATTERN.asMatchPredicate().test(request.getName())) throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST);
 			Player player = game.join(request.getName());
 

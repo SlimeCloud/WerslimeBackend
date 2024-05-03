@@ -26,7 +26,7 @@ public class ModifyMemberEndpoint implements Handler {
 		Player player = info.getGame().getPlayers().get(ctx.pathParam("user_id"));
 		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-		if(request.getMaster() != null) player.setMaster(request.getMaster());
+		if (request.getMaster() != null) player.setMaster(request.getMaster());
 
 		info.getGame().sendUpdate();
 	}

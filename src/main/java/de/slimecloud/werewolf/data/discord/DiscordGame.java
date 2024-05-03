@@ -129,7 +129,7 @@ public class DiscordGame extends Game {
 		started = false;
 		updateVoice();
 
-		if(cleanup != null) cleanup.run();
+		if (cleanup != null) cleanup.run();
 		super.cleanup();
 	}
 }
