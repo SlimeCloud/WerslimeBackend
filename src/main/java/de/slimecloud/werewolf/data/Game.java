@@ -120,10 +120,11 @@ public class Game {
 		if (!started) return;
 
 		current.onTurnEnd(this);
+		Role temp = current;
 
 		if (current == Role.VILLAGER) checkWin();
 
-		current = getNextRole(Role.values.indexOf(current));
+		if(current == temp) current = getNextRole(Role.values.indexOf(current));
 		current.onTurnStart(this);
 
 		interactions.clear();

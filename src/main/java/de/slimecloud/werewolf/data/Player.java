@@ -49,6 +49,8 @@ public class Player {
 	}
 
 	public boolean canSeeRole(@NotNull Player player) {
+		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
+
 		if (equals(player)) return true;
 		if (isLover() && player.isLover() && game.getSettings().revealLoverRoles()) return true;
 
