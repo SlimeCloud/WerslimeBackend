@@ -107,7 +107,7 @@ public class Game {
 
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
-		current = getNextRole(-1);
+		current = Role.VILLAGER_ELECT;
 		current.onTurnStart(this);
 
 		started = true;
