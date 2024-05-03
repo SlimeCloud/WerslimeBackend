@@ -13,7 +13,7 @@ import java.util.Objects;
 @Accessors(fluent = true)
 @AllArgsConstructor
 public class GameSettings {
-	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false, true);
+	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false, false);
 
 	private Integer werewolfAmount;
 	private List<Role> roles;
