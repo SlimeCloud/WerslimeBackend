@@ -21,6 +21,11 @@ public enum Role {
 		}
 
 		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(Player::isMayor);
+		}
+
+		@Override
 		public void onTurnEnd(@NotNull Game game) {
 			game.evaluateVote().ifPresent(player -> player.setMayor(true));
 		}
