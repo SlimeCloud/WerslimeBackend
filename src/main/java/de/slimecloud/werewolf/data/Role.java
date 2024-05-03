@@ -158,7 +158,7 @@ public enum Role {
 
 			targets.forEach((action, target) -> {
 				if (target == null || target.isBlank()) return;
-				if (!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!available.contains(action)) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 				switch (action) {
 					case HEAL -> {
