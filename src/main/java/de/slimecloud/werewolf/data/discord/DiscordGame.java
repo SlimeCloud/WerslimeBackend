@@ -116,7 +116,7 @@ public class DiscordGame extends Game {
 		GuildVoiceState state = member.getVoiceState();
 		Player player = players.get(member.getUser().getId());
 
-		if (state == null || !settings.muteMembers() || player.isMaster()) return new CompletedRestAction<>(member.getJDA(), null);
+		if (state == null || !settings.muteMembers()) return new CompletedRestAction<>(member.getJDA(), null);
 
 		return DiscordBot.updateMute(member.getVoiceState(),
 				started && (player == null || (current.isDay() ^ player.isAlive())),
