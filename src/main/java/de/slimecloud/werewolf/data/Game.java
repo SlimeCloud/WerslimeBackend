@@ -127,13 +127,17 @@ public class Game {
 		current.onTurnEnd(this);
 		Role temp = current;
 
-		if (current == temp) current = getNextRole(Role.values.indexOf(current));
-		current.onTurnStart(this);
+		if (current == temp) setCurrent(getNextRole(Role.values.indexOf(current)));
 
-		interactions.clear();
 		sendUpdate();
 
 		round++;
+	}
+
+	public void setCurrent(@NotNull Role role) {
+		this.current = role;
+		current.onTurnStart(this);
+		interactions.clear();
 	}
 
 	@NotNull
