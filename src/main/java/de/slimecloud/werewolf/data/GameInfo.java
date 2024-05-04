@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
@@ -23,13 +24,19 @@ public class GameInfo {
 	private final String victim;
 
 	private final Map<String, Object> interactions;
+	private final Object roleMeta;
+
+	private final String target;
 	private final int interacted;
 	private final int total;
-
-	private final Object roleMeta;
+	private final boolean valid;
 
 	@NotNull
 	public static GameInfo create(@NotNull Game game, @Nullable Player self) {
+		int interacted = game.getInteractions().size();
+		int total = (int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count();
+		Optional<Player> target = game.evaluateVote();
+
 		return new GameInfo(
 				game.getId(),
 				game instanceof DiscordGame,
@@ -38,14 +45,20 @@ public class GameInfo {
 						self != null && self.canSeeRole(p),
 						self != null && self.canSeeTeam(p)
 				)).toList(),
+
 				game.isStarted(),
 				game.getSettings(),
+
 				game.getCurrent(),
 				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getVictim() : null,
+
 				self != null && (game.getCurrent().canSeeInteractions(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
-				game.getInteractions().size(),
-				(int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count(),
-				self != null ? game.getRoleMetaData().get(self.getRole()) : null
+				self != null ? game.getRoleMetaData().get(self.getRole()) : null,
+
+				target.map(Player::getId).orElse(null),
+				interacted,
+				total,
+				interacted >= total && (!game.getCurrent().isVote() || target.isPresent())
 		);
 	}
 }
