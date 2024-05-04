@@ -13,7 +13,7 @@ import java.util.Objects;
 @Accessors(fluent = true)
 @AllArgsConstructor
 public class GameSettings {
-	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false, false);
+	public final static GameSettings DEFAULT = new GameSettings(2, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false, MuteSystem.NONE);
 
 	private Integer werewolfAmount;
 	private List<Role> roles;
@@ -22,7 +22,8 @@ public class GameSettings {
 	private Boolean revealDeadRoles;
 	private Boolean deadSpectators;
 	private Boolean revealLoverRoles;
-	private Boolean muteMembers;
+
+	private MuteSystem muteSystem;
 
 	@SuppressWarnings("unchecked")
 	public static boolean validate(@NotNull String name, @NotNull Object value) {

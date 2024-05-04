@@ -5,7 +5,6 @@ import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.data.Game;
 import de.slimecloud.werewolf.data.Player;
 import de.slimecloud.werewolf.data.Role;
-import de.slimecloud.werewolf.discord.DiscordBot;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.Setter;
@@ -116,12 +115,8 @@ public class DiscordGame extends Game {
 		GuildVoiceState state = member.getVoiceState();
 		Player player = players.get(member.getUser().getId());
 
-		if (state == null || !settings.muteMembers()) return new CompletedRestAction<>(member.getJDA(), null);
-
-		return DiscordBot.updateMute(member.getVoiceState(),
-				started && (player == null || (current.isDay() ^ player.isAlive())),
-				started && (player != null && (!current.isDay() && player.isAlive()))
-		);
+		RestAction<Void> action = state != null ? settings.muteSystem().mute(this, state, player) : null;
+		return action != null ?  action : new CompletedRestAction<>(member.getJDA(), null);
 	}
 
 	@Override
