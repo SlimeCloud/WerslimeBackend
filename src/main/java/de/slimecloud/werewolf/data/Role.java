@@ -54,7 +54,7 @@ public enum Role {
 		}
 
 		@Override
-		public void onTurnEnd(@NotNull Game game) {
+		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.SEER, 1);
 		}
 
