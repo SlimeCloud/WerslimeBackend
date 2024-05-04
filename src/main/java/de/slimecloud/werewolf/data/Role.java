@@ -55,6 +55,7 @@ public enum Role {
 
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
 			game.playSound(Sound.SEER, 1);
 		}
 
@@ -112,6 +113,7 @@ public enum Role {
 	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
 			game.playSound(Sound.HOWL, 0.5);
 		}
 
@@ -143,6 +145,7 @@ public enum Role {
 
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
 			game.playSound(Sound.POTION);
 		}
 
@@ -194,6 +197,7 @@ public enum Role {
 
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
 			game.playSound(Sound.VILLAGER);
 		}
 
