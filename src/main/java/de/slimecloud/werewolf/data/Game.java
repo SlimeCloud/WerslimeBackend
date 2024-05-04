@@ -139,7 +139,7 @@ public class Game {
 	public void setCurrent(@NotNull Role role) {
 		this.current = role;
 		current.onTurnStart(this);
-		interactions.clear();
+		if (current != Role.HUNTER && role != Role.HUNTER) interactions.clear();
 	}
 
 	public void scheduleNightAction(@NotNull Runnable action) {
