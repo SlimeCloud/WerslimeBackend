@@ -209,6 +209,8 @@ public class Game {
 
 	@NotNull
 	private Role getNextRole(int current) {
+		if (this.current == Role.HUNTER) return getRoleMetaData(Role.HUNTER);
+
 		AtomicInteger i = new AtomicInteger(current);
 		int j = 0;
 

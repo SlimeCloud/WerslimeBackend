@@ -228,6 +228,8 @@ public enum Role {
 				target.kill(KillReason.HUNTER);
 				player.getGame().playSound(Sound.SHOOT);
 			});
+
+			player.getGame().next();
 		}
 	},
 	JESTER(Team.NEUTRAL, false, false, false, false, 2) {

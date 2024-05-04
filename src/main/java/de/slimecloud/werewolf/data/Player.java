@@ -96,7 +96,10 @@ public class Player {
 			game.getInteractions().remove(id);
 			mayor = false;
 
-			if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
+			if (role == Role.HUNTER) {
+				game.getRoleMetaData().put(Role.HUNTER, game.getCurrent());
+				game.setCurrent(Role.HUNTER);
+			}
 			else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
 			else sendEvent("KILL", new Object());
 
