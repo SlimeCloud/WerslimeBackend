@@ -11,6 +11,7 @@ import de.mineking.discordutils.ui.MessageRenderer;
 import de.mineking.discordutils.ui.UIManager;
 import de.mineking.discordutils.ui.components.button.ButtonColor;
 import de.mineking.discordutils.ui.components.button.ButtonComponent;
+import de.mineking.discordutils.ui.state.MessageSendState;
 import de.slimecloud.werewolf.data.discord.DiscordGame;
 import de.slimecloud.werewolf.discord.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -20,6 +21,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -38,6 +41,7 @@ public class CreateCommand {
 	};
 
 	private final MessageMenu menu;
+	private final MessageMenu deleteMenu;
 
 	public CreateCommand(@NotNull DiscordBot bot, @NotNull UIManager manager) {
 		menu = manager.createMenu("game",
@@ -68,6 +72,20 @@ public class CreateCommand {
 							.queue();
 				})
 		);
+
+		deleteMenu = manager.createMenu("game.delete",
+				MessageRenderer.content(
+						":x: In diesem Kanal läuft bereits ein Spiel! Du kannst die bisherige Runde für diesen Kanal beenden und stattdessen eine neue erstellen. " +
+						"Bedenke, dass durch das beenden alle Spieler aus der Runde entfernt werden und der neuen beitreten müssen. Diese Aktion kann nicht rückgängig gemacht werden!"
+				),
+				new ButtonComponent("delete", ButtonColor.RED, "Bisherige Runde beenden").appendHandler(s -> {
+					bot.getMain().getGames().invalidate(s.getState("ch", String.class));
+
+					if (s.getEvent() instanceof IMessageEditCallback edit) {
+						edit.editMessage(":white_check_mark: Bisherige Runde beendet. Du kannst nun eine Runde für diesen Kanal erstellen…").setComponents().queue();
+					}
+				})
+		);
 	}
 
 	@ApplicationCommandMethod
@@ -76,21 +94,26 @@ public class CreateCommand {
 	                           @Option(description = "Der Titel der Nachricht") String title,
 	                           @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
 	) {
-		if (bot.getGame(channel.getId()).isPresent()) {
-			event.reply(":x: In diesem Kanal läuft bereits ein Spiel!").setEphemeral(true).queue();
-			return;
-		}
+		boolean exists = bot.getGame(channel.getId()).isPresent();
 
-		DiscordGame game = bot.createGame(channel, event.getMember());
+		MessageSendState state = exists
+				? deleteMenu.createState()
+				: menu.createState();
 
-		menu.createState()
-				.setState("game", game.getId())
-				.setCache("title", title)
+		state.setCache("title", title)
 				.setCache("mention", ping != null ? ping.getAsMention() : null)
 				.setCache("master", event.getMember())
 				.setCache("channel", channel)
-				.display(event, false);
+				.setState("ch", channel.getId());
 
+		if (exists) state.display(event);
+		else createGame(bot, state, event);
+	}
+
+	private void createGame(@NotNull DiscordBot bot, @NotNull MessageSendState state, @NotNull IReplyCallback event) {
+		DiscordGame game = bot.createGame(state.getCache("channel"), event.getMember());
+
+		state.setState("game", game.getId()).display(event, false);
 		event.getHook().retrieveOriginal().queue(message -> game.setCleanup(() -> message.editMessageComponents(ActionRow.of(Button.secondary("---", "Runde Beendet").asDisabled())).queue()));
 	}
 }
