@@ -55,7 +55,7 @@ public class GameInfo {
 				self != null && (game.getCurrent().canSeeInteractions(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null,
 
-				target.map(Player::getId).orElse(null),
+				self != null && game.getCurrent().canSeeInteractions(self) ? target.map(Player::getId).orElse(null) : null,
 				interacted,
 				total,
 				interacted >= total && (!game.getCurrent().isVote() || target.isPresent())
