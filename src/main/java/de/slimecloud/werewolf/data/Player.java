@@ -75,11 +75,11 @@ public class Player {
 		return false;
 	}
 
-	@NotNull
+	@Nullable
 	public Team getEffectiveTeam() {
 		if (role == Role.SPY) return Team.HOSTILE;
 		if (lover) return Team.NEUTRAL;
-		return role.getTeam();
+		return role == null ? null : role.getTeam();
 	}
 
 	public void setAlive(boolean alive, @Nullable KillReason reason) {
