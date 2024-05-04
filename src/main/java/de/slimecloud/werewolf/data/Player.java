@@ -49,12 +49,12 @@ public class Player {
 	}
 
 	public boolean canSeeRole(@NotNull Player player) {
-		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
-
 		if (equals(player)) return true;
 		if (isLover() && player.isLover() && game.getSettings().revealLoverRoles()) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+
+		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
 		if (!isAlive() && game.getSettings().deadSpectators()) return true;
 
 		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
@@ -68,6 +68,8 @@ public class Player {
 		if (this.role != null && this.role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+
+		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
 		if (!isAlive() && game.getSettings().deadSpectators()) return true;
 
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());

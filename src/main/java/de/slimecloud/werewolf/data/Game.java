@@ -29,7 +29,6 @@ public class Game {
 
 	@Setter
 	protected String victim;
-	@Setter
 	protected Role current = Role.VILLAGER;
 
 	protected final Map<String, Object> interactions = new HashMap<>();
@@ -125,9 +124,7 @@ public class Game {
 		checkWin();
 
 		current.onTurnEnd(this);
-		Role temp = current;
-
-		if (current == temp) setCurrent(getNextRole(Role.values.indexOf(current)));
+		setCurrent(getNextRole(Role.values.indexOf(current)));
 
 		sendUpdate();
 
