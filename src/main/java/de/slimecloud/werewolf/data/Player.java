@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.sequence.EditScript;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +64,7 @@ public class Player {
 	public boolean canSeeTeam(@NotNull Player player) {
 		if (canSeeRole(player)) return true;
 
-		if (getEffectiveTeam() == Team.HOSTILE && player.getEffectiveTeam() == Team.HOSTILE) return true;
+		if (getEffectiveTeam(false) == Team.HOSTILE && player.getEffectiveTeam(false) == Team.HOSTILE) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
 
@@ -76,9 +77,9 @@ public class Player {
 	}
 
 	@Nullable
-	public Team getEffectiveTeam() {
+	public Team getEffectiveTeam(boolean lover) {
 		if (role == Role.SPY) return Team.HOSTILE;
-		if (lover) return Team.NEUTRAL;
+		if (this.lover && lover) return Team.NEUTRAL;
 		return role == null ? null : role.getTeam();
 	}
 

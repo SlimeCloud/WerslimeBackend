@@ -107,7 +107,7 @@ public enum Role {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-				ctx.json(new Response(target.getEffectiveTeam()));
+				ctx.json(new Response(target.getEffectiveTeam(true)));
 			});
 		}
 	},
