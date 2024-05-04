@@ -63,7 +63,7 @@ public class Player {
 	public boolean canSeeTeam(@NotNull Player player) {
 		if (canSeeRole(player)) return true;
 
-		if (this.role != null && this.role.displayTeam() == Team.HOSTILE && role.displayTeam() == player.getRole().displayTeam()) return true;
+		if (getEffectiveTeam() == Team.HOSTILE && player.getEffectiveTeam() == Team.HOSTILE) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
 
@@ -73,6 +73,13 @@ public class Player {
 		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
 
 		return false;
+	}
+
+	@NotNull
+	public Team getEffectiveTeam() {
+		if (role == Role.SPY) return Team.HOSTILE;
+		if (lover) return Team.NEUTRAL;
+		return role.getTeam();
 	}
 
 	public void setAlive(boolean alive, @Nullable KillReason reason) {
