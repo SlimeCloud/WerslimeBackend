@@ -128,6 +128,9 @@ public class Game {
 		if (current.isDay()) synchronized (nightActions) {
 			nightActions.forEach(Runnable::run);
 			nightActions.clear();
+
+			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			victim = null;
 		}
 
 		sendUpdate();

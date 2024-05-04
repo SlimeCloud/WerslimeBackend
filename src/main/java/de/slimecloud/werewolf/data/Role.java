@@ -191,9 +191,6 @@ public enum Role {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.VILLAGER);
-
-			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			game.setVictim(null);
 		}
 
 		@Override
@@ -207,12 +204,6 @@ public enum Role {
 		}
 	},
 	VILLAGER(Team.VILLAGE, true, true, false, false, 0) {
-		@Override
-		public void onTurnStart(@NotNull Game game) {
-			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			game.setVictim(null);
-		}
-
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
 			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
