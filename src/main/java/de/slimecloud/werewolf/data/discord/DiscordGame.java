@@ -116,7 +116,7 @@ public class DiscordGame extends Game {
 		Player player = players.get(member.getUser().getId());
 
 		RestAction<Void> action = state != null ? settings.muteSystem().mute(this, state, player) : null;
-		return action != null ?  action : new CompletedRestAction<>(member.getJDA(), null);
+		return action != null ? action : new CompletedRestAction<>(member.getJDA(), null);
 	}
 
 	@Override

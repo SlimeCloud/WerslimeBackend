@@ -46,10 +46,9 @@ public class CreateCommand {
 						.setColor(Color.decode(bot.getMain().getConfig().getColor()))
 						.setAuthor(s.<Member>getCache("master").getEffectiveName(), null, s.<Member>getCache("master").getEffectiveAvatarUrl())
 						.setThumbnail(s.getEvent().getGuild().getIconUrl())
-						.setDescription(
-								"Spielt mit bei Werslime in " + s.<VoiceChannel>getCache("channel").getAsMention() + "! \n\n" +
-										"Um der Runde beizutreten, [**verifiziere dich mit OAuth2**](" + bot.getMain().getConfig().getUrl() + "/game/" + s.getState("game", String.class) + ")" +
-										" oder verwende den **Knopf unter dieser Nachricht**, um ohne OAuth2 beizutreten!"
+						.setDescription("Spielt mit bei Werslime in " + s.<VoiceChannel>getCache("channel").getAsMention() + "! \n\n" +
+								"Um der Runde beizutreten, [**verifiziere dich mit OAuth2**](" + bot.getMain().getConfig().getUrl() + "/game/" + s.getState("game", String.class) + ")" +
+								" oder verwende den **Knopf unter dieser Nachricht**, um ohne OAuth2 beizutreten!"
 						)
 						.build()
 				).withContent(s -> s.getCache("mention")),

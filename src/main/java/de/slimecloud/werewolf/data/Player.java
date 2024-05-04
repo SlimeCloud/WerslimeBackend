@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.sequence.EditScript;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,8 +99,7 @@ public class Player {
 			if (role == Role.HUNTER) {
 				game.getRoleMetaData().put(Role.HUNTER, game.getCurrent());
 				game.setCurrent(Role.HUNTER);
-			}
-			else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
+			} else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
 			else sendEvent("KILL", new Object());
 
 			if (role != Role.JESTER) game.playSound(Sound.DEATH);
