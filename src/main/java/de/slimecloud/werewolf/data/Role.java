@@ -277,6 +277,7 @@ public enum Role {
 	public void onTurnStart(@NotNull Game game) {
 		game.getPlayers().values().stream()
 				.filter(this::hasRole)
+				.filter(Player::isAlive)
 				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
 	}
 
