@@ -111,7 +111,7 @@ public enum Role {
 	},
 	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
-		public void onTurnEnd(@NotNull Game game) {
+		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.HOWL, 0.5);
 			game.evaluateVote().ifPresent(player -> game.setVictim(player.getId()));
 		}
@@ -135,6 +135,11 @@ public enum Role {
 		@Getter
 		public static class WitchRequest {
 			private Map<WitchAction, String> actions;
+		}
+
+		@Override
+		public void onTurnStart(@NotNull Game game) {
+			game.playSound(Sound.POTION);
 		}
 
 		@Override
@@ -175,7 +180,6 @@ public enum Role {
 			});
 
 			execute.forEach(Runnable::run);
-			if (!execute.isEmpty()) player.getGame().playSound(Sound.POTION);
 		}
 	},
 	VILLAGER_ELECT(Team.VILLAGE, true, true, false, false, 0) {
@@ -205,8 +209,6 @@ public enum Role {
 	VILLAGER(Team.VILLAGE, true, true, false, false, 0) {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
-			game.playSound(Sound.VILLAGER);
-
 			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
 			game.setVictim(null);
 		}
