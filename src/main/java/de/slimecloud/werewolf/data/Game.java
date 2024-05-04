@@ -120,8 +120,13 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
+		Role temp = current;
 		current.onTurnEnd(this);
-		setCurrent(getNextRole(Role.values.indexOf(current)));
+
+		if (temp == current) {
+			if (current == Role.HUNTER) current = getRoleMetaData(Role.HUNTER);
+			setCurrent(getNextRole(Role.values.indexOf(current)));
+		}
 
 		if (current.isDay()) synchronized (nightActions) {
 			nightActions.forEach(Runnable::run);
@@ -139,7 +144,7 @@ public class Game {
 	public void setCurrent(@NotNull Role role) {
 		this.current = role;
 		current.onTurnStart(this);
-		if (current != Role.HUNTER && role != Role.HUNTER) interactions.clear();
+		interactions.clear();
 	}
 
 	public void scheduleNightAction(@NotNull Runnable action) {
@@ -209,8 +214,6 @@ public class Game {
 
 	@NotNull
 	private Role getNextRole(int current) {
-		if (this.current == Role.HUNTER) return getRoleMetaData(Role.HUNTER);
-
 		AtomicInteger i = new AtomicInteger(current);
 		int j = 0;
 

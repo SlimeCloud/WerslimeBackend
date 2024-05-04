@@ -190,6 +190,12 @@ public enum Role {
 			execute.forEach(Runnable::run);
 		}
 	},
+	MORNING(Team.VILLAGE, true, false, false, false, Integer.MIN_VALUE) {
+		@Override
+		public void onTurnStart(@NotNull Game game) {
+			game.next();
+		}
+	},
 	VILLAGER_ELECT(Team.VILLAGE, true, true, false, false, 0) {
 		@Override
 		public boolean hasRole(@NotNull Player player) {
