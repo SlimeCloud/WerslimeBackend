@@ -23,7 +23,6 @@ public class Game {
 	protected final Map<String, Player> players = new HashMap<>();
 
 	protected boolean started;
-	private int round;
 
 	protected final GameSettings settings = GameSettings.DEFAULT;
 
@@ -108,11 +107,10 @@ public class Game {
 
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 
-		current = Role.VILLAGER_ELECT;
+		setCurrent(getNextRole(-1));
 		current.onTurnStart(this);
 
 		started = true;
-		round = 0;
 
 		playSound(Sound.START);
 		sendUpdate();
@@ -127,8 +125,6 @@ public class Game {
 		setCurrent(getNextRole(Role.values.indexOf(current)));
 
 		sendUpdate();
-
-		round++;
 	}
 
 	public void setCurrent(@NotNull Role role) {
@@ -197,8 +193,6 @@ public class Game {
 
 	@NotNull
 	private Role getNextRole(int current) {
-		if (round == 0) current = -1;
-
 		AtomicInteger i = new AtomicInteger(current);
 		int j = 0;
 
