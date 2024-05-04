@@ -120,8 +120,6 @@ public class Game {
 	public void next() {
 		if (!started) return;
 
-		checkWin();
-
 		current.onTurnEnd(this);
 		setCurrent(getNextRole(Role.values.indexOf(current)));
 
@@ -132,6 +130,8 @@ public class Game {
 			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
 			victim = null;
 		}
+
+		checkWin();
 
 		sendUpdate();
 	}
