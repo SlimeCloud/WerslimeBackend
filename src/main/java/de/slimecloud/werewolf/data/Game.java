@@ -163,9 +163,14 @@ public class Game {
 	public Optional<Player> evaluateVote() {
 		Map<String, Double> votes = new HashMap<>();
 
-		interactions.values().stream().filter(t -> t instanceof String).map(t -> (String) t).forEach(p -> {
-			double weight = Optional.ofNullable(players.get(p)).map(pl -> pl.voteCount(current)).orElse(0.0);
-			votes.compute(p, (k, v) -> v == null ? weight : v + weight);
+		interactions.forEach((p, t) -> {
+			Player player = players.get(p);
+			Player target = players.get(t);
+
+			if (player == null || target == null) return;
+			double weight = player.voteCount(current);
+
+			votes.compute(target.getId(), (k, v) -> v == null ? weight : v + weight);
 		});
 
 		return votes.entrySet().stream()

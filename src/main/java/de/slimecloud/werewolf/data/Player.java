@@ -40,12 +40,10 @@ public class Player {
 	}
 
 	public double voteCount(@NotNull Role current) {
-		double votes = 1;
-
 		if (!current.hasRole(this)) return 0;
 		if (current == Role.WEREWOLF && role == Role.SPY) return 0;
 
-		return votes * (current == Role.VILLAGER && mayor ? 1.5 : 1);
+		return current == Role.VILLAGER && mayor ? 1.5 : 1;
 	}
 
 	public boolean canSeeRole(@NotNull Player player) {
