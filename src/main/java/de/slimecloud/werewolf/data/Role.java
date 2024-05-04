@@ -113,6 +113,10 @@ public enum Role {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			game.playSound(Sound.HOWL, 0.5);
+		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
 			game.evaluateVote().ifPresent(player -> game.setVictim(player.getId()));
 		}
 
