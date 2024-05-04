@@ -85,20 +85,22 @@ public class Player {
 	}
 
 	public void kill(@NotNull KillReason reason) {
-		game.getInteractions().remove(id);
-		mayor = false;
+		game.scheduleNightAction(() -> {
+			game.getInteractions().remove(id);
+			mayor = false;
 
-		if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
-		else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
-		else sendEvent("KILL", new Object());
+			if (role == Role.HUNTER) game.setCurrent(Role.HUNTER);
+			else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
+			else sendEvent("KILL", new Object());
 
-		if (role != Role.JESTER) game.playSound(Sound.DEATH);
+			if (role != Role.JESTER) game.playSound(Sound.DEATH);
 
-		if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
-			if (p.isLover()) p.kill(KillReason.LOVER);
+			if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
+				if (p.isLover()) p.kill(KillReason.LOVER);
+			});
+
+			this.alive = false;
 		});
-
-		this.alive = false;
 	}
 
 	public void sendUpdate() {

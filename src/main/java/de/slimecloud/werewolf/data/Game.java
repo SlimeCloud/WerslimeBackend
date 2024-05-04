@@ -32,6 +32,7 @@ public class Game {
 
 	protected final Map<String, Object> interactions = new HashMap<>();
 	protected final Map<Role, Object> roleMetaData = new HashMap<>();
+	protected final Set<Runnable> nightActions = new HashSet<>();
 
 	public boolean isPublic() {
 		return settings.isPublic();
@@ -124,6 +125,11 @@ public class Game {
 		current.onTurnEnd(this);
 		setCurrent(getNextRole(Role.values.indexOf(current)));
 
+		if (current.isDay()) synchronized (nightActions) {
+			nightActions.forEach(Runnable::run);
+			nightActions.clear();
+		}
+
 		sendUpdate();
 	}
 
@@ -131,6 +137,13 @@ public class Game {
 		this.current = role;
 		current.onTurnStart(this);
 		interactions.clear();
+	}
+
+	public void scheduleNightAction(@NotNull Runnable action) {
+		if (current.isDay()) action.run();
+		else synchronized (nightActions) {
+			nightActions.add(action);
+		}
 	}
 
 	@NotNull
