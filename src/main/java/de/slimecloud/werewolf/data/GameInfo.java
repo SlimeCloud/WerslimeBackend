@@ -41,7 +41,7 @@ public class GameInfo {
 				game.getId(),
 				game instanceof DiscordGame,
 				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p,
-						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().deadSpectators() && !self.isAlive())),
+						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().deadSpectators() && !self.isAlive() && !(game.getCurrent() == Role.HUNTER && self.getRole() == Role.HUNTER))),
 						self != null && self.canSeeRole(p),
 						self != null && self.canSeeTeam(p)
 				)).toList(),
