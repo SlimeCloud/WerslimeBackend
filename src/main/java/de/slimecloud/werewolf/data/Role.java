@@ -133,7 +133,7 @@ public enum Role {
 			return super.hasRole(player) || player.getRole() == SPY;
 		}
 	},
-	WITCH(Team.VILLAGE, false, true, false, false, 100) {
+	WITCH(Team.VILLAGE, false, false, false, false, 100) {
 		public enum WitchAction {
 			POISON,
 			HEAL
