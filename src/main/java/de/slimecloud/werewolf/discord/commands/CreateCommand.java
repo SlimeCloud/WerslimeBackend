@@ -91,7 +91,7 @@ public class CreateCommand {
 	@ApplicationCommandMethod
 	public void performCommand(@NotNull SlashCommandInteractionEvent event, @NotNull DiscordBot bot,
 	                           @Option(description = "Der Kanal, in dem gespielt wird", channelTypes = ChannelType.VOICE) VoiceChannel channel,
-	                           @Option(description = "Der Titel der Nachricht") String title,
+	                           @Option(description = "Der Titel der Nachricht", maxLength = 50) String title,
 	                           @Option(description = "Die Rolle, die benachrichtigt wird", required = false) Role ping
 	) {
 		boolean exists = bot.getGame(channel.getId()).isPresent();

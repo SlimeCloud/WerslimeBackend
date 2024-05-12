@@ -1,5 +1,6 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.data.meta.WarlockMetaData;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -56,6 +57,7 @@ public class Player {
 		if (!isAlive() && game.getSettings().deadSpectators()) return true;
 
 		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
+		if (this.role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getVisible().contains(player.getId());
 
 		return false;
 	}
@@ -63,7 +65,7 @@ public class Player {
 	public boolean canSeeTeam(@NotNull Player player) {
 		if (canSeeRole(player)) return true;
 
-		if (getEffectiveTeam(false) == Team.HOSTILE && player.getEffectiveTeam(false) == Team.HOSTILE) return true;
+		if (getEffectiveTeam(false) == Team.HOSTILE && player.getEffectiveTeam(false) == Team.HOSTILE && role != Role.WARLOCK) return true;
 
 		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
 
@@ -76,7 +78,14 @@ public class Player {
 	}
 
 	@Nullable
+	public Role getEffectiveRole() {
+		if (isAlive() && role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getCamouflage();
+		return role;
+	}
+
+	@Nullable
 	public Team getEffectiveTeam(boolean lover) {
+		if (isAlive() && role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getCamouflage().getTeam();
 		if (role == Role.SPY) return Team.HOSTILE;
 		if (this.lover && lover) return Team.NEUTRAL;
 		return role == null ? null : role.getTeam();
@@ -109,6 +118,10 @@ public class Player {
 			});
 
 			this.alive = false;
+
+			if (game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
+				game.getPlayers().values().stream().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
+			}
 		});
 	}
 

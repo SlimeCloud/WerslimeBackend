@@ -87,7 +87,6 @@ public class Game {
 
 		interactions.clear();
 		roleMetaData.clear();
-		Role.values.forEach(r -> r.initialize(this));
 	}
 
 	public void start() {
@@ -107,6 +106,7 @@ public class Game {
 		for (int i = roles.size(); i < players.size(); i++) roles.add(Role.VILLAGER);
 
 		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
+		Role.values.forEach(r -> r.initialize(this));
 
 		setCurrent(getNextRole(-1));
 		current.onTurnStart(this);
@@ -126,14 +126,6 @@ public class Game {
 		if (temp == current) {
 			if (current == Role.HUNTER) current = getRoleMetaData(Role.HUNTER);
 			setCurrent(getNextRole(Role.values.indexOf(current)));
-		}
-
-		if (current.isDay()) synchronized (nightActions) {
-			nightActions.forEach(Runnable::run);
-			nightActions.clear();
-
-			Optional.ofNullable(victim).map(players::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
-			victim = null;
 		}
 
 		checkWin();

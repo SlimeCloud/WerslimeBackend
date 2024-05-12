@@ -2,6 +2,8 @@ package de.slimecloud.werewolf.data;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
+import de.slimecloud.werewolf.data.meta.WarlockMetaData;
+import de.slimecloud.werewolf.main.Main;
 import io.javalin.http.Context;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import java.util.function.Predicate;
 @Getter
 @AllArgsConstructor
 public enum Role {
-	AMOR(Team.VILLAGE, false, false, false, false, 75) {
+	AMOR(Team.VILLAGE, false, false, false, false, 750) {
 		@Getter
 		public static class AmorRequest {
 			private String first;
@@ -47,7 +49,7 @@ public enum Role {
 			if (!player.equals(first) && !player.equals(second)) player.playSound(Sound.LOVE);
 		}
 	},
-	SEER(Team.VILLAGE, false, false, false, false, 50) {
+	SEER(Team.VILLAGE, false, false, false, false, 500) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Role role;
@@ -75,11 +77,11 @@ public enum Role {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-				ctx.json(new Response(target.getRole()));
+				ctx.json(new Response(target.getEffectiveRole()));
 			});
 		}
 	},
-	AURA_SEER(Team.VILLAGE, false, false, false, false, 5) {
+	AURA_SEER(Team.VILLAGE, false, false, false, false, 50) {
 		@AllArgsConstructor
 		public static class Response {
 			private final Team team;
@@ -111,6 +113,44 @@ public enum Role {
 			});
 		}
 	},
+	WARLOCK(Team.HOSTILE, false, false, true, false, 5) {
+		@AllArgsConstructor
+		public static class Response {
+			private final Role role;
+		}
+
+		@Override
+		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
+			game.playSound(Sound.WARLOCK, 1);
+		}
+
+		@Override
+		public void initialize(@NotNull Game game) {
+			game.getRoleMetaData().put(this, new WarlockMetaData(game.getPlayers().values().stream()
+					.map(Player::getRole)
+					.filter(r -> r.getTeam() != Team.HOSTILE)
+					.sorted((o1, o2) -> Main.random.nextInt(-1, 2))
+					.findAny()
+					.orElse(VILLAGER)
+			));
+		}
+
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return !game.<WarlockMetaData>getRoleMetaData(this).getVisible().containsAll(game.getPlayers().values().stream().filter(Player::isAlive).map(Player::getId).toList());
+		}
+
+		@Override
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!player.getGame().<WarlockMetaData>getRoleMetaData(this).getVisible().add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				ctx.json(new Response(target.getEffectiveRole()));
+			});
+		}
+	},
 	WEREWOLF(Team.HOSTILE, false, true, true, false, 0) {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
@@ -133,7 +173,7 @@ public enum Role {
 			return super.hasRole(player) || player.getRole() == SPY;
 		}
 	},
-	WITCH(Team.VILLAGE, false, false, false, false, 100) {
+	WITCH(Team.VILLAGE, false, false, false, false, 1000) {
 		public enum WitchAction {
 			POISON,
 			HEAL
@@ -193,6 +233,12 @@ public enum Role {
 	MORNING(Team.VILLAGE, true, false, false, false, Integer.MIN_VALUE) {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			game.getNightActions().forEach(Runnable::run);
+			game.getNightActions().clear();
+
+			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			game.setVictim(null);
+
 			game.next();
 		}
 	},
@@ -229,7 +275,7 @@ public enum Role {
 			return true;
 		}
 	},
-	HUNTER(Team.VILLAGE, true, false, false, true, 10) {
+	HUNTER(Team.VILLAGE, true, false, false, true, 100) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -247,13 +293,13 @@ public enum Role {
 			player.getGame().next();
 		}
 	},
-	JESTER(Team.NEUTRAL, false, false, false, false, 2) {
+	JESTER(Team.NEUTRAL, false, false, false, false, 20) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
 		}
 	},
-	SPY(Team.VILLAGE, false, false, false, false, 1) {
+	SPY(Team.VILLAGE, false, false, false, false, 10) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;

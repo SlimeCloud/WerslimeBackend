@@ -15,6 +15,7 @@ public enum Sound {
 	LOVE(1),
 
 	ACTIVE_TURN(1),
+	WARLOCK(2),
 	HOWL(1),
 	POTION(1),
 	SEER(1),

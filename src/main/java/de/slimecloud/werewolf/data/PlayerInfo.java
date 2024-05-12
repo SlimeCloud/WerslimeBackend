@@ -22,14 +22,14 @@ public class PlayerInfo {
 	private final boolean connected;
 
 	@NotNull
-	public static PlayerInfo create(@NotNull Player player, boolean lover, boolean role, boolean team) {
+	public static PlayerInfo create(@NotNull Player player, boolean self, boolean lover, boolean role, boolean team) {
 		return new PlayerInfo(
 				player.getId(),
 				player.getAvatar(),
 
 				player.getName(),
-				role ? player.getRole() : null,
-				team && player.getRole() != null ? (role ? player.getRole().getTeam() : player.getEffectiveTeam(lover)) : null,
+				role ? (self ? player.getRole() : player.getEffectiveRole()) : null,
+				team && player.getRole() != null ? (self ? player.getRole().getTeam() : (role ? player.getEffectiveRole().getTeam() : player.getEffectiveTeam(lover))) : null,
 
 				player.isMaster(),
 				player.isAlive(),
