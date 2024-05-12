@@ -129,7 +129,6 @@ public class Game {
 		}
 
 		checkWin();
-
 		sendUpdate();
 	}
 
@@ -215,7 +214,7 @@ public class Game {
 				reset();
 				break;
 			}
-		} while (!Role.values()[i.get()].canUseRole(this) || players.values().stream().filter(Player::isAlive).noneMatch(Role.values()[i.get()]::hasRole));
+		} while (!Role.values()[i.get()].canUseRole(this) || (!Role.values()[i.get()].isSystem() && players.values().stream().filter(Player::isAlive).noneMatch(Role.values()[i.get()]::hasRole)));
 
 		return Role.values()[i.get()];
 	}
