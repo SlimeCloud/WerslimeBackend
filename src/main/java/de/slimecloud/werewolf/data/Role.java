@@ -68,7 +68,15 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return !game.<Set<String>>getRoleMetaData(this).containsAll(game.getPlayers().values().stream().filter(Player::isAlive).map(Player::getId).toList());
+			return game.getPlayers().values().stream()
+					.filter(Player::isAlive)
+					.filter(p -> p.getRole() == SEER)
+					.findFirst()
+					.map(p -> game.getPlayers().values().stream()
+							.filter(Player::isAlive)
+							.anyMatch(t -> !p.canSeeRole(t))
+					)
+					.orElse(false);
 		}
 
 		@Override
@@ -100,7 +108,15 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return !game.<Set<String>>getRoleMetaData(this).containsAll(game.getPlayers().values().stream().filter(Player::isAlive).map(Player::getId).toList());
+			return game.getPlayers().values().stream()
+					.filter(Player::isAlive)
+					.filter(p -> p.getRole() == AURA_SEER)
+					.findFirst()
+					.map(p -> game.getPlayers().values().stream()
+							.filter(Player::isAlive)
+							.anyMatch(t -> !p.canSeeTeam(t))
+					)
+					.orElse(false);
 		}
 
 		@Override
