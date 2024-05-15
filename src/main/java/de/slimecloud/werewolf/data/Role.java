@@ -154,7 +154,15 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return !game.<WarlockMetaData>getRoleMetaData(this).getVisible().containsAll(game.getPlayers().values().stream().filter(Player::isAlive).map(Player::getId).toList());
+			return game.getPlayers().values().stream()
+					.filter(Player::isAlive)
+					.filter(p -> p.getRole() == WARLOCK)
+					.findFirst()
+					.map(p -> game.getPlayers().values().stream()
+							.filter(Player::isAlive)
+							.anyMatch(t -> !p.canSeeRole(t))
+					)
+					.orElse(false);
 		}
 
 		@Override
