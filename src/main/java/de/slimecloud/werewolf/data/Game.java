@@ -113,7 +113,7 @@ public class Game {
 
 		started = true;
 
-		playSound(Sound.START);
+		playSound(Sound.START, 0.5);
 		sendUpdate();
 	}
 
