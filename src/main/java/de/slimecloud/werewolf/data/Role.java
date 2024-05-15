@@ -67,19 +67,6 @@ public enum Role {
 		}
 
 		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream()
-					.filter(Player::isAlive)
-					.filter(p -> p.getRole() == SEER)
-					.findFirst()
-					.map(p -> game.getPlayers().values().stream()
-							.filter(Player::isAlive)
-							.anyMatch(t -> !p.canSeeRole(t))
-					)
-					.orElse(false);
-		}
-
-		@Override
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
@@ -104,19 +91,6 @@ public enum Role {
 		@Override
 		public void initialize(@NotNull Game game) {
 			game.getRoleMetaData().put(this, new HashSet<>());
-		}
-
-		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream()
-					.filter(Player::isAlive)
-					.filter(p -> p.getRole() == AURA_SEER)
-					.findFirst()
-					.map(p -> game.getPlayers().values().stream()
-							.filter(Player::isAlive)
-							.anyMatch(t -> !p.canSeeTeam(t))
-					)
-					.orElse(false);
 		}
 
 		@Override
@@ -150,19 +124,6 @@ public enum Role {
 					.findAny()
 					.orElse(VILLAGER)
 			));
-		}
-
-		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream()
-					.filter(Player::isAlive)
-					.filter(p -> p.getRole() == WARLOCK)
-					.findFirst()
-					.map(p -> game.getPlayers().values().stream()
-							.filter(Player::isAlive)
-							.anyMatch(t -> !p.canSeeRole(t))
-					)
-					.orElse(false);
 		}
 
 		@Override
