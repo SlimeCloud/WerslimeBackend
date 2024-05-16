@@ -34,8 +34,6 @@ public enum Role {
 					.check(r -> r.getTargets().size() == 2, "Invalid 'targets'")
 					.get();
 
-
-
 			Player first = player.getGame().getPlayers().get(request.getTargets().get(0));
 			Player second = player.getGame().getPlayers().get(request.getTargets().get(1));
 
