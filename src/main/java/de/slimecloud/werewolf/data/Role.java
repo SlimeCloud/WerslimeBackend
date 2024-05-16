@@ -34,10 +34,12 @@ public enum Role {
 					.check(r -> r.getTargets().size() == 2, "Invalid 'targets'")
 					.get();
 
+
+
 			Player first = player.getGame().getPlayers().get(request.getTargets().get(0));
 			Player second = player.getGame().getPlayers().get(request.getTargets().get(1));
 
-			if (first == null || !first.isAlive() || second == null || !second.isAlive()) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (first == null || !first.isAlive() || second == null || !second.isAlive() || first.equals(second)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 			first.setLover(true);
 			second.setLover(true);
