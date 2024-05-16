@@ -25,6 +25,7 @@ public class CreateEndpoint implements Handler {
 	@Override
 	public void handle(@NotNull Context ctx) throws Exception {
 		Request request = ctx.bodyValidator(CreateEndpoint.Request.class)
+				.check(r -> r.getMasterName() != null, "Invalid 'masterName'")
 				.check(r -> JoinEndpoint.NAME_PATTERN.asMatchPredicate().test(r.getMasterName()), "Invalid 'masterName'")
 				.get();
 
