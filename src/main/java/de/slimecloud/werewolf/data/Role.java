@@ -19,8 +19,7 @@ public enum Role {
 	AMOR(Team.VILLAGE, false, false, false, false, false, 750) {
 		@Getter
 		public static class AmorRequest {
-			private String first;
-			private String second;
+			private List<String> targets;
 		}
 
 		@Override
@@ -31,12 +30,12 @@ public enum Role {
 		@Override
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			AmorRequest request = ctx.bodyValidator(AmorRequest.class)
-					.check(r -> r.getFirst() != null, "Invalid 'first'")
-					.check(r -> r.getSecond() != null, "Invalid 'second'")
+					.check(r -> r.getTargets() != null, "Invalid 'targets'")
+					.check(r -> r.getTargets().size() == 2, "Invalid 'targets'")
 					.get();
 
-			Player first = player.getGame().getPlayers().get(request.getFirst());
-			Player second = player.getGame().getPlayers().get(request.getSecond());
+			Player first = player.getGame().getPlayers().get(request.getTargets().get(0));
+			Player second = player.getGame().getPlayers().get(request.getTargets().get(1));
 
 			if (first == null || !first.isAlive() || second == null || !second.isAlive()) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
