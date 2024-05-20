@@ -24,6 +24,7 @@
     </appender>
 
     <logger name="io.javalin.Javalin" level="OFF"/>
+    <logger name="club.minnced.discord.webhook.WebhookClient" level="OFF"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>
