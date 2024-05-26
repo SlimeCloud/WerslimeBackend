@@ -1,7 +1,7 @@
 package de.slimecloud.werewolf.api;
 
-import de.slimecloud.werewolf.data.Game;
-import de.slimecloud.werewolf.data.Player;
+import de.slimecloud.werewolf.game.Game;
+import de.slimecloud.werewolf.game.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

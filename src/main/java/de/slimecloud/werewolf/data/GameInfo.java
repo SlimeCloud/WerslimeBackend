@@ -1,6 +1,10 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.data.discord.DiscordGame;
+import de.slimecloud.werewolf.game.discord.DiscordGame;
+import de.slimecloud.werewolf.game.Game;
+import de.slimecloud.werewolf.game.GameSettings;
+import de.slimecloud.werewolf.game.Player;
+import de.slimecloud.werewolf.game.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

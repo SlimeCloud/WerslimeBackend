@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.discord.commands;
+package de.slimecloud.werewolf.main.discord.commands;
 
 import de.mineking.discordutils.commands.ApplicationCommand;
 import de.mineking.discordutils.commands.ApplicationCommandMethod;
@@ -12,8 +12,8 @@ import de.mineking.discordutils.ui.UIManager;
 import de.mineking.discordutils.ui.components.button.ButtonColor;
 import de.mineking.discordutils.ui.components.button.ButtonComponent;
 import de.mineking.discordutils.ui.state.MessageSendState;
-import de.slimecloud.werewolf.data.discord.DiscordGame;
-import de.slimecloud.werewolf.discord.DiscordBot;
+import de.slimecloud.werewolf.game.discord.DiscordGame;
+import de.slimecloud.werewolf.main.discord.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;

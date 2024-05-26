@@ -1,8 +1,8 @@
-package de.slimecloud.werewolf.data.discord;
+package de.slimecloud.werewolf.game.discord;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
-import de.slimecloud.werewolf.data.Player;
+import de.slimecloud.werewolf.game.Player;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

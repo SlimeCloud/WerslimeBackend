@@ -1,7 +1,10 @@
-package de.slimecloud.werewolf.data;
+package de.slimecloud.werewolf.game;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
+import de.slimecloud.werewolf.data.KillReason;
+import de.slimecloud.werewolf.data.Sound;
+import de.slimecloud.werewolf.data.Team;
 import de.slimecloud.werewolf.data.meta.WarlockMetaData;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.http.Context;

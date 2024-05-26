@@ -1,10 +1,10 @@
-package de.slimecloud.werewolf.data.discord;
+package de.slimecloud.werewolf.game.discord;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
-import de.slimecloud.werewolf.data.Game;
-import de.slimecloud.werewolf.data.Player;
-import de.slimecloud.werewolf.data.Role;
+import de.slimecloud.werewolf.game.Game;
+import de.slimecloud.werewolf.game.Player;
+import de.slimecloud.werewolf.game.Role;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.Setter;

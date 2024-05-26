@@ -1,7 +1,7 @@
-package de.slimecloud.werewolf.config;
+package de.slimecloud.werewolf.main.config;
 
 import de.mineking.discordutils.console.RedirectTarget;
-import de.slimecloud.werewolf.discord.DiscordBot;
+import de.slimecloud.werewolf.main.discord.DiscordBot;
 import org.jetbrains.annotations.NotNull;
 
 public record LogForwarding(Type type, String id) {

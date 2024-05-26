@@ -3,7 +3,7 @@ package de.slimecloud.werewolf.api.endpoints.game;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.data.Game;
+import de.slimecloud.werewolf.game.Game;
 import de.slimecloud.werewolf.data.GameInfo;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

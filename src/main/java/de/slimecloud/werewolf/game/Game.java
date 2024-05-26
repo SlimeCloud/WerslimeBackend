@@ -1,6 +1,8 @@
-package de.slimecloud.werewolf.data;
+package de.slimecloud.werewolf.game;
 
 import de.mineking.javautils.ID;
+import de.slimecloud.werewolf.data.Sound;
+import de.slimecloud.werewolf.data.Winner;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

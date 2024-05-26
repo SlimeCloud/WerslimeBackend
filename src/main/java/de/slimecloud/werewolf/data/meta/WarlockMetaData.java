@@ -1,6 +1,6 @@
 package de.slimecloud.werewolf.data.meta;
 
-import de.slimecloud.werewolf.data.Role;
+import de.slimecloud.werewolf.game.Role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -2,8 +2,8 @@ package de.slimecloud.werewolf.api.endpoints;
 
 import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.data.Game;
-import de.slimecloud.werewolf.data.Player;
+import de.slimecloud.werewolf.game.Game;
+import de.slimecloud.werewolf.game.Player;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

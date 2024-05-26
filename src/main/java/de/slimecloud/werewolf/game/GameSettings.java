@@ -1,5 +1,6 @@
-package de.slimecloud.werewolf.data;
+package de.slimecloud.werewolf.game;
 
+import de.slimecloud.werewolf.data.MuteSystem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;

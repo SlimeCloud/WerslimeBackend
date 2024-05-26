@@ -1,6 +1,8 @@
 package de.slimecloud.werewolf.data;
 
-import de.slimecloud.werewolf.discord.DiscordBot;
+import de.slimecloud.werewolf.game.Game;
+import de.slimecloud.werewolf.game.Player;
+import de.slimecloud.werewolf.main.discord.DiscordBot;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;

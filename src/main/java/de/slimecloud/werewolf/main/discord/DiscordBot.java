@@ -1,11 +1,11 @@
-package de.slimecloud.werewolf.discord;
+package de.slimecloud.werewolf.main.discord;
 
 import de.mineking.discordutils.DiscordUtils;
-import de.slimecloud.werewolf.config.ActivityConfig;
-import de.slimecloud.werewolf.config.LogForwarding;
-import de.slimecloud.werewolf.data.discord.DiscordGame;
-import de.slimecloud.werewolf.data.discord.DiscordPlayer;
-import de.slimecloud.werewolf.discord.commands.CreateCommand;
+import de.slimecloud.werewolf.main.config.ActivityConfig;
+import de.slimecloud.werewolf.main.config.LogForwarding;
+import de.slimecloud.werewolf.game.discord.DiscordGame;
+import de.slimecloud.werewolf.game.discord.DiscordPlayer;
+import de.slimecloud.werewolf.main.discord.commands.CreateCommand;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;

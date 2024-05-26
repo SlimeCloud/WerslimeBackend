@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.config;
+package de.slimecloud.werewolf.main.config;
 
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;

@@ -1,5 +1,7 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.game.Player;
+import de.slimecloud.werewolf.game.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

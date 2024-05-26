@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.config;
+package de.slimecloud.werewolf.main.config;
 
 import net.dv8tion.jda.api.entities.Activity;
 import org.jetbrains.annotations.NotNull;

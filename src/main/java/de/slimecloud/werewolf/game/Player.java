@@ -1,5 +1,6 @@
-package de.slimecloud.werewolf.data;
+package de.slimecloud.werewolf.game;
 
+import de.slimecloud.werewolf.data.*;
 import de.slimecloud.werewolf.data.meta.WarlockMetaData;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;

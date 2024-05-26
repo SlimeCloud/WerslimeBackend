@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.discord;
+package de.slimecloud.werewolf.main.discord;
 
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.Permission;
