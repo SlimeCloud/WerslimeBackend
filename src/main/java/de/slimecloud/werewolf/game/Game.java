@@ -1,8 +1,8 @@
 package de.slimecloud.werewolf.game;
 
 import de.mineking.javautils.ID;
+import de.slimecloud.werewolf.data.PlayerInfo;
 import de.slimecloud.werewolf.data.Sound;
-import de.slimecloud.werewolf.data.Winner;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class Game {
 
 	protected boolean started;
 
-	protected final GameSettings settings = GameSettings.DEFAULT;
+	protected final GameSettings settings = GameSettings.createDefault();
 
 	@Setter
 	protected String victim;
@@ -77,12 +77,7 @@ public class Game {
 
 	public void reset() {
 		started = false;
-		players.values().forEach(player -> {
-			player.setRole(null);
-			player.revive();
-			player.setMayor(false);
-			player.setLover(false);
-		});
+		players.values().forEach(Player::reset);
 
 		current = Role.VILLAGER;
 		victim = null;
@@ -100,7 +95,6 @@ public class Game {
 		for (int i = 0; i < settings.werewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
 		roles.addAll(settings.roles().stream()
-				.sorted(Comparator.comparing(Role::getPriority, Comparator.reverseOrder()))
 				.limit(Math.max(players.size() - settings.werewolfAmount(), 0))
 				.toList()
 		);
@@ -125,10 +119,7 @@ public class Game {
 		Role temp = current;
 		current.onTurnEnd(this);
 
-		if (temp == current) {
-			if (current == Role.HUNTER) current = getRoleMetaData(Role.HUNTER);
-			setCurrent(getNextRole(Role.values.indexOf(current)));
-		}
+		if (temp == current) setCurrent(getNextRole(Role.values.indexOf(current)));
 
 		checkWin();
 		sendUpdate();
@@ -141,7 +132,7 @@ public class Game {
 	}
 
 	public void scheduleNightAction(@NotNull Runnable action) {
-		if (current.isDay()) action.run();
+		if (current.hasFlag(RoleFlag.DAY)) action.run();
 		else synchronized (nightActions) {
 			nightActions.add(action);
 		}
@@ -154,7 +145,7 @@ public class Game {
 	}
 
 	private void checkWin() {
-		for (Winner candidate : Winner.values()) {
+		for (Team candidate : Team.values()) {
 			if (candidate.isWinning(this)) {
 				sendWin(candidate);
 				return;
@@ -162,11 +153,19 @@ public class Game {
 		}
 	}
 
-	public void sendWin(@NotNull Winner winner) {
-		players.values().stream()
-				.filter(winner::isMember)
-				.forEach(p -> p.playSound(Sound.WIN));
-		sendEvent("END", new GameEnding(winner));
+	public void sendWin(@NotNull Team team) {
+		List<Player> winners = players.values().stream()
+				.filter(p -> p.hasTeam(team))
+				.toList();
+
+		List<Player> losers = players.values().stream()
+				.filter(p -> !winners.contains(p))
+				.toList();
+
+		winners.forEach(p -> p.playSound(Sound.WIN));
+		losers.forEach(p -> p.playSound(Sound.LOSE));
+
+		sendEvent("END", new GameEnding(team, winners.stream().map(p -> PlayerInfo.create(p, null)).toList()));
 	}
 
 	@NotNull
@@ -178,7 +177,7 @@ public class Game {
 			Player target = players.get(t);
 
 			if (player == null || target == null) return;
-			double weight = player.voteCount(current);
+			double weight = player.getVoteCount();
 
 			votes.compute(target.getId(), (k, v) -> v == null ? weight : v + weight);
 		});
@@ -216,12 +215,12 @@ public class Game {
 				reset();
 				break;
 			}
-		} while (!Role.values()[i.get()].canUseRole(this) || (!Role.values()[i.get()].isSystem() && players.values().stream().filter(Player::isAlive).noneMatch(Role.values()[i.get()]::hasRole)));
+		} while (!Role.values()[i.get()].canUseRole(this));
 
 		return Role.values()[i.get()];
 	}
 
-	private record GameEnding(Winner winner) {
+	private record GameEnding(Team winner, List<PlayerInfo> players) {
 	}
 
 	public void cleanup() {

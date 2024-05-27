@@ -1,10 +1,7 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.game.*;
 import de.slimecloud.werewolf.game.discord.DiscordGame;
-import de.slimecloud.werewolf.game.Game;
-import de.slimecloud.werewolf.game.GameSettings;
-import de.slimecloud.werewolf.game.Player;
-import de.slimecloud.werewolf.game.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -38,31 +35,27 @@ public class GameInfo {
 	@NotNull
 	public static GameInfo create(@NotNull Game game, @Nullable Player self) {
 		int interacted = game.getInteractions().size();
-		int total = (int) game.getPlayers().values().stream().filter(p -> (p.isAlive() || game.getCurrent().isDead()) && game.getCurrent().hasRole(p)).count();
+		int total = (int) game.getPlayers().values().stream().filter(p -> p.isAlive() && game.getCurrent().hasRole(p)).count();
 		Optional<Player> target = game.evaluateVote();
 
 		return new GameInfo(
 				game.getId(),
 				game instanceof DiscordGame,
-				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p, p.equals(self),
-						self != null && (self.isLover() || self.getRole() == Role.AMOR || (game.getSettings().deadSpectators() && !self.isAlive() && !(game.getCurrent() == Role.HUNTER && self.getRole() == Role.HUNTER))),
-						self != null && self.canSeeRole(p),
-						self != null && self.canSeeTeam(p)
-				)).toList(),
+				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p, self)).toList(),
 
 				game.isStarted(),
 				game.getSettings(),
 
 				game.getCurrent(),
-				(self != null && self.getRole() != null) && (self.getRole().canSeeVictim(game) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getVictim() : null,
+				self != null && (self.getRole().hasFlag(RoleFlag.VICTIM) || self.isSpectating()) ? game.getVictim() : null,
 
-				self != null && (game.getCurrent().canSeeInteractions(self) || (game.getSettings().deadSpectators() && !self.isAlive())) ? game.getInteractions() : null,
+				self != null && game.getCurrent().canSeeInteractions(self) ? game.getInteractions() : null,
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null,
 
 				self != null && game.getCurrent().canSeeInteractions(self) ? target.map(Player::getId).orElse(null) : null,
 				interacted,
 				total,
-				interacted >= total && (!game.getCurrent().isVote() || target.isPresent())
+				interacted >= total && (!game.getCurrent().hasFlag(RoleFlag.VOTE) || target.isPresent())
 		);
 	}
 }

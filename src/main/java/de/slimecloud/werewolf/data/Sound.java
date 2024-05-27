@@ -8,21 +8,26 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public enum Sound {
-	START(1),
-	DEATH(1),
-	WIN(1),
+	START,
+	WIN,
+	LOSE,
 
-	LOVE(1),
+	DEATH,
+	LOVE,
 
-	ACTIVE_TURN(1),
-	WARLOCK(2),
-	HOWL(1),
-	POTION(1),
-	SEER(1),
-	SHOOT(1),
-	VILLAGER(2);
+	ACTIVE_TURN,
+	WARLOCK,
+	HOWL,
+	POTION,
+	SEER,
+	SHOOT,
+	VILLAGER;
 
 	private final int variantAmount;
+
+	Sound() {
+		this(1);
+	}
 
 	public Data data(double volume) {
 		return data(volume, Main.random.nextInt(variantAmount));

@@ -4,22 +4,25 @@ import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.data.KillReason;
 import de.slimecloud.werewolf.data.Sound;
-import de.slimecloud.werewolf.data.Team;
-import de.slimecloud.werewolf.data.meta.WarlockMetaData;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.http.Context;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
 
+/**
+ * Order is the order of awakening
+ */
 @Getter
 @AllArgsConstructor
-public enum Role {
-	AMOR(Team.VILLAGE, false, false, false, false, false, 750) {
+public enum Role implements IPlayerModifier {
+	AMOR(List.of(Team.VILLAGE, Team.LOVER)) {
 		@Getter
 		public static class AmorRequest {
 			private List<String> targets;
@@ -27,7 +30,7 @@ public enum Role {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream().noneMatch(Player::isLover);
+			return super.canUseRole(game) && game.getPlayers().values().stream().noneMatch(p -> p.hasTeam(Team.LOVER) && p.getRole() != AMOR);
 		}
 
 		@Override
@@ -42,19 +45,21 @@ public enum Role {
 
 			if (first == null || !first.isAlive() || second == null || !second.isAlive() || first.equals(second)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			first.setLover(true);
-			second.setLover(true);
+			first.addTeam(Team.LOVER);
+			second.addTeam(Team.LOVER);
 
-			first.playSound(Sound.LOVE);
-			second.playSound(Sound.LOVE);
+			first.getModifiers().add(Modifier.LOVER);
+			second.getModifiers().add(Modifier.LOVER);
 
-			if (!player.equals(first) && !player.equals(second)) player.playSound(Sound.LOVE);
+			player.getGame().getPlayers().values().stream()
+					.filter(p -> p.hasTeam(Team.LOVER))
+					.forEach(p -> p.playSound(Sound.LOVE));
 		}
 	},
-	SEER(Team.VILLAGE, false, false, false, false, false, 500) {
-		@AllArgsConstructor
-		public static class Response {
-			private final Role role;
+	SEER(Team.VILLAGE) {
+		@Override
+		public void initialize(@NotNull Game game) {
+			game.getRoleMetaData().put(this, new HashSet<>());
 		}
 
 		@Override
@@ -64,24 +69,22 @@ public enum Role {
 		}
 
 		@Override
-		public void initialize(@NotNull Game game) {
-			game.getRoleMetaData().put(this, new HashSet<>());
-		}
-
-		@Override
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-				ctx.json(new Response(target.getEffectiveRole()));
 			});
 		}
+
+		@Override
+		public boolean canSeeRole(@NotNull Player player, @NotNull Player target) {
+			return player.getGame().<Set<String>>getRoleMetaData(this).contains(target.getId());
+		}
 	},
-	AURA_SEER(Team.VILLAGE, false, false, false, false, false, 50) {
-		@AllArgsConstructor
-		public static class Response {
-			private final Team team;
+	AURA_SEER(Team.VILLAGE) {
+		@Override
+		public void initialize(@NotNull Game game) {
+			game.getRoleMetaData().put(this, new HashSet<>());
 		}
 
 		@Override
@@ -91,24 +94,47 @@ public enum Role {
 		}
 
 		@Override
-		public void initialize(@NotNull Game game) {
-			game.getRoleMetaData().put(this, new HashSet<>());
-		}
-
-		@Override
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-				ctx.json(new Response(target.getEffectiveTeam(true)));
 			});
 		}
+
+		@Override
+		public boolean canSeeAura(@NotNull Player player, @NotNull Player target) {
+			return player.getGame().<Set<String>>getRoleMetaData(this).contains(target.getId());
+		}
 	},
-	WARLOCK(Team.HOSTILE, false, false, false, true, false, 5) {
-		@AllArgsConstructor
-		public static class Response {
-			private final Role role;
+	WARLOCK(Team.WEREWOLF) {
+		@Getter
+		@Setter
+		@RequiredArgsConstructor
+		public static class WarlockMetaData {
+			private int targetLimit = 2;
+
+			private final Set<String> visible = new HashSet<>();
+			private final Role camouflage;
+		}
+
+		public enum WarlockAction {
+			VIEW, MARK
+		}
+
+		@Getter
+		public static class Request {
+			private Map<WarlockAction, String> actions;
+		}
+
+		@Override
+		public void initialize(@NotNull Game game) {
+			game.getRoleMetaData().put(this, new WarlockMetaData(game.getPlayers().values().stream()
+					.map(Player::getRole)
+					.filter(r -> r.getTeams().contains(Team.VILLAGE))
+					.sorted((o1, o2) -> Main.random.nextInt(-1, 2))
+					.findAny()
+					.orElse(VILLAGER)
+			));
 		}
 
 		@Override
@@ -118,27 +144,46 @@ public enum Role {
 		}
 
 		@Override
-		public void initialize(@NotNull Game game) {
-			game.getRoleMetaData().put(this, new WarlockMetaData(game.getPlayers().values().stream()
-					.map(Player::getRole)
-					.filter(r -> r.getTeam() != Team.HOSTILE)
-					.sorted((o1, o2) -> Main.random.nextInt(-1, 2))
-					.findAny()
-					.orElse(VILLAGER)
-			));
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			Map<WarlockAction, String> targets = ctx.bodyValidator(Request.class)
+					.check(r -> r.getActions() != null, "Invalid 'actions'")
+					.get().getActions();
+
+			if(targets.containsKey(WarlockAction.MARK)) {
+				if(player.getGame().<WarlockMetaData>getRoleMetaData(this).getTargetLimit() <= 0) throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST);
+
+				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.MARK))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				player.getGame().getRoleMetaData().put(WEREWOLF, target.id);
+				player.getGame().<WarlockMetaData>getRoleMetaData(this).targetLimit--;
+			}
+
+			if(targets.containsKey(WarlockAction.VIEW)) {
+				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.VIEW))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+
+				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+				if (!player.getGame().<WarlockMetaData>getRoleMetaData(this).getVisible().add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			}
 		}
 
 		@Override
-		public void handle(@NotNull Player player, @NotNull Context ctx) {
-			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
-				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-				if (!player.getGame().<WarlockMetaData>getRoleMetaData(this).getVisible().add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+		public boolean canSeeRole(@NotNull Player player, @NotNull Player target) {
+			return player.getGame().<WarlockMetaData>getRoleMetaData(this).getVisible().contains(target.getId());
+		}
 
-				ctx.json(new Response(target.getEffectiveRole()));
-			});
+		@NotNull
+		@Override
+		public Role getEffectiveRole(@NotNull Game game) {
+			return game.<WarlockMetaData>getRoleMetaData(this).getCamouflage();
 		}
 	},
-	WEREWOLF(Team.HOSTILE, false, false, true, true, false, 0) {
+	WEREWOLF(Team.WEREWOLF, EnumSet.of(RoleFlag.VOTE, RoleFlag.VICTIM, RoleFlag.KILLING)) {
+		@Override
+		public boolean hasRole(@NotNull Player player) {
+			return super.hasRole(player) || player.getRole() == SPY;
+		}
+
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			super.onTurnStart(game);
@@ -151,24 +196,28 @@ public enum Role {
 		}
 
 		@Override
-		public boolean canSeeVictim(@NotNull Game game) {
-			return true;
-		}
+		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
+			if (player.getGame().getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
+				player.getGame().getPlayers().values().stream().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
+			}
 
-		@Override
-		public boolean hasRole(@NotNull Player player) {
-			return super.hasRole(player) || player.getRole() == SPY;
+			return super.handleDeath(player, reason);
 		}
 	},
-	WITCH(Team.VILLAGE, false, false, false, false, false, 1000) {
+	WITCH(Team.VILLAGE, EnumSet.of(RoleFlag.VICTIM)) {
 		public enum WitchAction {
 			POISON,
 			HEAL
 		}
 
 		@Getter
-		public static class WitchRequest {
+		public static class Request {
 			private Map<WitchAction, String> actions;
+		}
+
+		@Override
+		public void initialize(@NotNull Game game) {
+			game.getRoleMetaData().put(this, new HashSet<>(Arrays.asList(WitchAction.POISON, WitchAction.HEAL)));
 		}
 
 		@Override
@@ -178,20 +227,10 @@ public enum Role {
 		}
 
 		@Override
-		public void initialize(@NotNull Game game) {
-			game.getRoleMetaData().put(this, new HashSet<>(Arrays.asList(WitchAction.POISON, WitchAction.HEAL)));
-		}
-
-		@Override
-		public boolean canSeeVictim(@NotNull Game game) {
-			return true;
-		}
-
-		@Override
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			Set<WitchAction> available = player.getGame().getRoleMetaData(this);
-			Map<WitchAction, String> targets = ctx.bodyValidator(WitchRequest.class)
-					.check(r -> r.getActions() != null, "Invalid 'action'")
+			Map<WitchAction, String> targets = ctx.bodyValidator(Request.class)
+					.check(r -> r.getActions() != null, "Invalid 'actions'")
 					.get().getActions();
 
 			Set<Runnable> execute = new HashSet<>();
@@ -217,7 +256,12 @@ public enum Role {
 			execute.forEach(Runnable::run);
 		}
 	},
-	MORNING(Team.VILLAGE, true, true, false, false, false, Integer.MIN_VALUE) {
+	MORNING(Collections.emptyList(), EnumSet.of(RoleFlag.DAY)) {
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return true;
+		}
+
 		@Override
 		public void onTurnStart(@NotNull Game game) {
 			game.getNightActions().forEach(Runnable::run);
@@ -229,10 +273,15 @@ public enum Role {
 			game.next();
 		}
 	},
-	VILLAGER_ELECT(Team.VILLAGE, false, true, true, false, false, 0) {
+	VILLAGER_ELECT(Collections.emptyList(), EnumSet.of(RoleFlag.VOTE, RoleFlag.DAY)) {
 		@Override
 		public boolean hasRole(@NotNull Player player) {
 			return true;
+		}
+
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.hasModifier(Modifier.MAYOR));
 		}
 
 		@Override
@@ -242,27 +291,22 @@ public enum Role {
 		}
 
 		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(Player::isMayor);
-		}
-
-		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> player.setMayor(true));
+			game.evaluateVote().ifPresent(player -> player.getModifiers().add(Modifier.MAYOR));
 		}
 	},
-	VILLAGER(Team.VILLAGE, false, true, true, false, false, 0) {
-		@Override
-		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
-		}
-
+	VILLAGER(Team.VILLAGE, EnumSet.of(RoleFlag.VOTE, RoleFlag.DAY)) {
 		@Override
 		public boolean hasRole(@NotNull Player player) {
 			return true;
 		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
+			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
+		}
 	},
-	HUNTER(Team.VILLAGE, false, true, false, false, true, 100) {
+	HUNTER(Team.VILLAGE) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -279,48 +323,66 @@ public enum Role {
 
 			player.getGame().next();
 		}
-	},
-	JESTER(Team.NEUTRAL, false, false, false, false, false, 20) {
+
 		@Override
-		public boolean canUseRole(@NotNull Game game) {
+		public void onTurnEnd(@NotNull Game game) {
+			game.setCurrent(game.getRoleMetaData(HUNTER));
+		}
+
+		@Override
+		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
+			player.getGame().getRoleMetaData().put(Role.HUNTER, player.getGame().getCurrent());
+			player.getGame().setCurrent(Role.HUNTER);
+
 			return false;
 		}
 	},
-	SPY(Team.VILLAGE, false, false, false, false, false, 10) {
+	JESTER(List.of(Team.VILLAGE, Team.JESTER)) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
 		}
 
 		@Override
-		public boolean canSeeVictim(@NotNull Game game) {
-			return true;
+		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
+			if(reason != KillReason.VILLAGE_VOTE) return super.handleDeath(player, reason);
+
+			player.getGame().sendWin(Team.JESTER);
+			return false;
+		}
+	},
+	SPY(List.of(Team.VILLAGE), EnumSet.of(RoleFlag.VICTIM)) {
+		@Override
+		public boolean canUseRole(@NotNull Game game) {
+			return false;
+		}
+
+		@NotNull
+		@Override
+		public Aura getEffectiveAura(@NotNull Game game) {
+			return Aura.HOSTILE;
 		}
 	};
 
 	public final static List<Role> values = Arrays.asList(values());
 
-	private final Team team;
-	private final boolean system;
-	private final boolean day;
-	private final boolean vote;
-	private final boolean killing;
-	private final boolean dead;
-	private final int priority;
+	private final List<Team> teams;
+	private final EnumSet<RoleFlag> flags;
 
-	public void onTurnStart(@NotNull Game game) {
-		game.getPlayers().values().stream()
-				.filter(this::hasRole)
-				.filter(Player::isAlive)
-				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
+	Role(@NotNull List<Team> teams) {
+		this(teams, EnumSet.noneOf(RoleFlag.class));
 	}
 
-	public void onTurnEnd(@NotNull Game game) {
-
+	Role(@NotNull Team team) {
+		this(List.of(team));
 	}
 
-	public void handle(@NotNull Player player, @NotNull Context ctx) {
-		player.getGame().getInteractions().put(player.getId(), getTarget(player.getGame(), ctx, Player::isAlive).map(Player::getId).orElse(""));
+	Role(@NotNull Team team, @NotNull EnumSet<RoleFlag> flags) {
+		this(List.of(team), flags);
+	}
+
+	public final boolean hasFlag(@NotNull RoleFlag flag) {
+		return flags.contains(flag);
 	}
 
 	public void initialize(@NotNull Game game) { }
@@ -329,17 +391,40 @@ public enum Role {
 		return player.getRole() == this;
 	}
 
-	public boolean canSeeInteractions(@NotNull Player player) {
-		return hasRole(player);
-	}
-
 	public boolean canUseRole(@NotNull Game game) {
-		return true;
+		return game.getPlayers().values().stream().filter(Player::isAlive).anyMatch(this::hasRole);
 	}
 
-	public boolean canSeeVictim(@NotNull Game game) {
-		return false;
+	public void onTurnStart(@NotNull Game game) {
+		game.getPlayers().values().stream()
+				.filter(this::hasRole)
+				.filter(Player::isAlive)
+				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
 	}
+
+	public void handle(@NotNull Player player, @NotNull Context ctx) {
+		player.getGame().getInteractions().put(player.getId(), getTarget(player.getGame(), ctx, Player::isAlive).map(Player::getId).orElse(""));
+	}
+
+
+	public void onTurnEnd(@NotNull Game game) {
+
+	}
+
+	public boolean canSeeInteractions(@NotNull Player player) {
+		return hasRole(player) || player.isSpectating();
+	}
+
+	@NotNull
+	public Role getEffectiveRole(@NotNull Game game) {
+		return this;
+	}
+
+	@Nullable
+	public Aura getEffectiveAura(@NotNull Game game) {
+		return Aura.of(teams).orElse(null);
+	}
+
 
 	@NotNull
 	private static Optional<Player> getTarget(@NotNull Game game, @NotNull Context ctx, @Nullable Predicate<Player> condition) {

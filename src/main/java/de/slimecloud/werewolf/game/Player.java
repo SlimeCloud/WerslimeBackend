@@ -1,7 +1,8 @@
 package de.slimecloud.werewolf.game;
 
-import de.slimecloud.werewolf.data.*;
-import de.slimecloud.werewolf.data.meta.WarlockMetaData;
+import de.slimecloud.werewolf.data.GameState;
+import de.slimecloud.werewolf.data.KillReason;
+import de.slimecloud.werewolf.data.Sound;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,8 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.channels.ClosedChannelException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Slf4j
 @Setter
@@ -26,70 +31,94 @@ public class Player {
 	protected String name;
 	protected boolean master = false;
 
-	protected Role role = null;
-
-	protected boolean mayor = false;
-	protected boolean lover;
+	protected Role role = Role.VILLAGER;
+	protected final List<Team> teams = new ArrayList<>();
+	protected final Set<Modifier> modifiers = new HashSet<>();
 
 	@Setter(AccessLevel.NONE)
 	protected boolean alive = false;
 
 	protected Set<WsContext> clients = new HashSet<>();
 
+	public void reset() {
+		this.role = Role.VILLAGER;
+		this.teams.clear();
+		this.modifiers.clear();
+		this.alive = true;
+	}
+
 	@Nullable
 	public String getAvatar() {
 		return null;
 	}
 
-	public double voteCount(@NotNull Role current) {
-		if (!current.hasRole(this)) return 0;
-		if (current == Role.WEREWOLF && role == Role.SPY) return 0;
-
-		return current == Role.VILLAGER && mayor ? 1.5 : 1;
+	public boolean isSpectating() {
+		return !alive && game.getSettings().deadSpectators();
 	}
 
-	public boolean canSeeRole(@NotNull Player player) {
-		if (equals(player)) return true;
-		if (isLover() && player.isLover() && game.getSettings().revealLoverRoles()) return true;
+	public double getVoteCount() {
+		double vote = role.getVoteMultiplier(this);
 
-		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+		for(Modifier m : modifiers) vote *= m.getVoteMultiplier(this);
 
-		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
-		if (!isAlive() && game.getSettings().deadSpectators()) return true;
-
-		if (this.role == Role.SEER) return game.<Set<String>>getRoleMetaData(Role.SEER).contains(player.getId());
-		if (this.role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getVisible().contains(player.getId());
-
-		return false;
+		return vote;
 	}
 
-	public boolean canSeeTeam(@NotNull Player player) {
-		if (canSeeRole(player)) return true;
+	@NotNull
+	public List<Team> getTeams() {
+		return Stream.concat(teams.stream(), role.getTeams().stream()).toList();
+	}
 
-		if (getEffectiveTeam(false) == Team.HOSTILE && player.getEffectiveTeam(false) == Team.HOSTILE && role != Role.WARLOCK) return true;
+	public boolean hasTeam(@NotNull Team team) {
+		return teams.contains(team) || role.getTeams().contains(team);
+	}
 
-		if (!player.isAlive() && game.getSettings().revealDeadRoles()) return true;
+	public boolean hasModifier(@NotNull Modifier modifier) {
+		return modifiers.contains(modifier);
+	}
 
-		if (role == Role.HUNTER && game.current == Role.HUNTER) return false;
-		if (!isAlive() && game.getSettings().deadSpectators()) return true;
+	public boolean hasFlag(@NotNull RoleFlag flag) {
+		return role.getFlags().contains(flag);
+	}
 
-		if (this.role == Role.AURA_SEER) return game.<Set<String>>getRoleMetaData(Role.AURA_SEER).contains(player.getId());
-
-		return false;
+	public void addTeam(@NotNull Team team) {
+		if(!teams.contains(team)) teams.add(team);
 	}
 
 	@Nullable
-	public Role getEffectiveRole() {
-		if (isAlive() && role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getCamouflage();
-		return role;
+	public Role getRole(@Nullable Player other) {
+		if(equals(other) || other == null || other.isSpectating()) return role;
+
+		if(other.getModifiers().stream().anyMatch(m -> m.canSeeRole(other, this))) return role;
+		if(other.getRole().canSeeRole(other, this) || teams.stream().anyMatch(t -> t.canSeeRole(other, this))) return role.getEffectiveRole(game);
+
+		return null;
+	}
+
+	@NotNull
+	public List<Team> getTeams(@Nullable Player other) {
+		if(equals(other) || other == null || other.isSpectating()) return getTeams();
+
+		List<Team> teams = new ArrayList<>();
+
+		Role role = getRole(other);
+		if(role != null) teams.addAll(role.getTeams());
+		teams.addAll(this.teams.stream().filter(t -> t.isVisible(other, this)).filter(t -> !teams.contains(t)).toList());
+
+		return teams;
 	}
 
 	@Nullable
-	public Team getEffectiveTeam(boolean lover) {
-		if (isAlive() && role == Role.WARLOCK) return game.<WarlockMetaData>getRoleMetaData(Role.WARLOCK).getCamouflage().getTeam();
-		if (role == Role.SPY) return Team.HOSTILE;
-		if (this.lover && lover) return Team.NEUTRAL;
-		return role == null ? null : role.getTeam();
+	public Aura getAura(@Nullable Player other) {
+		return Aura.of(getTeams(other))
+				.orElse(other != null && other.getRole().canSeeAura(other, this)
+						? role.getEffectiveAura(game)
+						: null
+				);
+	}
+
+	public void setRole(@NotNull Role role) {
+		this.role = role;
 	}
 
 	public void setAlive(boolean alive, @Nullable KillReason reason) {
@@ -104,25 +133,17 @@ public class Player {
 	public void kill(@NotNull KillReason reason) {
 		game.scheduleNightAction(() -> {
 			game.getInteractions().remove(id);
-			mayor = false;
+			modifiers.removeIf(m -> !m.isPersistent());
 
-			if (role == Role.HUNTER) {
-				game.getRoleMetaData().put(Role.HUNTER, game.getCurrent());
-				game.setCurrent(Role.HUNTER);
-			} else if (role == Role.JESTER && reason == KillReason.VILLAGE_VOTE) game.sendWin(Winner.JESTER);
-			else sendEvent("KILL", new Object());
+			for(Modifier m : modifiers) if(!m.handleDeath(this, reason)) return;
+			for(Team t : teams) if(!t.handleDeath(this, reason)) return;
 
-			if (role != Role.JESTER) game.playSound(Sound.DEATH);
+			if(!role.handleDeath(this, reason)) return;
 
-			if (lover && reason != KillReason.LOVER) game.getPlayers().values().forEach(p -> {
-				if (p.isLover()) p.kill(KillReason.LOVER);
-			});
+			sendEvent("KILL", reason);
+			game.playSound(Sound.DEATH);
 
 			this.alive = false;
-
-			if (game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
-				game.getPlayers().values().stream().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
-			}
 		});
 	}
 
@@ -131,12 +152,15 @@ public class Player {
 	}
 
 	public void sendEvent(@NotNull String name, @NotNull Object data) {
-		clients.forEach(client -> {
+		clients.removeIf(client -> {
 			try {
 				client.send(new EventPayload(name, data));
 			} catch (Exception e) {
+				if(e.getCause() instanceof ClosedChannelException) return true;
 				logger.error("Failed to send event to {}", this, e);
 			}
+
+			return false;
 		});
 	}
 
@@ -160,7 +184,7 @@ public class Player {
 
 	@Override
 	public String toString() {
-		return id + " (" + name + ")";
+		return name + " (" + id + ")";
 	}
 
 	private record EventPayload(String name, Object data) {

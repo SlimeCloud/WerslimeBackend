@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.data;
 
 import de.slimecloud.werewolf.game.Game;
 import de.slimecloud.werewolf.game.Player;
+import de.slimecloud.werewolf.game.RoleFlag;
 import de.slimecloud.werewolf.main.discord.DiscordBot;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -21,8 +22,8 @@ public enum MuteSystem {
 		@Override
 		public RestAction<Void> mute(@NotNull Game game, @NotNull GuildVoiceState member, @Nullable Player player) {
 			return DiscordBot.updateMute(member,
-					game.isStarted() && (player == null || (game.getCurrent().isDay() ^ player.isAlive())),
-					game.isStarted() && (player != null && (!game.getCurrent().isDay() && player.isAlive()))
+					game.isStarted() && (player == null || (game.getCurrent().hasFlag(RoleFlag.DAY) ^ player.isAlive())),
+					game.isStarted() && (player != null && (!game.getCurrent().hasFlag(RoleFlag.DAY) && player.isAlive()))
 			);
 		}
 	},

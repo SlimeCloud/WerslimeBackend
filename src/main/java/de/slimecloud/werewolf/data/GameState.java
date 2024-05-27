@@ -15,9 +15,6 @@ public class GameState {
 
 	@NotNull
 	public static GameState create(@NotNull Game game, @NotNull Player player) {
-		return new GameState(GameInfo.create(game, player), PlayerInfo.create(player, true,
-				player.isLover() || player.getRole() == Role.AMOR || (game.getSettings().deadSpectators() && !player.isAlive() && !(game.getCurrent() == Role.HUNTER && player.getRole() == Role.HUNTER)),
-				true, true
-		));
+		return new GameState(GameInfo.create(game, player), PlayerInfo.create(player, player));
 	}
 }

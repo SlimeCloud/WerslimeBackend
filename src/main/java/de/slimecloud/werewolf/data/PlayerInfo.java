@@ -1,10 +1,15 @@
 package de.slimecloud.werewolf.data;
 
+import de.slimecloud.werewolf.game.Aura;
+import de.slimecloud.werewolf.game.Modifier;
 import de.slimecloud.werewolf.game.Player;
 import de.slimecloud.werewolf.game.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 @Getter
 @AllArgsConstructor
@@ -13,32 +18,30 @@ public class PlayerInfo {
 	private final String avatar;
 
 	private final String name;
-	private final Role role;
-	private final Team team;
-
 	private final boolean master;
-	private final boolean alive;
-	private final boolean mayor;
-	private final boolean lover;
 
+	private final boolean alive;
 	private final boolean connected;
 
+	private final Role role;
+	private final Aura aura;
+	private final Collection<Modifier> modifiers;
+
 	@NotNull
-	public static PlayerInfo create(@NotNull Player player, boolean self, boolean lover, boolean role, boolean team) {
+	public static PlayerInfo create(@NotNull Player player, @Nullable Player viewer) {
 		return new PlayerInfo(
 				player.getId(),
 				player.getAvatar(),
 
 				player.getName(),
-				role ? (self ? player.getRole() : player.getEffectiveRole()) : null,
-				team && player.getRole() != null ? (self ? player.getRole().getTeam() : (role ? player.getEffectiveRole().getTeam() : player.getEffectiveTeam(lover))) : null,
-
 				player.isMaster(),
-				player.isAlive(),
-				player.isMayor(),
-				lover && player.isLover(),
 
-				!player.getClients().isEmpty()
+				player.isAlive(),
+				!player.getClients().isEmpty(),
+
+				player.getRole(viewer),
+				player.getAura(viewer),
+				viewer == player ? player.getModifiers() : player.getModifiers().stream().filter(m -> m.isVisible(viewer)).toList()
 		);
 	}
 }
