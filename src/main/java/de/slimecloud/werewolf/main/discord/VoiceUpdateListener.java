@@ -28,10 +28,10 @@ public class VoiceUpdateListener extends ListenerAdapter {
 			List<AuditLogEntry> entries = event.getGuild().retrieveAuditLogs()
 					.type(ActionType.MEMBER_UPDATE)
 					.order(PaginationAction.PaginationOrder.BACKWARD)
-					.stream()
+					.limit(50).stream()
 					.filter(e -> e.getTargetIdLong() == event.getMember().getIdLong())
 					.filter(e -> e.getChanges().containsKey(AuditLogKey.MEMBER_MUTE.getKey()) || e.getChanges().containsKey(AuditLogKey.MEMBER_DEAF.getKey()))
-					.limit(50).toList();
+					.toList();
 
 			if (muted.get() && entries.stream()
 					.filter(e -> e.getChangeByKey(AuditLogKey.MEMBER_MUTE) != null)
