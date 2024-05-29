@@ -337,7 +337,7 @@ public enum Role implements IPlayerModifier {
 			return false;
 		}
 	},
-	JESTER(List.of(Team.VILLAGE, Team.JESTER)) {
+	JESTER(List.of(Team.JESTER)) {
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
