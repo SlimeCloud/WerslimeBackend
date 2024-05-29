@@ -41,7 +41,7 @@ public class PlayerInfo {
 
 				player.getRole(viewer),
 				player.getAura(viewer),
-				viewer == player ? player.getModifiers() : player.getModifiers().stream().filter(m -> m.isVisible(viewer)).toList()
+				player.getModifiers(viewer)
 		);
 	}
 }

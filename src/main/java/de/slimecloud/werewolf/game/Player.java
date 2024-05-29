@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -53,7 +50,7 @@ public class Player {
 	}
 
 	public boolean isSpectating() {
-		return !alive && game.getSettings().deadSpectators();
+		return (!alive && game.getSettings().deadSpectators()) || !game.started;
 	}
 
 	public double getVoteCount() {
@@ -83,6 +80,12 @@ public class Player {
 
 	public void addTeam(@NotNull Team team) {
 		if(!teams.contains(team)) teams.add(team);
+	}
+
+	@NotNull
+	public Collection<Modifier> getModifiers(@Nullable Player other) {
+		if(equals(other) || other == null || other.isSpectating()) return modifiers;
+		return modifiers.stream().filter(m -> m.isVisible(other)).toList();
 	}
 
 	@Nullable

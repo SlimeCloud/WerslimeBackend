@@ -1,7 +1,6 @@
 package de.slimecloud.werewolf.game;
 
 import de.mineking.javautils.ID;
-import de.slimecloud.werewolf.data.PlayerInfo;
 import de.slimecloud.werewolf.data.Sound;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
@@ -21,11 +20,9 @@ public class Game {
 	protected final Main main;
 
 	protected final String id;
-
 	protected final Map<String, Player> players = new HashMap<>();
 
 	protected boolean started;
-
 	protected final GameSettings settings = GameSettings.createDefault();
 
 	@Setter
@@ -154,6 +151,8 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Team team) {
+		started = false;
+
 		List<Player> winners = players.values().stream()
 				.filter(p -> p.hasTeam(team))
 				.toList();
@@ -165,7 +164,7 @@ public class Game {
 		winners.forEach(p -> p.playSound(Sound.WIN));
 		losers.forEach(p -> p.playSound(Sound.LOSE));
 
-		sendEvent("END", new GameEnding(team, winners.stream().map(p -> PlayerInfo.create(p, null)).toList()));
+		sendEvent("END", new GameEnding(team, winners.stream().map(Player::getId).toList()));
 	}
 
 	@NotNull
@@ -220,7 +219,7 @@ public class Game {
 		return Role.values()[i.get()];
 	}
 
-	private record GameEnding(Team winner, List<PlayerInfo> players) {
+	private record GameEnding(Team winner, List<String> players) {
 	}
 
 	public void cleanup() {
