@@ -94,7 +94,7 @@ public class Player {
 
 	@Nullable
 	public Role getRole(@Nullable Player other) {
-		if (equals(other) || other == null || other.isSpectating()) return role;
+		if (equals(other) || other == null || other.isSpectating() || (!alive && game.getSettings().revealDeadRoles())) return role;
 
 		if (other.getModifiers().stream().anyMatch(m -> m.canSeeRole(other, this))) return role;
 		if (other.getRole().canSeeRole(other, this) || teams.stream().anyMatch(t -> t.canSeeRole(other, this))) return role.getEffectiveRole(game);
@@ -104,7 +104,7 @@ public class Player {
 
 	@NotNull
 	public List<Team> getTeams(@Nullable Player other) {
-		if (equals(other) || other == null || other.isSpectating()) return getTeams();
+		if (equals(other) || other == null || other.isSpectating() || (!alive && game.getSettings().revealDeadRoles())) return getTeams();
 
 		List<Team> teams = new ArrayList<>();
 
