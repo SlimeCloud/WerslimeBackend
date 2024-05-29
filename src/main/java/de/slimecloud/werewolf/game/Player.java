@@ -60,7 +60,7 @@ public class Player {
 	public double getVoteCount() {
 		double vote = role.getVoteMultiplier(this);
 
-		for(Modifier m : modifiers) vote *= m.getVoteMultiplier(this);
+		for (Modifier m : modifiers) vote *= m.getVoteMultiplier(this);
 
 		return vote;
 	}
@@ -83,33 +83,33 @@ public class Player {
 	}
 
 	public void addTeam(@NotNull Team team) {
-		if(!teams.contains(team)) teams.add(team);
+		if (!teams.contains(team)) teams.add(team);
 	}
 
 	@NotNull
 	public Collection<Modifier> getModifiers(@Nullable Player other) {
-		if(equals(other) || other == null || other.isSpectating()) return modifiers;
+		if (equals(other) || other == null || other.isSpectating()) return modifiers;
 		return modifiers.stream().filter(m -> m.isVisible(other)).toList();
 	}
 
 	@Nullable
 	public Role getRole(@Nullable Player other) {
-		if(equals(other) || other == null || other.isSpectating()) return role;
+		if (equals(other) || other == null || other.isSpectating()) return role;
 
-		if(other.getModifiers().stream().anyMatch(m -> m.canSeeRole(other, this))) return role;
-		if(other.getRole().canSeeRole(other, this) || teams.stream().anyMatch(t -> t.canSeeRole(other, this))) return role.getEffectiveRole(game);
+		if (other.getModifiers().stream().anyMatch(m -> m.canSeeRole(other, this))) return role;
+		if (other.getRole().canSeeRole(other, this) || teams.stream().anyMatch(t -> t.canSeeRole(other, this))) return role.getEffectiveRole(game);
 
 		return null;
 	}
 
 	@NotNull
 	public List<Team> getTeams(@Nullable Player other) {
-		if(equals(other) || other == null || other.isSpectating()) return getTeams();
+		if (equals(other) || other == null || other.isSpectating()) return getTeams();
 
 		List<Team> teams = new ArrayList<>();
 
 		Role role = getRole(other);
-		if(role != null) teams.addAll(role.getTeams());
+		if (role != null) teams.addAll(role.getTeams());
 		teams.addAll(this.teams.stream().filter(t -> t.isVisible(other, this)).filter(t -> !teams.contains(t)).toList());
 
 		return teams;
@@ -142,10 +142,10 @@ public class Player {
 			game.getInteractions().remove(id);
 			modifiers.removeIf(m -> !m.isPersistent());
 
-			for(Modifier m : modifiers) if(!m.handleDeath(this, reason)) return;
-			for(Team t : teams) if(!t.handleDeath(this, reason)) return;
+			for (Modifier m : modifiers) if (!m.handleDeath(this, reason)) return;
+			for (Team t : teams) if (!t.handleDeath(this, reason)) return;
 
-			if(!role.handleDeath(this, reason)) return;
+			if (!role.handleDeath(this, reason)) return;
 
 			sendEvent("KILL", reason);
 			game.playSound(Sound.DEATH);
@@ -163,7 +163,7 @@ public class Player {
 			try {
 				client.send(new EventPayload(name, data));
 			} catch (Exception e) {
-				if(e.getCause() instanceof ClosedChannelException) return true;
+				if (e.getCause() instanceof ClosedChannelException) return true;
 				logger.error("Failed to send event to {}", this, e);
 			}
 

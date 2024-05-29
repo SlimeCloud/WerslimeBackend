@@ -17,7 +17,7 @@ public enum Team implements IPlayerModifier {
 	LOVER(Aura.NEUTRAL) {
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			if(reason != KillReason.LOVER && player.getRole() != Role.AMOR) {
+			if (reason != KillReason.LOVER && player.getRole() != Role.AMOR) {
 				player.getGame().getPlayers().values().stream()
 						.filter(p -> p.hasModifier(Modifier.LOVER))
 						.forEach(p -> p.kill(KillReason.LOVER));
@@ -28,7 +28,7 @@ public enum Team implements IPlayerModifier {
 
 		@Override
 		public boolean isWinning(@NotNull Game game) {
-			if(playerExists(game, p -> p.hasFlag(RoleFlag.KILLING))) return false;
+			if (playerExists(game, p -> p.hasFlag(RoleFlag.KILLING))) return false;
 
 			int lover = getPlayerCount(game, p -> p.hasTeam(LOVER));
 			int other = getPlayerCount(game, p -> !p.hasTeam(LOVER));

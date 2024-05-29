@@ -149,8 +149,8 @@ public enum Role implements IPlayerModifier {
 					.check(r -> r.getActions() != null, "Invalid 'actions'")
 					.get().getActions();
 
-			if(targets.containsKey(WarlockAction.MARK)) {
-				if(player.getGame().<WarlockMetaData>getRoleMetaData(this).getTargetLimit() <= 0) throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST);
+			if (targets.containsKey(WarlockAction.MARK)) {
+				if (player.getGame().<WarlockMetaData>getRoleMetaData(this).getTargetLimit() <= 0) throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST);
 
 				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.MARK))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
@@ -159,7 +159,7 @@ public enum Role implements IPlayerModifier {
 				player.getGame().<WarlockMetaData>getRoleMetaData(this).targetLimit--;
 			}
 
-			if(targets.containsKey(WarlockAction.VIEW)) {
+			if (targets.containsKey(WarlockAction.VIEW)) {
 				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.VIEW))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
@@ -345,7 +345,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			if(reason != KillReason.VILLAGE_VOTE) return super.handleDeath(player, reason);
+			if (reason != KillReason.VILLAGE_VOTE) return super.handleDeath(player, reason);
 
 			player.getGame().sendWin(Team.JESTER);
 			return false;
