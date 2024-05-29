@@ -53,6 +53,10 @@ public class Player {
 		return (!alive && game.getSettings().deadSpectators()) || !game.started;
 	}
 
+	public boolean canSeeVictim() {
+		return isSpectating() || (role.hasFlag(RoleFlag.VICTIM) && role == game.current);
+	}
+
 	public double getVoteCount() {
 		double vote = role.getVoteMultiplier(this);
 

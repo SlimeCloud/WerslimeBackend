@@ -47,7 +47,7 @@ public class GameInfo {
 				game.getSettings(),
 
 				game.getCurrent(),
-				self != null && (self.getRole().hasFlag(RoleFlag.VICTIM) || self.isSpectating()) ? game.getVictim() : null,
+				self != null && self.canSeeVictim() ? game.getVictim() : null,
 
 				self != null && game.getCurrent().canSeeInteractions(self) ? game.getInteractions() : null,
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null,
