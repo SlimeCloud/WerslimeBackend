@@ -109,9 +109,6 @@ public class Game {
 		reset();
 		int players = (int) getPlayers().count();
 
-		System.out.println(players);
-		System.out.println(settings.roles());
-
 		List<Role> roles = new ArrayList<>(players);
 		for (int i = 0; i < settings.werewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
@@ -119,8 +116,6 @@ public class Game {
 				.limit(Math.max(players - settings.werewolfAmount(), 0))
 				.toList()
 		);
-
-		System.out.println(roles);
 
 		for (int i = roles.size(); i < getPlayers().count(); i++) roles.add(Role.VILLAGER);
 
