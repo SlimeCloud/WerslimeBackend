@@ -63,7 +63,7 @@ public enum Team implements IPlayerModifier {
 	VILLAGE(Aura.VILLAGE) {
 		@Override
 		public boolean isWinning(@NotNull Game game) {
-			int hostile = getPlayerCount(game, p -> p.getTeams().stream().anyMatch(t -> t.getAura() == Aura.HOSTILE));
+			int hostile = getPlayerCount(game, p -> p.hasFlag(RoleFlag.KILLING));
 			return hostile == 0;
 		}
 
