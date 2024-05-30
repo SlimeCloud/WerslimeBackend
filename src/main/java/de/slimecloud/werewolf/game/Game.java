@@ -105,6 +105,7 @@ public class Game {
 
 	public void start() {
 		if (started) return;
+		started = true;
 
 		reset();
 		int players = (int) getPlayers().count();
@@ -118,8 +119,6 @@ public class Game {
 		);
 
 		for (int i = roles.size(); i < getPlayers().count(); i++) roles.add(Role.VILLAGER);
-
-		started = true;
 
 		getPlayers().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 		Role.values.forEach(r -> r.initialize(this));
