@@ -365,8 +365,8 @@ public enum Role implements IPlayerModifier {
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-				target.kill(KillReason.HUNTER);
 				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.HUNTER, new String[] { target.getId() });
+				target.kill(KillReason.HUNTER);
 			});
 
 			player.kill(player.getGame().<HunterMetaData>getRoleMetaData(HUNTER).getReason());
