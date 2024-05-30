@@ -343,8 +343,8 @@ public enum Role implements IPlayerModifier {
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
 			game.evaluateVote().ifPresent(player -> {
-				player.kill(KillReason.VILLAGE_VOTE);
 				game.pushProtocol(ProtocolEntry.ProtocolType.VILLAGER, new String[] { player.getId() });
+				player.kill(KillReason.VILLAGE_VOTE);
 			});
 		}
 	},
