@@ -28,7 +28,7 @@ public enum Team implements IPlayerModifier {
 
 		@Override
 		public boolean isWinning(@NotNull Game game) {
-			return game.getPlayers().allMatch(p -> p.hasTeam(LOVER));
+			return game.getPlayers().filter(Player::isAlive).allMatch(p -> p.hasTeam(LOVER));
 		}
 
 		@Override
