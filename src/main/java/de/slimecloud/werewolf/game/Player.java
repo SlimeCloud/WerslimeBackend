@@ -60,7 +60,7 @@ public class Player {
 	public double getVoteCount() {
 		double vote = role.getVoteMultiplier(this);
 
-		for (Modifier m : modifiers) vote *= m.getVoteMultiplier(this);
+		for (IPlayerModifier m : getBehavior().toList()) vote *= m.getVoteMultiplier(this);
 
 		return vote;
 	}
@@ -124,6 +124,17 @@ public class Player {
 				);
 	}
 
+	@NotNull
+	public Stream<? extends IPlayerModifier> getBehavior() {
+		return Stream.concat(
+				Stream.concat(
+						getTeams().stream(),
+						getModifiers().stream()
+				),
+				Stream.of(role)
+		);
+	}
+
 	public void setRole(@NotNull Role role) {
 		this.role = role;
 	}
@@ -142,10 +153,8 @@ public class Player {
 			game.getInteractions().remove(id);
 			modifiers.removeIf(m -> !m.isPersistent());
 
-			for (Modifier m : modifiers) if (!m.handleDeath(this, reason)) return;
-			for (Team t : teams) if (!t.handleDeath(this, reason)) return;
-
-			if (!role.handleDeath(this, reason)) return;
+			//This can NOT be replaced with "anyMatch" because handleDeath has to be executed for all modifiers!
+			if (getBehavior().filter(b -> !b.handleDeath(this, reason)).count() > 0) return;
 
 			sendEvent("KILL", reason);
 			game.playSound(Sound.DEATH);
