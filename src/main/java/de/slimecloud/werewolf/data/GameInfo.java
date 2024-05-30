@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -49,10 +50,13 @@ public class GameInfo {
 				game.getCurrent(),
 				self != null && self.canSeeVictim() ? game.getVictim() : null,
 
-				self != null && game.getCurrent().canSeeInteractions(self) ? game.getInteractions() : null,
+				self != null ? (game.getCurrent().canSeeInteractions(self)
+						? game.getInteractions()
+						: game.getInteractions().entrySet().stream().filter(e -> e.getKey().equals(self.getId())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+				) : null,
 				self != null ? game.getRoleMetaData().get(self.getRole()) : null,
 
-				self != null && game.getCurrent().canSeeInteractions(self) ? target.map(Player::getId).orElse(null) : null,
+				self != null && game.getCurrent().canSeeTarget(self) ? target.map(Player::getId).orElse(null) : null,
 				interacted,
 				total,
 				interacted >= total && (!game.getCurrent().hasFlag(RoleFlag.VOTE) || target.isPresent())

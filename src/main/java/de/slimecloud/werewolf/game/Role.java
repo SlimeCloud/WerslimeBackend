@@ -180,11 +180,6 @@ public enum Role implements IPlayerModifier {
 	},
 	WEREWOLF(Team.WEREWOLF, EnumSet.of(RoleFlag.VOTE, RoleFlag.VICTIM, RoleFlag.KILLING)) {
 		@Override
-		public boolean hasRole(@NotNull Player player) {
-			return super.hasRole(player) || player.getRole() == SPY;
-		}
-
-		@Override
 		public void onTurnStart(@NotNull Game game) {
 			super.onTurnStart(game);
 			game.playSound(Sound.HOWL, 0.5);
@@ -202,6 +197,21 @@ public enum Role implements IPlayerModifier {
 			}
 
 			return super.handleDeath(player, reason);
+		}
+
+		@Override
+		public boolean canSeeAura(@NotNull Player player, @NotNull Player target) {
+			return player.getTeams().contains(Team.WEREWOLF) && (target.getRole() == WEREWOLF || target.getRole() == SPY);
+		}
+
+		@Override
+		public boolean canSeeInteractions(@NotNull Player player) {
+			return false;
+		}
+
+		@Override
+		public boolean canSeeTarget(@NotNull Player player) {
+			return player.getTeams().contains(Team.WEREWOLF) || player.getRole() == SPY;
 		}
 	},
 	WITCH(Team.VILLAGE, EnumSet.of(RoleFlag.VICTIM)) {
@@ -423,6 +433,10 @@ public enum Role implements IPlayerModifier {
 
 	public boolean canSeeInteractions(@NotNull Player player) {
 		return hasRole(player) || player.isSpectating();
+	}
+
+	public boolean canSeeTarget(@NotNull Player player) {
+		return canSeeInteractions(player);
 	}
 
 	@NotNull
