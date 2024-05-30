@@ -264,13 +264,16 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public void onTurnStart(@NotNull Game game) {
+			game.next();
+		}
+
+		@Override
+		public void onTurnEnd(@NotNull Game game) {
 			game.getNightActions().forEach(Runnable::run);
 			game.getNightActions().clear();
 
 			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
 			game.setVictim(null);
-
-			game.next();
 		}
 	},
 	VILLAGER_ELECT(Collections.emptyList(), EnumSet.of(RoleFlag.VOTE, RoleFlag.DAY)) {
@@ -306,7 +309,14 @@ public enum Role implements IPlayerModifier {
 			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
 		}
 	},
-	HUNTER(Team.VILLAGE) {
+	HUNTER(Team.VILLAGE, EnumSet.of(RoleFlag.DAY)) {
+		@Getter
+		@RequiredArgsConstructor
+		public static class HunterMetaData {
+			private final Role lastRole;
+			private final KillReason reason;
+		}
+
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
 			return false;
@@ -316,22 +326,22 @@ public enum Role implements IPlayerModifier {
 		public void handle(@NotNull Player player, @NotNull Context ctx) {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
 				target.kill(KillReason.HUNTER);
-				player.getGame().playSound(Sound.SHOOT);
 			});
 
+			player.kill(player.getGame().<HunterMetaData>getRoleMetaData(HUNTER).getReason());
+			player.getGame().playSound(Sound.SHOOT);
 			player.getGame().next();
 		}
 
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			game.setCurrent(game.getRoleMetaData(HUNTER));
+			game.setCurrent(game.<HunterMetaData>getRoleMetaData(HUNTER).getLastRole());
 		}
 
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			player.getGame().getRoleMetaData().put(Role.HUNTER, player.getGame().getCurrent());
+			player.getGame().getRoleMetaData().put(Role.HUNTER, new HunterMetaData(player.getGame().getCurrent(), reason));
 			player.getGame().setCurrent(Role.HUNTER);
 
 			return false;
