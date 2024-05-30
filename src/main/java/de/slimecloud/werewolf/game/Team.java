@@ -14,18 +14,6 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public enum Team implements IPlayerModifier {
 	JESTER(Aura.NEUTRAL),
-	VILLAGE(Aura.VILLAGE) {
-		@Override
-		public boolean isWinning(@NotNull Game game) {
-			int hostile = getPlayerCount(game, p -> p.hasFlag(RoleFlag.KILLING));
-			return hostile == 0;
-		}
-
-		@Override
-		public boolean isVisible(@NotNull Player player, @NotNull Player target) {
-			return false;
-		}
-	},
 	LOVER(Aura.NEUTRAL) {
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
@@ -40,12 +28,7 @@ public enum Team implements IPlayerModifier {
 
 		@Override
 		public boolean isWinning(@NotNull Game game) {
-			if (playerExists(game, p -> p.hasFlag(RoleFlag.KILLING))) return false;
-
-			int lover = getPlayerCount(game, p -> p.hasTeam(LOVER));
-			int other = getPlayerCount(game, p -> !p.hasTeam(LOVER));
-
-			return lover >= other;
+			return game.getPlayers().allMatch(p -> p.hasTeam(LOVER));
 		}
 
 		@Override
@@ -70,6 +53,18 @@ public enum Team implements IPlayerModifier {
 		@Override
 		public boolean isVisible(@NotNull Player player, @NotNull Player target) {
 			return super.isVisible(player, target) && player.getRole() != Role.WARLOCK && target.getRole() != Role.WARLOCK;
+		}
+	},
+	VILLAGE(Aura.VILLAGE) {
+		@Override
+		public boolean isWinning(@NotNull Game game) {
+			int hostile = getPlayerCount(game, p -> p.hasFlag(RoleFlag.KILLING));
+			return hostile == 0;
+		}
+
+		@Override
+		public boolean isVisible(@NotNull Player player, @NotNull Player target) {
+			return false;
 		}
 	};
 
