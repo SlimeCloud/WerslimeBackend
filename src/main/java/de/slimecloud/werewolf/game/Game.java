@@ -105,9 +105,9 @@ public class Game {
 
 	public void start() {
 		if (started) return;
-		started = true;
-
 		reset();
+
+		started = true;
 		int players = (int) getPlayers().count();
 
 		List<Role> roles = new ArrayList<>(players);
