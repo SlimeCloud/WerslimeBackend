@@ -116,7 +116,7 @@ public enum Role implements IPlayerModifier {
 			return player.getGame().<Set<String>>getRoleMetaData(this).contains(target.getId());
 		}
 	},
-	WARLOCK(Team.WEREWOLF) {
+	WARLOCK(Team.WEREWOLF, EnumSet.of(RoleFlag.KILLING)) {
 		@Getter
 		@Setter
 		@RequiredArgsConstructor
@@ -209,7 +209,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			if (player.getGame().getPlayers().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
+			if (player.getGame().getPlayers().filter(Player::isAlive).filter(p -> p.getRole() == Role.WEREWOLF).count() <= 1) {
 				player.getGame().getPlayers().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
 			}
 
