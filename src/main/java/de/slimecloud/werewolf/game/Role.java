@@ -3,6 +3,7 @@ package de.slimecloud.werewolf.game;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.data.KillReason;
+import de.slimecloud.werewolf.data.ProtocolEntry;
 import de.slimecloud.werewolf.data.Sound;
 import de.slimecloud.werewolf.main.Main;
 import io.javalin.http.Context;
@@ -30,7 +31,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return super.canUseRole(game) && game.getPlayers().values().stream().noneMatch(p -> p.hasTeam(Team.LOVER) && p.getRole() != AMOR);
+			return super.canUseRole(game) && game.getPlayers().noneMatch(p -> p.hasTeam(Team.LOVER) && p.getRole() != AMOR);
 		}
 
 		@Override
@@ -40,20 +41,25 @@ public enum Role implements IPlayerModifier {
 					.check(r -> r.getTargets().size() == 2, "Invalid 'targets'")
 					.get();
 
-			Player first = player.getGame().getPlayers().get(request.getTargets().get(0));
-			Player second = player.getGame().getPlayers().get(request.getTargets().get(1));
+			Optional<Player> first = player.getGame().getPlayer(request.getTargets().get(0)).filter(Player::isAlive);
+			Optional<Player> second = player.getGame().getPlayer(request.getTargets().get(1)).filter(Player::isAlive);
 
-			if (first == null || !first.isAlive() || second == null || !second.isAlive() || first.equals(second)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+			if (first.isEmpty() || second.isEmpty() || first.equals(second)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
-			first.addTeam(Team.LOVER);
-			second.addTeam(Team.LOVER);
+			first.get().addTeam(Team.LOVER);
+			second.get().addTeam(Team.LOVER);
 
-			first.getModifiers().add(Modifier.LOVER);
-			second.getModifiers().add(Modifier.LOVER);
+			first.get().getModifiers().add(Modifier.LOVER);
+			second.get().getModifiers().add(Modifier.LOVER);
 
-			player.getGame().getPlayers().values().stream()
+			player.getGame().getPlayers()
 					.filter(p -> p.hasTeam(Team.LOVER))
 					.forEach(p -> p.playSound(Sound.LOVE));
+
+			player.getGame().pushProtocol(ProtocolEntry.ProtocolType.AMOR, new String[] {
+					first.get().getId(),
+					second.get().getId()
+			});
 		}
 	},
 	SEER(Team.VILLAGE) {
@@ -73,6 +79,8 @@ public enum Role implements IPlayerModifier {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.SEER, new String[] { target.getId() });
 			});
 		}
 
@@ -98,6 +106,8 @@ public enum Role implements IPlayerModifier {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<Set<String>>getRoleMetaData(this).add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.AURA_SEER, new String[] { target.getId() });
 			});
 		}
 
@@ -128,7 +138,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public void initialize(@NotNull Game game) {
-			game.getRoleMetaData().put(this, new WarlockMetaData(game.getPlayers().values().stream()
+			game.getRoleMetaData().put(this, new WarlockMetaData(game.getPlayers()
 					.map(Player::getRole)
 					.filter(r -> r.getTeams().contains(Team.VILLAGE))
 					.sorted((o1, o2) -> Main.random.nextInt(-1, 2))
@@ -152,18 +162,22 @@ public enum Role implements IPlayerModifier {
 			if (targets.containsKey(WarlockAction.MARK)) {
 				if (player.getGame().<WarlockMetaData>getRoleMetaData(this).getTargetLimit() <= 0) throw new ErrorResponse(ErrorResponseType.INVALID_REQUEST);
 
-				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.MARK))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+				Player target = player.getGame().getPlayer(targets.get(WarlockAction.MARK)).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 
 				player.getGame().getRoleMetaData().put(WEREWOLF, target.id);
 				player.getGame().<WarlockMetaData>getRoleMetaData(this).targetLimit--;
+
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.WARLOCK_MARK, new String[] { target.getId() });
 			}
 
 			if (targets.containsKey(WarlockAction.VIEW)) {
-				Player target = Optional.ofNullable(player.getGame().getPlayers().get(targets.get(WarlockAction.VIEW))).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+				Player target = player.getGame().getPlayer(targets.get(WarlockAction.VIEW)).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
 
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				if (!player.getGame().<WarlockMetaData>getRoleMetaData(this).getVisible().add(target.getId())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.WARLOCK_VIEW, new String[] { target.getId() });
 			}
 		}
 
@@ -187,13 +201,16 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> game.setVictim(player.getId()));
+			game.evaluateVote().ifPresent(player -> {
+				game.setVictim(player.getId());
+				game.pushProtocol(ProtocolEntry.ProtocolType.WEREWOLF, new String[] { player.getId() });
+			});
 		}
 
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			if (player.getGame().getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
-				player.getGame().getPlayers().values().stream().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
+			if (player.getGame().getPlayers().filter(Player::isAlive).noneMatch(p -> p.getRole() == Role.WEREWOLF)) {
+				player.getGame().getPlayers().filter(Player::isAlive).filter(p -> p.getRole() == Role.WARLOCK).forEach(p -> p.setRole(Role.WEREWOLF));
 			}
 
 			return super.handleDeath(player, reason);
@@ -252,11 +269,17 @@ public enum Role implements IPlayerModifier {
 				switch (action) {
 					case HEAL -> {
 						if (!target.equals(player.getGame().getVictim())) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-						execute.add(() -> player.getGame().setVictim(null));
+						execute.add(() -> {
+							player.getGame().setVictim(null);
+							player.getGame().pushProtocol(ProtocolEntry.ProtocolType.WITCH_HEAL, new String[] { target });
+						});
 					}
 					case POISON -> {
-						Player p = Optional.ofNullable(player.getGame().getPlayers().get(target)).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
-						execute.add(() -> p.kill(KillReason.WITCH_POISON));
+						Player p = player.getGame().getPlayer(target).filter(Player::isAlive).orElseThrow(() -> new ErrorResponse(ErrorResponseType.INVALID_TARGET));
+						execute.add(() -> {
+							p.kill(KillReason.WITCH_POISON);
+							player.getGame().pushProtocol(ProtocolEntry.ProtocolType.WITCH_POISON, new String[] { target });
+						});
 					}
 				}
 
@@ -282,7 +305,7 @@ public enum Role implements IPlayerModifier {
 			game.getNightActions().forEach(Runnable::run);
 			game.getNightActions().clear();
 
-			Optional.ofNullable(game.getVictim()).map(game.getPlayers()::get).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
+			Optional.ofNullable(game.getVictim()).flatMap(game::getPlayer).ifPresent(p -> p.kill(KillReason.WEREWOLF_ATTACK));
 			game.setVictim(null);
 		}
 	},
@@ -294,7 +317,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean canUseRole(@NotNull Game game) {
-			return game.getPlayers().values().stream().filter(Player::isAlive).noneMatch(p -> p.hasModifier(Modifier.MAYOR));
+			return game.getPlayers().filter(Player::isAlive).noneMatch(p -> p.hasModifier(Modifier.MAYOR));
 		}
 
 		@Override
@@ -305,7 +328,10 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> player.getModifiers().add(Modifier.MAYOR));
+			game.evaluateVote().ifPresent(player -> {
+				player.getModifiers().add(Modifier.MAYOR);
+				game.pushProtocol(ProtocolEntry.ProtocolType.VILLAGER_ELECT, new String[] { player.getId() });
+			});
 		}
 	},
 	VILLAGER(Team.VILLAGE, EnumSet.of(RoleFlag.VOTE, RoleFlag.DAY)) {
@@ -316,7 +342,10 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
-			game.evaluateVote().ifPresent(player -> player.kill(KillReason.VILLAGE_VOTE));
+			game.evaluateVote().ifPresent(player -> {
+				player.kill(KillReason.VILLAGE_VOTE);
+				game.pushProtocol(ProtocolEntry.ProtocolType.VILLAGER, new String[] { player.getId() });
+			});
 		}
 	},
 	HUNTER(Team.VILLAGE, EnumSet.of(RoleFlag.DAY)) {
@@ -337,6 +366,7 @@ public enum Role implements IPlayerModifier {
 			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
 				if (target.equals(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
 				target.kill(KillReason.HUNTER);
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.HUNTER, new String[] { target.getId() });
 			});
 
 			player.kill(player.getGame().<HunterMetaData>getRoleMetaData(HUNTER).getReason());
@@ -412,11 +442,11 @@ public enum Role implements IPlayerModifier {
 	}
 
 	public boolean canUseRole(@NotNull Game game) {
-		return game.getPlayers().values().stream().filter(Player::isAlive).anyMatch(this::hasRole);
+		return game.getPlayers().filter(Player::isAlive).anyMatch(this::hasRole);
 	}
 
 	public void onTurnStart(@NotNull Game game) {
-		game.getPlayers().values().stream()
+		game.getPlayers()
 				.filter(this::hasRole)
 				.filter(Player::isAlive)
 				.forEach(p -> p.playSound(Sound.ACTIVE_TURN));
@@ -455,12 +485,9 @@ public enum Role implements IPlayerModifier {
 		String target = ctx.bodyValidator(TargetRequest.class).get().getTarget();
 		if (target == null || target.isBlank()) return Optional.empty();
 
-		Player player = game.getPlayers().get(target);
-
-		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-		if (condition != null && !condition.test(player)) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-		return Optional.of(player);
+		return game.getPlayer(target)
+				.filter(p -> condition == null || condition.test(p))
+				.or(() -> { throw new ErrorResponse(ErrorResponseType.INVALID_TARGET); });
 	}
 
 	@Getter

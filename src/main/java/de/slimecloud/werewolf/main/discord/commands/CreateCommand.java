@@ -65,7 +65,7 @@ public class CreateCommand {
 						return;
 					}
 
-					if (!game.getPlayers().containsKey(state.getEvent().getUser().getId())) game.join(state.getEvent().getUser().getId(), state.getEvent().getUser().getName());
+					if (game.getPlayer(state.getEvent().getUser().getId()).isEmpty()) game.join(state.getEvent().getUser().getId(), state.getEvent().getUser().getName());
 
 					state.getEvent().reply("## Einladungs-Link\nTeile diesen Link nicht mit anderen! Dieser bietet Zugriff auf deinen Werslime-Account für diese Runde!\n\n" + bot.getMain().getConfig().getUrl() + "/join?token=" + bot.getMain().getAuthenticator().generateToken(state.getEvent().getUser().getId(), id))
 							.setEphemeral(true)

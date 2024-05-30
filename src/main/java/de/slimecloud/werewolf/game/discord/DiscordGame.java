@@ -62,7 +62,7 @@ public class DiscordGame extends Game {
 			player.setAlive(false, null);
 		}
 
-		getPlayers().put(player.getId(), player);
+		players.put(player.getId(), player);
 		sendUpdate();
 
 		updateVoice();

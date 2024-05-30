@@ -33,16 +33,18 @@ public class GameInfo {
 	private final int total;
 	private final boolean valid;
 
+	private final List<ProtocolEntry> protocol;
+
 	@NotNull
 	public static GameInfo create(@NotNull Game game, @Nullable Player self) {
 		int interacted = game.getInteractions().size();
-		int total = (int) game.getPlayers().values().stream().filter(p -> p.isAlive() && game.getCurrent().hasRole(p)).count();
+		int total = (int) game.getPlayers().filter(p -> p.isAlive() && game.getCurrent().hasRole(p)).count();
 		Optional<Player> target = game.evaluateVote();
 
 		return new GameInfo(
 				game.getId(),
 				game instanceof DiscordGame,
-				game.getPlayers().values().stream().map(p -> PlayerInfo.create(p, self)).toList(),
+				game.getPlayers().map(p -> PlayerInfo.create(p, self)).toList(),
 
 				game.isStarted(),
 				game.getSettings(),
@@ -59,7 +61,9 @@ public class GameInfo {
 				self != null && game.getCurrent().canSeeTarget(self) ? target.map(Player::getId).orElse(null) : null,
 				interacted,
 				total,
-				interacted >= total && (!game.getCurrent().hasFlag(RoleFlag.VOTE) || target.isPresent())
+				interacted >= total && (!game.getCurrent().hasFlag(RoleFlag.VOTE) || target.isPresent()),
+
+				self != null && self.isSpectating() ? game.getProtocol() : null
 		);
 	}
 }

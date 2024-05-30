@@ -95,7 +95,7 @@ public class DiscordBot extends ListenerAdapter {
 		DiscordPlayer player = new DiscordPlayer(game, user.getId(), user.getUser().getName());
 		player.setMaster(true);
 
-		game.getPlayers().put(player.getId(), player);
+		game.getAllPlayers().put(player.getId(), player);
 		main.getGames().put(game.getId(), game);
 
 		return game;

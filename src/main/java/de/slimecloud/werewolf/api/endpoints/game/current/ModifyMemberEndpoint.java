@@ -23,11 +23,12 @@ public class ModifyMemberEndpoint implements Handler {
 
 		Request request = ctx.bodyValidator(Request.class).get();
 
-		Player player = info.getGame().getPlayers().get(ctx.pathParam("user_id"));
-		if (player == null) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
-
-		if (request.getMaster() != null) player.setMaster(request.getMaster());
-
-		info.getGame().sendUpdate();
+		info.getGame().getPlayer(ctx.pathParam("user_id")).ifPresentOrElse(
+				player -> {
+					if (request.getMaster() != null) player.setMaster(request.getMaster());
+					info.getGame().sendUpdate();
+				},
+				() -> { throw new ErrorResponse(ErrorResponseType.INVALID_TARGET); }
+		);
 	}
 }

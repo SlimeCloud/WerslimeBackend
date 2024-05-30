@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.game;
 
 import de.mineking.javautils.ID;
+import de.slimecloud.werewolf.data.ProtocolEntry;
 import de.slimecloud.werewolf.data.Sound;
 import de.slimecloud.werewolf.main.Main;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Getter
 @RequiredArgsConstructor
@@ -33,8 +35,25 @@ public class Game {
 	protected final Map<Role, Object> roleMetaData = new HashMap<>();
 	protected final Set<Runnable> nightActions = new HashSet<>();
 
+	protected final List<ProtocolEntry> protocol = new ArrayList<>();
+
 	public boolean isPublic() {
 		return settings.isPublic();
+	}
+
+	@NotNull
+	public Stream<Player> getPlayers() {
+		return players.values().stream().filter(p -> !p.isMaster() || !settings.storyMode() || !started);
+	}
+
+	@NotNull
+	public Map<String, Player> getAllPlayers() {
+		return players;
+	}
+
+	@NotNull
+	public Optional<Player> getPlayer(@NotNull String id) {
+		return Optional.ofNullable(players.get(id));
 	}
 
 	@NotNull
@@ -57,7 +76,7 @@ public class Game {
 		Player removed = players.remove(player);
 
 		if (removed != null) {
-			if (players.values().stream().noneMatch(Player::isMaster)) main.getGames().invalidate(id); //Will automatically call cleanup due to removalListener
+			if (getPlayers().noneMatch(Player::isMaster)) main.getGames().invalidate(id); //Will automatically call cleanup due to removalListener
 
 			if (event != null) event.accept(removed);
 
@@ -81,30 +100,39 @@ public class Game {
 
 		interactions.clear();
 		roleMetaData.clear();
+		protocol.clear();
 	}
 
 	public void start() {
 		if (started) return;
 
 		reset();
+		int players = (int) getPlayers().count();
 
-		List<Role> roles = new ArrayList<>(players.size());
+		System.out.println(players);
+		System.out.println(settings.roles());
+
+		List<Role> roles = new ArrayList<>(players);
 		for (int i = 0; i < settings.werewolfAmount(); i++) roles.add(Role.WEREWOLF);
 
 		roles.addAll(settings.roles().stream()
-				.limit(Math.max(players.size() - settings.werewolfAmount(), 0))
+				.limit(Math.max(players - settings.werewolfAmount(), 0))
 				.toList()
 		);
 
-		for (int i = roles.size(); i < players.size(); i++) roles.add(Role.VILLAGER);
+		System.out.println(roles);
 
-		players.values().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
+		for (int i = roles.size(); i < getPlayers().count(); i++) roles.add(Role.VILLAGER);
+
+		getPlayers().forEach(player -> player.setRole(roles.remove(Main.random.nextInt(roles.size()))));
 		Role.values.forEach(r -> r.initialize(this));
 
 		setCurrent(getNextRole(-1));
 		current.onTurnStart(this);
 
 		started = true;
+
+		pushProtocol(ProtocolEntry.ProtocolType.START);
 
 		playSound(Sound.START, 0.5);
 		sendUpdate();
@@ -135,6 +163,14 @@ public class Game {
 		}
 	}
 
+	public void pushProtocol(@NotNull ProtocolEntry.ProtocolType type, @NotNull Object[] data) {
+		protocol.add(new ProtocolEntry(ID.generate().asString(), type, data));
+	}
+
+	public void pushProtocol(@NotNull ProtocolEntry.ProtocolType type) {
+		pushProtocol(type, new Object[0]);
+	}
+
 	@NotNull
 	@SuppressWarnings("unchecked")
 	public <T> T getRoleMetaData(@NotNull Role role) {
@@ -151,19 +187,21 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Team team) {
+		if (!started) return;
 		started = false;
 
-		List<Player> winners = players.values().stream()
+		List<Player> winners = getPlayers()
 				.filter(p -> p.hasTeam(team))
 				.toList();
 
-		List<Player> losers = players.values().stream()
+		List<Player> losers = getPlayers()
 				.filter(p -> !winners.contains(p))
 				.toList();
 
 		winners.forEach(p -> p.playSound(Sound.WIN));
 		losers.forEach(p -> p.playSound(Sound.LOSE));
 
+		pushProtocol(ProtocolEntry.ProtocolType.END, new String[]{ team.name() });
 		sendEvent("END", new GameEnding(team, winners.stream().map(Player::getId).toList()));
 	}
 

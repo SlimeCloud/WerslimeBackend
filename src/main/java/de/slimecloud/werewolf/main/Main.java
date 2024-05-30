@@ -64,7 +64,7 @@ public class Main {
 		Player player = new Player(game, ID.generate().asString(), name);
 		player.setMaster(true);
 
-		game.getPlayers().put(player.getId(), player);
+		game.getAllPlayers().put(player.getId(), player);
 		games.put(game.getId(), game);
 
 		return game;

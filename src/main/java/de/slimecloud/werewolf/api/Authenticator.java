@@ -60,7 +60,7 @@ public class Authenticator {
 		Game game = main.getGames().getIfPresent(decoded.getClaim("game").asString());
 		if (game == null) throw new ErrorResponse(ErrorResponseType.GAME_NOT_FOUND);
 
-		Player player = game.getPlayers().get(decoded.getClaim("user").asString());
+		Player player = game.getAllPlayers().get(decoded.getClaim("user").asString());
 		if (player == null) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
 
 		return new AuthorizationInfo(player, game);

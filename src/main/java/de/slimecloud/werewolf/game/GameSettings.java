@@ -16,7 +16,7 @@ import java.util.Objects;
 public class GameSettings {
 	@NotNull
 	public static GameSettings createDefault() {
-		return new GameSettings(2, MuteSystem.NONE, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false);
+		return new GameSettings(2, MuteSystem.NONE, Arrays.asList(Role.WITCH, Role.AMOR, Role.SEER), false, true, true, false, false);
 	}
 
 	private Integer werewolfAmount;
@@ -27,6 +27,7 @@ public class GameSettings {
 	private Boolean revealDeadRoles;
 	private Boolean deadSpectators;
 	private Boolean revealLoverRoles;
+	private Boolean storyMode;
 
 	@SuppressWarnings("unchecked")
 	public static boolean validate(@NotNull String name, @NotNull Object value) {

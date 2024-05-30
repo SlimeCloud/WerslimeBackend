@@ -18,7 +18,7 @@ public enum Team implements IPlayerModifier {
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
 			if (reason != KillReason.LOVER && player.getRole() != Role.AMOR) {
-				player.getGame().getPlayers().values().stream()
+				player.getGame().getPlayers()
 						.filter(p -> p.hasModifier(Modifier.LOVER))
 						.forEach(p -> p.kill(KillReason.LOVER));
 			}
@@ -84,10 +84,10 @@ public enum Team implements IPlayerModifier {
 	}
 
 	private static boolean playerExists(@NotNull Game game, Predicate<Player> condition) {
-		return game.getPlayers().values().stream().filter(Player::isAlive).anyMatch(condition);
+		return game.getPlayers().filter(Player::isAlive).anyMatch(condition);
 	}
 
 	private static int getPlayerCount(@NotNull Game game, @NotNull Predicate<Player> condition) {
-		return (int) game.getPlayers().values().stream().filter(Player::isAlive).filter(condition).count();
+		return (int) game.getPlayers().filter(Player::isAlive).filter(condition).count();
 	}
 }

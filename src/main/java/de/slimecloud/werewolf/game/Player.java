@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.game;
 
 import de.slimecloud.werewolf.data.GameState;
 import de.slimecloud.werewolf.data.KillReason;
+import de.slimecloud.werewolf.data.ProtocolEntry;
 import de.slimecloud.werewolf.data.Sound;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class Player {
 		this.role = Role.VILLAGER;
 		this.teams.clear();
 		this.modifiers.clear();
-		this.alive = true;
+		this.alive = !master || !game.getSettings().storyMode();
 	}
 
 	@Nullable
@@ -50,7 +51,7 @@ public class Player {
 	}
 
 	public boolean isSpectating() {
-		return (!alive && game.getSettings().deadSpectators()) || !game.started;
+		return (!alive && game.getSettings().deadSpectators()) || !game.started || (master && game.getSettings().storyMode());
 	}
 
 	public boolean canSeeVictim() {
@@ -158,6 +159,8 @@ public class Player {
 
 			sendEvent("KILL", reason);
 			game.playSound(Sound.DEATH);
+
+			game.pushProtocol(ProtocolEntry.ProtocolType.DEATH, new Object[] { id, reason });
 
 			this.alive = false;
 		});

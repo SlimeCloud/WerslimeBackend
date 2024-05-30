@@ -53,7 +53,7 @@ public class JoinEndpoint implements Handler {
 					TokensResponse token = ctx.appData(Server.MAIN_KEY).getOauth2().getTokens(request.getCode());
 					User user = new DiscordAPI(token.getAccessToken()).fetchUser();
 
-					if (!game.getPlayers().containsKey(user.getId())) dg.join(user.getId(), user.getUsername());
+					if (game.getPlayer(user.getId()).isEmpty()) dg.join(user.getId(), user.getUsername());
 					ctx.json(new Response(ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(user.getId(), game.getId())));
 				} catch (Exception e) {
 					ctx.status(500);

@@ -21,6 +21,11 @@ public enum MuteSystem {
 		@NotNull
 		@Override
 		public RestAction<Void> mute(@NotNull Game game, @NotNull GuildVoiceState member, @Nullable Player player) {
+			if (game.getSettings().storyMode()) return DiscordBot.updateMute(member,
+					player == null || (game.isStarted() && !player.isMaster() && (!player.isAlive() || !game.getCurrent().hasFlag(RoleFlag.DAY))),
+					null
+			);
+
 			return DiscordBot.updateMute(member,
 					game.isStarted() && (player == null || (game.getCurrent().hasFlag(RoleFlag.DAY) ^ player.isAlive())),
 					game.isStarted() && (player != null && (!game.getCurrent().hasFlag(RoleFlag.DAY) && player.isAlive()))
