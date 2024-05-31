@@ -21,5 +21,6 @@ public class CurrentGameEndpoints implements EndpointGroup {
 		});
 
 		post("action", new RoleActionEndpoint());
+		post("chat", new ChatEndpoint());
 	}
 }

@@ -227,6 +227,11 @@ public enum Role implements IPlayerModifier {
 		}
 
 		@Override
+		public boolean canSeeChat(@NotNull Player player) {
+			return super.canSeeChat(player) || player.getRole() == SPY;
+		}
+
+		@Override
 		public boolean canSeeTarget(@NotNull Player player) {
 			return player.getTeams().contains(Team.WEREWOLF) || player.getRole() == SPY;
 		}
@@ -463,6 +468,10 @@ public enum Role implements IPlayerModifier {
 
 	public boolean canSeeInteractions(@NotNull Player player) {
 		return hasRole(player) || player.isSpectating();
+	}
+
+	public boolean canSeeChat(@NotNull Player player) {
+		return hasRole(player);
 	}
 
 	public boolean canSeeTarget(@NotNull Player player) {

@@ -157,7 +157,7 @@ public class Player {
 			//This can NOT be replaced with "anyMatch" because handleDeath has to be executed for all modifiers!
 			if (getBehavior().filter(b -> !b.handleDeath(this, reason)).count() > 0) return;
 
-			sendEvent("KILL", reason);
+			sendEvent(EventType.KILL, reason);
 			game.playSound(Sound.DEATH);
 
 			game.pushProtocol(ProtocolEntry.ProtocolType.DEATH, new Object[] { id, reason });
@@ -167,13 +167,13 @@ public class Player {
 	}
 
 	public void sendUpdate() {
-		sendEvent("UPDATE", GameState.create(game, this));
+		sendEvent(EventType.UPDATE, GameState.create(game, this));
 	}
 
-	public void sendEvent(@NotNull String name, @NotNull Object data) {
+	public void sendEvent(@NotNull EventType type, @NotNull Object data) {
 		clients.removeIf(client -> {
 			try {
-				client.send(new EventPayload(name, data));
+				client.send(new EventPayload(type, data));
 			} catch (Exception e) {
 				if (e.getCause() instanceof ClosedChannelException) return true;
 				logger.error("Failed to send event to {}", this, e);
@@ -188,7 +188,7 @@ public class Player {
 	}
 
 	public void playSound(@NotNull Sound sound, double volume) {
-		sendEvent("SOUND", sound.data(volume));
+		sendEvent(EventType.SOUND, sound.data(volume));
 	}
 
 	@Override
@@ -206,6 +206,6 @@ public class Player {
 		return name + " (" + id + ")";
 	}
 
-	private record EventPayload(String name, Object data) {
+	private record EventPayload(EventType type, Object data) {
 	}
 }

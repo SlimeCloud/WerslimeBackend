@@ -181,7 +181,7 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Team team) {
-		if (!started) return;
+		if (!started || true) return;
 		started = false;
 
 		List<Player> winners = getPlayers()
@@ -196,7 +196,7 @@ public class Game {
 		losers.forEach(p -> p.playSound(Sound.LOSE));
 
 		pushProtocol(ProtocolEntry.ProtocolType.END, new String[]{ team.name() });
-		sendEvent("END", new GameEnding(team, winners.stream().map(Player::getId).toList()));
+		sendEvent(EventType.END, new GameEnding(team, winners.stream().map(Player::getId).toList()));
 	}
 
 	@NotNull
@@ -219,8 +219,8 @@ public class Game {
 				.map(Map.Entry::getKey).map(players::get);
 	}
 
-	public void sendEvent(@NotNull String name, @NotNull Object object) {
-		players.values().forEach(p -> p.sendEvent(name, object));
+	public void sendEvent(@NotNull EventType type, @NotNull Object object) {
+		players.values().forEach(p -> p.sendEvent(type, object));
 	}
 
 	public void sendUpdate() {
@@ -255,6 +255,6 @@ public class Game {
 	}
 
 	public void cleanup() {
-		sendEvent("CLOSE", new Object());
+		sendEvent(EventType.CLOSE, new Object());
 	}
 }
