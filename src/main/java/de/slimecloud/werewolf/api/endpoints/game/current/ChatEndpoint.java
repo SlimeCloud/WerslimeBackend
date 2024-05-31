@@ -20,7 +20,7 @@ public class ChatEndpoint implements Handler {
 
 	@RequiredArgsConstructor
 	public static class Message {
-		private final String id = ID.generate().asString();
+		private final String id;
 		private final String author;
 		private final String message;
 	}
@@ -30,17 +30,17 @@ public class ChatEndpoint implements Handler {
 		AuthorizationInfo info = ctx.appData(Server.MAIN_KEY).getAuthenticator().checkAuthorization(ctx, true);
 
 		if (!info.getGame().getSettings().chat()) throw new ErrorResponse(ErrorResponseType.MISSING_ACCESS);
-		if (!info.getGame().getCurrent().hasRole(info.getPlayer())) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
+		if (!info.getGame().getCurrent().canSeeChat(info.getPlayer())) throw new ErrorResponse(ErrorResponseType.INVALID_GAME_STATE);
 		if (!info.getPlayer().isAlive()) throw new ErrorResponse(ErrorResponseType.INVALID_TURN);
 
 		Request request = ctx.bodyValidator(Request.class)
 				.check(r -> r.getMessage() != null && !r.getMessage().isBlank() && r.getMessage().length() <= 100, "Invalid 'message'")
 				.get();
 
-		Message message = new Message(info.getPlayer().getId(), request.getMessage());
+		String id = ID.generate().asString();
 
 		info.getGame().getAllPlayers().values().stream()
 				.filter(p -> (p.isAlive() && info.getGame().getCurrent().canSeeChat(p)) || p.isSpectating())
-				.forEach(p -> p.sendEvent(EventType.CHAT, message));
+				.forEach(p -> p.sendEvent(EventType.CHAT, new Message(id, info.getGame().getCurrent().hasRole(p) || p.equals(info.getPlayer()) ? info.getPlayer().getId() : "0", request.getMessage())));
 	}
 }
