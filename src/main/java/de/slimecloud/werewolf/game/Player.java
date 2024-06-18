@@ -1,9 +1,6 @@
 package de.slimecloud.werewolf.game;
 
-import de.slimecloud.werewolf.data.GameState;
-import de.slimecloud.werewolf.data.KillReason;
-import de.slimecloud.werewolf.data.ProtocolEntry;
-import de.slimecloud.werewolf.data.Sound;
+import de.slimecloud.werewolf.data.*;
 import io.javalin.websocket.WsContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -89,7 +86,7 @@ public class Player {
 
 	@NotNull
 	public Collection<Modifier> getModifiers(@Nullable Player other) {
-		if (equals(other) || other == null || other.isSpectating()) return modifiers;
+		if (other == null || other.isSpectating()) return modifiers;
 		return modifiers.stream().filter(m -> m.isVisible(other)).toList();
 	}
 

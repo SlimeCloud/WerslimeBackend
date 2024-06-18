@@ -5,7 +5,7 @@ import de.slimecloud.werewolf.api.AuthorizationInfo;
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
-import de.slimecloud.werewolf.game.EventType;
+import de.slimecloud.werewolf.data.EventType;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import lombok.Getter;

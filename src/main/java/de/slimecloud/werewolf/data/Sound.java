@@ -17,6 +17,7 @@ public enum Sound {
 
 	ACTIVE_TURN,
 	WARLOCK(2),
+	HEALER,
 	HOWL,
 	POTION,
 	SEER,
