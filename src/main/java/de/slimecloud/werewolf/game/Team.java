@@ -17,7 +17,7 @@ public enum Team implements IPlayerModifier {
 	LOVER(Aura.NEUTRAL) {
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
-			if (reason != KillReason.LOVER && player.getRole() != Role.AMOR) {
+			if (reason != KillReason.LOVER && player.hasModifier(Modifier.LOVER)) {
 				player.getGame().getPlayers()
 						.filter(p -> p.hasModifier(Modifier.LOVER))
 						.forEach(p -> p.kill(KillReason.LOVER));
