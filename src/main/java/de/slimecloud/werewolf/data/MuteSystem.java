@@ -36,7 +36,7 @@ public enum MuteSystem {
 		@NotNull
 		@Override
 		public RestAction<Void> mute(@NotNull Game game, @NotNull GuildVoiceState member, @Nullable Player player) {
-			return DiscordBot.updateMute(member, player == null || !player.isAlive(), null);
+			return DiscordBot.updateMute(member, game.isStarted() && (player == null || !player.isAlive()), null);
 		}
 	};
 
