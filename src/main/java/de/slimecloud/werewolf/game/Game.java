@@ -182,7 +182,7 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Team team) {
-		if (!started || true) return;
+		if (!started) return;
 		started = false;
 
 		List<Player> winners = getPlayers()
