@@ -78,10 +78,6 @@ public enum Team implements IPlayerModifier {
 		return player.hasTeam(this) && target.hasTeam(this);
 	}
 
-	private static boolean playerExists(@NotNull Game game, Predicate<Player> condition) {
-		return game.getPlayers().filter(Player::isAlive).anyMatch(condition);
-	}
-
 	private static int getPlayerCount(@NotNull Game game, @NotNull Predicate<Player> condition) {
 		return (int) game.getPlayers().filter(Player::isAlive).filter(condition).count();
 	}
