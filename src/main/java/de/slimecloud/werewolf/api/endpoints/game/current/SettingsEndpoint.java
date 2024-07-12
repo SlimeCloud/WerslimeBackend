@@ -8,6 +8,7 @@ import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
 import de.slimecloud.werewolf.api.Server;
 import de.slimecloud.werewolf.game.GameSettings;
+import de.slimecloud.werewolf.game.discord.DiscordGame;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
@@ -31,5 +32,6 @@ public class SettingsEndpoint implements Handler {
 		}
 
 		info.getGame().sendUpdate();
+		if (info.getGame() instanceof DiscordGame dg) dg.updateVoice();
 	}
 }
