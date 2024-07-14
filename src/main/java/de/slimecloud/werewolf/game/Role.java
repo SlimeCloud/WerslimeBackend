@@ -2,6 +2,7 @@ package de.slimecloud.werewolf.game;
 
 import de.slimecloud.werewolf.api.ErrorResponse;
 import de.slimecloud.werewolf.api.ErrorResponseType;
+import de.slimecloud.werewolf.data.EventType;
 import de.slimecloud.werewolf.data.KillReason;
 import de.slimecloud.werewolf.data.ProtocolEntry;
 import de.slimecloud.werewolf.data.Sound;
@@ -192,6 +193,24 @@ public enum Role implements IPlayerModifier {
 			return game.<WarlockMetaData>getRoleMetaData(this).getCamouflage();
 		}
 	},
+	HEALER(Team.VILLAGE) {
+		@Override
+		public void onTurnStart(@NotNull Game game) {
+			super.onTurnStart(game);
+
+			game.playSound(Sound.HEALER, 1);
+		}
+
+		@Override
+		public void handle(@NotNull Player player, @NotNull Context ctx) {
+			getTarget(player.getGame(), ctx, Player::isAlive).ifPresent(target -> {
+				if (target.hasModifier(Modifier.SHIELD) || target.getId().equals(player.getGame().getRoleMetaData(this))) throw new ErrorResponse(ErrorResponseType.INVALID_TARGET);
+
+				player.getGame().pushProtocol(ProtocolEntry.ProtocolType.HEALER, new String[] { target.getId() });
+				target.getModifiers().add(Modifier.SHIELD);
+			});
+		}
+	},
 	WEREWOLF(Team.WEREWOLF, EnumSet.of(RoleFlag.VOTE, RoleFlag.VICTIM, RoleFlag.KILLING)) {
 		@Override
 		public void onTurnStart(@NotNull Game game) {
@@ -202,8 +221,13 @@ public enum Role implements IPlayerModifier {
 		@Override
 		public void onTurnEnd(@NotNull Game game) {
 			game.evaluateVote().ifPresent(player -> {
-				game.setVictim(player.getId());
-				game.pushProtocol(ProtocolEntry.ProtocolType.WEREWOLF, new String[] { player.getId() });
+				if (player.hasModifier(Modifier.SHIELD)) {
+					game.pushProtocol(ProtocolEntry.ProtocolType.WEREWOLF_HEALER, new String[] { player.getId() });
+					player.getGame().getPlayers().filter(p -> p.getRole() == HEALER).forEach(p -> p.sendEvent(EventType.SHIELD_ATTACK, new Object()));
+				} else {
+					game.setVictim(player.getId());
+					game.pushProtocol(ProtocolEntry.ProtocolType.WEREWOLF, new String[] { player.getId() });
+				}
 			});
 		}
 
@@ -350,6 +374,13 @@ public enum Role implements IPlayerModifier {
 			game.evaluateVote().ifPresent(player -> {
 				game.pushProtocol(ProtocolEntry.ProtocolType.VILLAGER, new String[] { player.getId() });
 				player.kill(KillReason.VILLAGE_VOTE);
+			});
+
+			game.getPlayers().forEach(p -> {
+				if (p.hasModifier(Modifier.SHIELD)) {
+					p.getModifiers().remove(Modifier.SHIELD);
+					game.getRoleMetaData().put(this, p.getId());
+				}
 			});
 		}
 	},

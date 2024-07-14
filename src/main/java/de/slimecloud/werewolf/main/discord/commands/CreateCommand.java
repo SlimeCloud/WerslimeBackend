@@ -2,9 +2,7 @@ package de.slimecloud.werewolf.main.discord.commands;
 
 import de.mineking.discordutils.commands.ApplicationCommand;
 import de.mineking.discordutils.commands.ApplicationCommandMethod;
-import de.mineking.discordutils.commands.condition.ICommandPermission;
 import de.mineking.discordutils.commands.condition.Scope;
-import de.mineking.discordutils.commands.context.ICommandContext;
 import de.mineking.discordutils.commands.option.Option;
 import de.mineking.discordutils.ui.MessageMenu;
 import de.mineking.discordutils.ui.MessageRenderer;
@@ -15,7 +13,6 @@ import de.mineking.discordutils.ui.state.MessageSendState;
 import de.slimecloud.werewolf.game.discord.DiscordGame;
 import de.slimecloud.werewolf.main.discord.DiscordBot;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -23,7 +20,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
@@ -32,14 +28,6 @@ import java.awt.*;
 
 @ApplicationCommand(name = "create", description = "Erstellt eine neue Discord-Runde und sendet eine Einladung", scope = Scope.GUILD_GLOBAL)
 public class CreateCommand {
-	public final ICommandPermission<ICommandContext> condition = new ICommandPermission<>() {
-		@NotNull
-		@Override
-		public DefaultMemberPermissions requiredPermissions() {
-			return DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER);
-		}
-	};
-
 	private final MessageMenu menu;
 	private final MessageMenu deleteMenu;
 

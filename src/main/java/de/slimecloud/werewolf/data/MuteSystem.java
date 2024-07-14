@@ -22,7 +22,7 @@ public enum MuteSystem {
 		@Override
 		public RestAction<Void> mute(@NotNull Game game, @NotNull GuildVoiceState member, @Nullable Player player) {
 			if (game.getSettings().storyMode()) return DiscordBot.updateMute(member,
-					player == null || (game.isStarted() && !player.isMaster() && (!player.isAlive() || !game.getCurrent().hasFlag(RoleFlag.DAY))),
+					game.isStarted() && (player == null || (!player.isMaster() && (!player.isAlive() || !game.getCurrent().hasFlag(RoleFlag.DAY)))),
 					null
 			);
 
@@ -36,7 +36,7 @@ public enum MuteSystem {
 		@NotNull
 		@Override
 		public RestAction<Void> mute(@NotNull Game game, @NotNull GuildVoiceState member, @Nullable Player player) {
-			return DiscordBot.updateMute(member, player == null || !player.isAlive(), null);
+			return DiscordBot.updateMute(member, game.isStarted() && (player == null || !player.isAlive()), null);
 		}
 	};
 

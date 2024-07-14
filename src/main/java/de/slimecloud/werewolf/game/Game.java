@@ -1,6 +1,7 @@
 package de.slimecloud.werewolf.game;
 
 import de.mineking.javautils.ID;
+import de.slimecloud.werewolf.data.EventType;
 import de.slimecloud.werewolf.data.ProtocolEntry;
 import de.slimecloud.werewolf.data.Sound;
 import de.slimecloud.werewolf.main.Main;
@@ -181,7 +182,7 @@ public class Game {
 	}
 
 	public void sendWin(@NotNull Team team) {
-		if (!started || true) return;
+		if (!started) return;
 		started = false;
 
 		List<Player> winners = getPlayers()

@@ -1,4 +1,4 @@
-package de.slimecloud.werewolf.game;
+package de.slimecloud.werewolf.data;
 
 public enum EventType {
     CHAT,
@@ -7,5 +7,7 @@ public enum EventType {
     KILL,
     KICK,
     END,
-    CLOSE
+    CLOSE,
+
+	SHIELD_ATTACK
 }
