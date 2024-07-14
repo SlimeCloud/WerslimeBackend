@@ -22,7 +22,7 @@ public class VoiceUpdateListener extends ListenerAdapter {
 		if (event.getChannelJoined() == null) return;
 
 		AtomicBoolean muted = new AtomicBoolean(event.getVoiceState().isGuildMuted());
-		AtomicBoolean deafened = new AtomicBoolean(event.getVoiceState().isDeafened());
+		AtomicBoolean deafened = new AtomicBoolean(event.getVoiceState().isGuildDeafened());
 
 		if ((muted.get() || deafened.get()) && event.getGuild().getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
 			List<AuditLogEntry> entries = event.getGuild().retrieveAuditLogs()
