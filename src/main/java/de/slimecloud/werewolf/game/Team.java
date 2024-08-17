@@ -32,11 +32,6 @@ public enum Team implements IPlayerModifier {
 		}
 
 		@Override
-		public boolean canSeeRole(@NotNull Player player, @NotNull Player target) {
-			return player.hasModifier(Modifier.LOVER) && target.hasModifier(Modifier.LOVER) && player.getGame().getSettings().revealLoverRoles();
-		}
-
-		@Override
 		public boolean isVisible(@NotNull Player player, @NotNull Player target) {
 			return false;
 		}

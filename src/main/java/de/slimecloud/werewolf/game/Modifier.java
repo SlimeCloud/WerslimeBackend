@@ -24,6 +24,11 @@ public enum Modifier implements IPlayerModifier {
 		public boolean canSeeAura(@NotNull Player player, @NotNull Player target) {
 			return player.hasModifier(LOVER) && target.hasModifier(LOVER);
 		}
+
+		@Override
+		public boolean canSeeRole(@NotNull Player player, @NotNull Player target) {
+			return player.hasModifier(Modifier.LOVER) && target.hasModifier(Modifier.LOVER) && player.getGame().getSettings().revealLoverRoles();
+		}
 	},
 	SHIELD(false) {
 		@Override
