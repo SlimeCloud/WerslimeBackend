@@ -39,7 +39,7 @@ public class ChatEndpoint implements Handler {
 
 		String id = ID.generate().asString();
 
-		info.getGame().getAllPlayers().values().stream()
+		info.getGame().getPlayers()
 				.filter(p -> (p.isAlive() && info.getGame().getCurrent().canSeeChat(p)) || p.isSpectating())
 				.forEach(p -> p.sendEvent(EventType.CHAT, new Message(id, info.getGame().getCurrent().hasRole(p) || p.equals(info.getPlayer()) ? info.getPlayer().getId() : "0", request.getMessage())));
 	}

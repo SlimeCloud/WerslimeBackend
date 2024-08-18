@@ -11,7 +11,6 @@ import io.javalin.http.Context;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,7 +118,6 @@ public enum Role implements IPlayerModifier {
 	},
 	WARLOCK(Team.WEREWOLF, EnumSet.of(RoleFlag.KILLING)) {
 		@Getter
-		@Setter
 		@RequiredArgsConstructor
 		public static class WarlockMetaData {
 			private int targetLimit = 2;
@@ -242,7 +240,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean canSeeAura(@NotNull Player player, @NotNull Player target) {
-			return player.getTeams().contains(Team.WEREWOLF) && (target.getRole() == WEREWOLF || target.getRole() == SPY);
+			return player.getTeams().contains(Team.WEREWOLF) && (target.getRole() == WEREWOLF || target.getRole() == SPY || target.getRole() == WARLOCK);
 		}
 
 		@Override

@@ -32,7 +32,7 @@ public class CreateEndpoint implements Handler {
 		Game game = ctx.appData(Server.MAIN_KEY).create(request.getMasterName());
 
 		ctx.json(new Response(game.getId(), ctx.appData(Server.MAIN_KEY).getAuthenticator().generateToken(
-				game.getAllPlayers().values().stream().findFirst().map(Player::getId).orElseThrow(),
+				game.getPlayers().findFirst().map(Player::getId).orElseThrow(),
 				game.getId())
 		));
 		game.sendUpdate();

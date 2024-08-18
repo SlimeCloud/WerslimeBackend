@@ -3,6 +3,7 @@ package de.slimecloud.werewolf.game;
 import de.slimecloud.werewolf.data.MuteSystem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
+@Setter
 @Accessors(fluent = true)
 @AllArgsConstructor
 public class GameSettings {

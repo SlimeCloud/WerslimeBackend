@@ -65,7 +65,7 @@ public class Player {
 
 	@NotNull
 	public List<Team> getTeams() {
-		return Stream.concat(teams.stream(), role.getTeams().stream()).toList();
+		return Stream.concat(teams.stream(), role.getTeams().stream().filter(t -> !teams.contains(t))).toList();
 	}
 
 	public boolean hasTeam(@NotNull Team team) {

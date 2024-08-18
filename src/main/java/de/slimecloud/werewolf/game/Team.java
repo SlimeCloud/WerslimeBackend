@@ -47,7 +47,7 @@ public enum Team implements IPlayerModifier {
 
 		@Override
 		public boolean isVisible(@NotNull Player player, @NotNull Player target) {
-			return super.isVisible(player, target) && player.getRole() != Role.WARLOCK;
+			return super.isVisible(player, target) && player.getRole() != Role.WARLOCK && target.getRole() != Role.WARLOCK;
 		}
 	},
 	VILLAGE(Aura.VILLAGE) {
