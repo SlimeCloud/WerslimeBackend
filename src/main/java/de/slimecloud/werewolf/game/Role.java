@@ -417,6 +417,8 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean handleDeath(@NotNull Player player, @NotNull KillReason reason) {
+			if (player.getGame().getCurrent() == HUNTER) return true;
+
 			player.getGame().getRoleMetaData().put(Role.HUNTER, new HunterMetaData(player.getGame().getCurrent(), reason));
 			player.getGame().setCurrent(Role.HUNTER);
 
