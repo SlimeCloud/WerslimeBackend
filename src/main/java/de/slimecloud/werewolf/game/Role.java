@@ -240,22 +240,12 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean canSeeAura(@NotNull Player player, @NotNull Player target) {
-			return player.getTeams().contains(Team.WEREWOLF) && (target.getRole() == WEREWOLF || target.getRole() == SPY || target.getRole() == WARLOCK);
+			return player.getTeams().contains(Team.WEREWOLF) && (target.getRole() == WEREWOLF || target.getRole() == WARLOCK);
 		}
 
 		@Override
 		public boolean canSeeInteractions(@NotNull Player player) {
 			return false;
-		}
-
-		@Override
-		public boolean canSeeChat(@NotNull Player player) {
-			return super.canSeeChat(player) || player.getRole() == SPY;
-		}
-
-		@Override
-		public boolean canSeeTarget(@NotNull Player player) {
-			return player.getTeams().contains(Team.WEREWOLF) || player.getRole() == SPY;
 		}
 	},
 	WITCH(Team.VILLAGE, EnumSet.of(RoleFlag.VICTIM)) {
@@ -435,18 +425,6 @@ public enum Role implements IPlayerModifier {
 
 			player.getGame().sendWin(Team.JESTER);
 			return false;
-		}
-	},
-	SPY(List.of(Team.VILLAGE), EnumSet.of(RoleFlag.VICTIM)) {
-		@Override
-		public boolean canUseRole(@NotNull Game game) {
-			return false;
-		}
-
-		@NotNull
-		@Override
-		public Aura getEffectiveAura(@NotNull Game game) {
-			return Aura.HOSTILE;
 		}
 	};
 
