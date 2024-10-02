@@ -245,7 +245,7 @@ public enum Role implements IPlayerModifier {
 
 		@Override
 		public boolean canSeeInteractions(@NotNull Player player) {
-			return false;
+			return player.hasTeam(Team.WEREWOLF);
 		}
 	},
 	WITCH(Team.VILLAGE, EnumSet.of(RoleFlag.VICTIM)) {
