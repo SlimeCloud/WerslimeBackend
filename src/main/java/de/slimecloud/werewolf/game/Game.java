@@ -173,8 +173,6 @@ public class Game {
 	}
 
 	private void checkWin() {
-		if (true) return;
-
 		for (Team candidate : Team.values()) {
 			if (candidate.isWinning(this)) {
 				sendWin(candidate);
